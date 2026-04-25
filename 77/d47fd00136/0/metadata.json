@@ -1,0 +1,45 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "77d47fd00136",
+  "session_id": "4fb7a68c-24dd-4fc2-84fd-94b774039cf2",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T21:38:12.701275Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/services/events.py",
+    "app/api/v1/events.py",
+    "app/api/v1/router.py",
+    "app/api/v1/webhook.py",
+    "app/static/index.html",
+    "app/main.py",
+    "tests/api/test_events_sse.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "cad486fe99bd",
+  "checkpoint_transcript_start": 183,
+  "transcript_lines_at_start": 183,
+  "token_usage": {
+    "input_tokens": 48,
+    "cache_creation_tokens": 37752,
+    "cache_read_tokens": 6068264,
+    "output_tokens": 23561,
+    "api_call_count": 48
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T21:38:12.686035Z",
+    "agent_lines": 314,
+    "agent_removed": 3,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 314,
+    "total_lines_changed": 317,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

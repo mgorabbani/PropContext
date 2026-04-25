@@ -40,10 +40,42 @@ Possible first milestones:
 1. Add a document ingestion script.
 2. Extract metadata....
 
-## Data Notes
+## Demo
 
-## Development Notes
+```bash
+# 1. install
+uv sync
 
+# 2. bootstrap a wiki skeleton from stammdaten and index it
+uv run python -m app.tools.bootstrap_wiki
+
+# 3. start the API + SSE live view
+APP_WEBHOOK_HMAC_SECRET=demo uv run fastapi run app/main.py
+#   -> http://localhost:8000/         live pulses (EventSource)
+#   -> http://localhost:8000/api/v1/properties/LIE-001  current building.md
+#   -> http://localhost:8000/api/v1/events                SSE stream
+
+# 4. replay one day of deltas (in another shell)
+APP_WEBHOOK_HMAC_SECRET=demo \
+  uv run python -m app.tools.replay --day 1 --rate 1.0
+
+# 5. backfill 2024-2025 archive (cost-capped)
+APP_WEBHOOK_HMAC_SECRET=demo \
+  uv run python -m app.tools.backfill --limit 200 --rate 2.0
+
+# 6. reconciliation report
+uv run python -m app.tools.reconcile --write-wiki
+```
+
+`AGENTS.md` (symlinked as `CLAUDE.md`) is the source of truth for code style and pipeline architecture. `IMPLEMENTATION_PLAN.md` traces the phased build.
+
+## Tests
+
+```bash
+uv run pytest                 # full suite
+uv run pytest tests/e2e -q    # end-to-end day-01 replay
+uv run ruff check . && uv run ty check
+```
 
 ## License
 

@@ -37,7 +37,7 @@ async def stream_events(
 async def _sse_generator(
     broker: EventBroker,
     subscription: Subscription,
-) -> AsyncGenerator[str, None]:
+) -> AsyncGenerator[str]:
     try:
         while True:
             pulse = await subscription.queue.get()

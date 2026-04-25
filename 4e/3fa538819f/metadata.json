@@ -3,11 +3,13 @@
   "checkpoint_id": "4e3fa538819f",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 4,
+  "checkpoints_count": 5,
   "files_touched": [
     "app/api/v1/wiki.py",
     "app/schemas/human_notes.py",
+    "app/services/human_notes.py",
     "app/services/patcher/apply.py",
+    "app/services/patcher/git.py",
     "app/static/assets/index-BuHqYBQi.css",
     "app/static/assets/index-CSqBIAjj.js",
     "app/static/assets/index-DTMDm8Aa.css",
@@ -39,13 +41,19 @@
       "transcript": "/4e/3fa538819f/2/full.jsonl",
       "content_hash": "/4e/3fa538819f/2/content_hash.txt",
       "prompt": "/4e/3fa538819f/2/prompt.txt"
+    },
+    {
+      "metadata": "/4e/3fa538819f/3/metadata.json",
+      "transcript": "/4e/3fa538819f/3/full.jsonl",
+      "content_hash": "/4e/3fa538819f/3/content_hash.txt",
+      "prompt": "/4e/3fa538819f/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 2877,
-    "cache_creation_tokens": 383306,
-    "cache_read_tokens": 20226161,
-    "output_tokens": 109715,
-    "api_call_count": 209
+    "input_tokens": 3098,
+    "cache_creation_tokens": 822777,
+    "cache_read_tokens": 41951083,
+    "output_tokens": 198917,
+    "api_call_count": 335
   }
 }

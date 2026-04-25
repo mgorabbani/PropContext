@@ -1,0 +1,107 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "fc8aed89d91f",
+  "session_id": "43c29fe5-0b12-4bc4-999f-8f812e104c8b",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T22:23:34.933081Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/api/v1/webhook.py",
+    "app/schemas/webhook.py",
+    "app/services/conflict.py",
+    "app/services/extract.py",
+    "app/services/patcher/apply.py",
+    "app/services/supervisor.py",
+    "tests/api/test_webhook_auth.py",
+    "tests/e2e/test_day01_replay.py",
+    "tests/llm/test_extract.py",
+    "tests/patcher/test_apply_plan.py",
+    "tests/tools/test_backfill.py",
+    "tests/tools/test_replay.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "76ddf72c55fe",
+  "token_usage": {
+    "input_tokens": 12,
+    "cache_creation_tokens": 22098,
+    "cache_read_tokens": 53773,
+    "output_tokens": 367,
+    "api_call_count": 2
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T22:23:34.920407Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 34,
+    "total_committed": 0,
+    "total_lines_changed": 34,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 921,
+      "user_lines_removed": 70,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".dockerignore": 2,
+        ".gitignore": 3,
+        "Dockerfile": 13,
+        "app/api/v1/webhook.py": 33,
+        "app/core/config.py": 19,
+        "app/schemas/webhook.py": 26,
+        "app/services/classify.py": 1,
+        "app/services/extract.py": 6,
+        "app/services/llm/client.py": 69,
+        "app/services/patcher/apply.py": 8,
+        "app/services/patcher/paths.py": 35,
+        "app/services/supervisor.py": 2,
+        "app/storage/idempotency.py": 10,
+        "docker-compose.yml": 19,
+        "pyproject.toml": 1,
+        "simulation.md": 509,
+        "tests/api/test_webhook_auth.py": 55,
+        "tests/e2e/test_day01_replay.py": 7,
+        "tests/handlers/test_supervisor.py": 2,
+        "tests/llm/test_extract.py": 41,
+        "tests/patcher/test_apply_plan.py": 41,
+        "tests/test_config.py": 14,
+        "tests/tools/test_backfill.py": 2,
+        "tests/tools/test_replay.py": 3
+      },
+      "user_removed_per_file": {
+        "Dockerfile": 1,
+        "app/api/v1/webhook.py": 1,
+        "app/core/config.py": 3,
+        "app/schemas/webhook.py": 5,
+        "app/services/classify.py": 1,
+        "app/services/conflict.py": 2,
+        "app/services/extract.py": 14,
+        "app/services/llm/client.py": 3,
+        "app/services/patcher/apply.py": 2,
+        "app/services/supervisor.py": 3,
+        "app/storage/idempotency.py": 16,
+        "docker-compose.yml": 5,
+        "tests/e2e/test_day01_replay.py": 7,
+        "tests/handlers/test_supervisor.py": 2,
+        "tests/test_config.py": 5
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 921,
+      "agent_lines_removed": 70
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/.env in the IDE. This may or may not be related to the current task.</ide_opened_file>
+bash <(curl -sSL \
+https://storage.googleapis.com/cloud-samples-data/adc/setup_adc.sh)

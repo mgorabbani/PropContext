@@ -25,6 +25,7 @@ Living building memory for Buena (Berlin property mgmt). Pipeline ingests emails
 | Lint+format | ruff | 0.15+ |
 | Type check | ty (Astral) | 0.0.32+ |
 | Test | pytest + pytest-asyncio | 9 / 1.3 |
+| Container | Docker (multi-stage, uv) | 29+ |
 
 Do not add libraries without first comparing 2-3 alternatives in chat and getting human sign-off. The ecosystem moves fast; "the classic choice" is usually wrong.
 
@@ -119,6 +120,27 @@ uv run ty check
 
 CI gate (when added) must run, in order: `ruff format --check`, `ruff check`, `ty check`, `pytest`.
 
+### Docker
+
+```bash
+# Prod image (multi-stage, runs as non-root, healthcheck on /api/v1/health)
+docker build -t buena-context:latest .
+docker run --rm -p 8000:8000 buena-context:latest
+
+# Compose — prod profile (default)
+docker compose up --build
+
+# Compose — dev profile (hot reload, source-mounted)
+docker compose --profile dev up --build api-dev
+```
+
+Image conventions:
+- Builder stage uses `ghcr.io/astral-sh/uv:python3.13-bookworm-slim`, `uv sync --frozen --no-dev`.
+- Runtime is `python:3.13-slim-bookworm`, copies only `/app/.venv` + `app/`. No uv at runtime.
+- Runs as uid 1000 (`app` user). Never run as root.
+- `output/` is a volume — `building.md` files persist across container restarts; never bake them into the image.
+- Settings read env vars with `APP_` prefix: `APP_ENV`, `APP_LOG_LEVEL`, `APP_OUTPUT_DIR`, etc.
+
 ## Test conventions
 
 - `pytest-asyncio` in `auto` mode — async tests don't need `@pytest.mark.asyncio`.
@@ -148,3 +170,4 @@ If you add a pattern, drop a pattern, change a tool, or notice the rules driftin
 - Schema / extraction: `schema/CLAUDE.md`, `schema/WIKI_SCHEMA.md`
 - Raw data: `data/` (read-only)
 - Plan / problem: `PLAN.md`, `PROBLEM_STATEMENT.md`, `IDEA.md`
+- Container: `Dockerfile`, `docker-compose.yml`, `.dockerignore`

@@ -15,17 +15,20 @@ log = structlog.get_logger(__name__)
 
 _SYSTEM_PROMPT = (
     "You are the Buena property wiki assistant. The user asks questions about a "
-    "single property. You have:\n"
-    "  • the property index (`index.md`)\n"
-    "  • a directory tree of all wiki files for the property\n\n"
+    "single property. You receive every markdown file in the property wiki, each "
+    "introduced by a `=== <relative path> ===` header. Skip files starting with "
+    "`_` (state/feedback) unless directly relevant.\n\n"
     "Answer the user's question using only the provided wiki content. If the "
-    "answer lives in a specific wiki file, return its path (relative to wiki_dir) "
-    "in the `path` field so the UI can open it. If you can answer in plain text, "
-    "use the `answer` field. You may use both. Be concise. Cite section headings "
-    "when helpful.\n\n"
+    "answer lives in one specific wiki file, return its path (relative to "
+    "wiki_dir) in the `path` field so the UI can open it. Always also fill the "
+    "`answer` field with a concise plain-text answer (1-3 sentences). Cite "
+    "section headings when helpful. Answer in the language of the question.\n\n"
     'Respond with a single JSON object: `{"answer": string|null, "path": string|null}`. '
     "No prose outside the JSON."
 )
+
+_MAX_FILE_BYTES = 200_000
+_MAX_TOTAL_BYTES = 800_000
 
 
 @dataclass(frozen=True, slots=True)

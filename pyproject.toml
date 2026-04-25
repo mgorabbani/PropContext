@@ -12,6 +12,7 @@ dependencies = [
     "anthropic>=0.97.0",
     "duckdb>=1.5.2",
     "pypdf>=6.10.2",
+    "fastmcp>=3.2.4",
 ]
 
 [dependency-groups]

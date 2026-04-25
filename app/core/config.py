@@ -35,6 +35,11 @@ class Settings(BaseSettings):
 
     llm_provider: Literal["anthropic", "gemini", "fake"] = "gemini"
 
+    mcp_enabled: bool = Field(default=True)
+    mcp_base_url: str = Field(default="http://localhost:8000")
+    mcp_required_scopes: list[str] = Field(default_factory=lambda: ["openid", "email"])
+    workos_authkit_domain: str | None = Field(default=None)
+
     fast_model: str = ""
     smart_model: str = ""
 

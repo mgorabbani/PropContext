@@ -33,7 +33,7 @@ Do not add libraries without first comparing 2-3 alternatives in chat and gettin
 
 ```
 app/
-  main.py              # create_app(), lifespan
+  main.py              # create_app(), lifespan, mounts /mcp
   api/v1/
     router.py          # mounts feature routers
     health.py
@@ -41,6 +41,12 @@ app/
   core/
     config.py          # Settings, get_settings (lru_cache)
     logging.py         # configure_logging
+  mcp/                 # FastMCP server exposed at /mcp (org-scoped, OAuth via WorkOS)
+    server.py          # build_mcp(settings) → FastMCP
+    auth.py            # AuthKitProvider wiring
+    context.py         # current_org_id, assert_property_access (per-call)
+    orgs.py            # hardcoded org → property allowlist
+    tools.py / resources.py / prompts.py
   schemas/             # Pydantic response/request models, no business logic
   services/            # business logic, IO, integrations
 tests/
@@ -92,6 +98,15 @@ uv add --group dev <pkg> # dev/test
 ```
 
 Pin a sane lower bound (`>=X.Y`). Never pin exact (`==`) except for security CVEs.
+
+### Adding an MCP capability
+
+1. Tool → `app/mcp/tools.py`. Use `assert_property_access(property_id)` at the top to enforce org scope. Raise `ToolError` for user-facing failure.
+2. Resource → `app/mcp/resources.py`. Same access gate. URIs use `property://<id>` / `building://<prop>/<bld>` shape.
+3. Prompt → `app/mcp/prompts.py`. Pure functions, no IO.
+4. Org → property mapping is hardcoded in `app/mcp/orgs.py` for the MVP. When this moves to a database, the access gate stays the same — only `properties_for_org` changes.
+5. Auth provider lives in `app/mcp/auth.py`. WorkOS AuthKit is the only supported AS today; swapping providers means changing this file alone (FastMCP `RemoteAuthProvider` contract).
+6. Never read the bearer token directly. Use `app.mcp.context.current_org_id()` / `assert_property_access()` so per-call auth state is sourced from FastMCP's request context.
 
 ## Commands
 

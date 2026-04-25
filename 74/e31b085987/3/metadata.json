@@ -1,0 +1,53 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "74e31b085987",
+  "session_id": "92a01305-2d77-4e28-b2e9-1e84559619e7",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:12:10.311467Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/static/index.html",
+    "ui/src/components/Breadcrumb.tsx",
+    "ui/src/components/FrontmatterCard.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/components/Tree.tsx",
+    "ui/src/lib/rehypeStripComments.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "755c676bb40c",
+  "checkpoint_transcript_start": 135,
+  "transcript_lines_at_start": 135,
+  "token_usage": {
+    "input_tokens": 2,
+    "cache_creation_tokens": 841,
+    "cache_read_tokens": 148097,
+    "output_tokens": 263,
+    "api_call_count": 2
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:12:10.304184Z",
+    "agent_lines": 410,
+    "agent_removed": 56,
+    "human_added": 6910,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 7320,
+    "total_lines_changed": 7376,
+    "agent_percentage": 6.317787418655098,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

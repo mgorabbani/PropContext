@@ -3,7 +3,7 @@
   "checkpoint_id": "fc8aed89d91f",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 7,
+  "checkpoints_count": 8,
   "files_touched": [
     "app/api/v1/webhook.py",
     "app/schemas/webhook.py",
@@ -31,13 +31,19 @@
       "transcript": "/fc/8aed89d91f/1/full.jsonl",
       "content_hash": "/fc/8aed89d91f/1/content_hash.txt",
       "prompt": "/fc/8aed89d91f/1/prompt.txt"
+    },
+    {
+      "metadata": "/fc/8aed89d91f/2/metadata.json",
+      "transcript": "/fc/8aed89d91f/2/full.jsonl",
+      "content_hash": "/fc/8aed89d91f/2/content_hash.txt",
+      "prompt": "/fc/8aed89d91f/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 162,
-    "cache_creation_tokens": 140588,
-    "cache_read_tokens": 6698508,
-    "output_tokens": 35031,
-    "api_call_count": 87
+    "input_tokens": 184,
+    "cache_creation_tokens": 187730,
+    "cache_read_tokens": 7276010,
+    "output_tokens": 41850,
+    "api_call_count": 99
   }
 }

@@ -7,5 +7,5 @@ from pydantic import BaseModel
 
 class HealthStatus(BaseModel):
     status: Literal["ok"]
-    env: str
+    env: Literal["dev", "staging", "prod"]
     version: str

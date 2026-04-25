@@ -7,6 +7,7 @@ import anyio
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
+from app.schemas.buildings import BuildingId
 
 
 class BuildingMemoryService:
@@ -19,10 +20,10 @@ class BuildingMemoryService:
     def __init__(self, output_dir: Path) -> None:
         self._output_dir = output_dir
 
-    def _path(self, building_id: str) -> Path:
+    def _path(self, building_id: BuildingId) -> Path:
         return self._output_dir / f"{building_id}.md"
 
-    async def load(self, building_id: str) -> str | None:
+    async def load(self, building_id: BuildingId) -> str | None:
         path = self._path(building_id)
         if not await anyio.Path(path).is_file():
             return None

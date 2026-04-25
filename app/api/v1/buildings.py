@@ -5,14 +5,12 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Path, status
 from fastapi.responses import PlainTextResponse
 
+from app.schemas.buildings import BuildingId as BuildingIdStr
 from app.services.building_memory import BuildingMemoryService, get_building_memory_service
 
 router = APIRouter()
 
-BuildingId = Annotated[
-    str,
-    Path(pattern=r"^[A-Za-z0-9_-]{1,64}$", description="Canonical building id, e.g. HAUS-12"),
-]
+BuildingId = Annotated[BuildingIdStr, Path(description="Canonical building id, e.g. HAUS-12")]
 
 
 @router.get(

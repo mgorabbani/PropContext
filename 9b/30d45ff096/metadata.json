@@ -3,7 +3,7 @@
   "checkpoint_id": "9b30d45ff096",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 3,
+  "checkpoints_count": 14,
   "files_touched": [
     "app/core/config.py",
     "app/services/classify.py",
@@ -17,13 +17,19 @@
       "transcript": "/9b/30d45ff096/0/full.jsonl",
       "content_hash": "/9b/30d45ff096/0/content_hash.txt",
       "prompt": "/9b/30d45ff096/0/prompt.txt"
+    },
+    {
+      "metadata": "/9b/30d45ff096/1/metadata.json",
+      "transcript": "/9b/30d45ff096/1/full.jsonl",
+      "content_hash": "/9b/30d45ff096/1/content_hash.txt",
+      "prompt": "/9b/30d45ff096/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 193,
-    "cache_creation_tokens": 146899,
-    "cache_read_tokens": 10572744,
-    "output_tokens": 54623,
-    "api_call_count": 118
+    "input_tokens": 280,
+    "cache_creation_tokens": 170643,
+    "cache_read_tokens": 12046587,
+    "output_tokens": 66133,
+    "api_call_count": 145
   }
 }

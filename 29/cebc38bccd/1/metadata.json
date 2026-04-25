@@ -1,0 +1,97 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "29cebc38bccd",
+  "session_id": "b0e4c26d-82f5-4cd9-982c-98373fd713cb",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:16.243238Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".env.example",
+    "AGENTS.md",
+    "app/core/config.py",
+    "app/main.py",
+    "pyproject.toml",
+    "uv.lock"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "227a19a0d203",
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 29390,
+    "cache_read_tokens": 142061,
+    "output_tokens": 1487,
+    "api_call_count": 4
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:16.236482Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 10,
+    "total_committed": 0,
+    "total_lines_changed": 10,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 2016,
+      "user_lines_removed": 190,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        ".env.example": 9,
+        "AGENTS.md": 16,
+        "app/api/v1/wiki.py": 43,
+        "app/core/config.py": 5,
+        "app/main.py": 33,
+        "app/mcp/__init__.py": 5,
+        "app/mcp/auth.py": 20,
+        "app/mcp/context.py": 32,
+        "app/mcp/orgs.py": 16,
+        "app/mcp/prompts.py": 29,
+        "app/mcp/resources.py": 45,
+        "app/mcp/server.py": 35,
+        "app/mcp/tools.py": 68,
+        "app/schemas/human_notes.py": 18,
+        "app/services/human_notes.py": 120,
+        "app/services/patcher/apply.py": 3,
+        "app/services/patcher/git.py": 34,
+        "app/static/assets/index-CSqBIAjj.js": 83,
+        "app/static/assets/index-DTMDm8Aa.css": 2,
+        "app/static/index.html": 2,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 222,
+        "optimisation-checklist.md": 25,
+        "pyproject.toml": 1,
+        "tests/api/test_human_notes.py": 119,
+        "tests/test_mcp.py": 129,
+        "ui/src/api.ts": 33,
+        "ui/src/components/HumanNotesEditor.tsx": 134,
+        "ui/src/components/Viewer.tsx": 25,
+        "ui/src/lib/markdown.ts": 15,
+        "uv.lock": 678
+      },
+      "user_removed_per_file": {
+        "AGENTS.md": 1,
+        "app/api/v1/wiki.py": 1,
+        "app/main.py": 9,
+        "app/services/patcher/apply.py": 31,
+        "app/static/assets/index-BuHqYBQi.css": 2,
+        "app/static/assets/index-PKtUfYij.js": 82,
+        "app/static/index.html": 2,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 54,
+        "ui/src/components/Viewer.tsx": 3
+      }
+    }
+  ]
+}

@@ -27,3 +27,7 @@ i mean can i connect with claude desktop?
 ---
 
 ok ;et's do it
+
+---
+
+commit all related to this

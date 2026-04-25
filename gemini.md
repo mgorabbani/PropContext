@@ -4,87 +4,102 @@ Technical Overview
 
 This repository implements an autonomous engine designed for the Buena Challenge. It transforms scattered property context (ERPs, PDFs, Emails, Slack) into a single, high-density, self-updating building.md file.
 
-By combining Andrej Karpathy’s LLM Wiki pattern with the Hermes Agent self-improving logic, we move beyond simple search-based RAG to a "State-based" property management system.
+By combining Andrej Karpathy’s LLM Wiki pattern with the Hermes Agent self-improvement loop, we move beyond simple search-based RAG to a "Learning State" property management system.
 
-🏗️ Architecture: The Synthesis Pipeline
+🏗️ Architecture: The Hermes Self-Improvement Loop
 
-The engine operates on a continuous loop of ingestion, reconciliation, and compression.
+The engine implements the 6-step recursive loop used by the Hermes Agent to ensure the building.md file (the "Procedural Memory") grows more intelligent with every interaction.
 
-1. The Ingestion Layer (Multimodal Connectors)
+1. Task Execution (Aufgabe ausführen)
 
-Sources: Gmail (API), Slack (Webhooks), ERP (Database exports), and PDFs (LLM-based OCR).
- 
-Extraction: Every new piece of data is treated as an "event" containing facts, entities, and temporal context.
+When a request comes in (e.g., "A tenant in Apt 4 reports a leak"), the agent performs tool calls:
 
-2. The Hermes "Researcher" Agent
+Querying the ERP for tenant history.
 
-Instead of just "storing" data, the Hermes-inspired agent performs three roles:
+Searching Gmail for previous contractor invoices.
 
-Fact Reconciler: If a new email says "Boiler fixed," but building.md says "Boiler broken," the agent updates the state and moves the old status to a # History sub-section.
+Checking Slack for recent building-wide notices.
 
-Provenance Tracker: Every line written to the Markdown file is appended with a source hash/link (e.g., [^GMAIL-123]) to ensure auditability.
+2. The Complexity Threshold (Komplexitätscheck)
 
-Skill Discovery: If a specific workflow (e.g., "how to access the roof in Building A") is discovered in a Slack thread, the agent extracts it as a Procedural Instruction.
+Logic: If the task requires > 5 Tool Calls (as specified in the Hermes architecture), it is flagged as "Complex."
 
-📝 The building.md Schema
+Action: Instead of just finishing the task, the agent identifies this as a "Learning Opportunity." If it's a simple one-off fact, it is discarded from the skill-extraction pipeline.
+
+3. Skill Creation & Refinement (Skill erstellen + verfeinern)
+
+The agent analyzes the successful trajectory of the complex task.
+
+It synthesizes a new Procedural Skill (e.g., "Workflow: Handling Plumbing Emergencies in Building A").
+
+This is drafted into a structured format, refining existing entries if a similar workflow exists.
+
+4. Persist to Memory (In Memory persistieren)
+
+The refined skill is "Surgically Injected" into the building.md file under the # Procedural Memory section.
+
+High-density facts are updated in the # Physical State section with full provenance ([^Source]).
+
+5. Periodic Nudge (Interne Anstöße)
+
+The "Internal Alarm": The system doesn't just wait for user input. It runs background "Nudges" to:
+
+Reconcile: Scan for contradictions (e.g., "Contract says maintenance is monthly, but logs show it hasn't happened in 60 days").
+
+Synthesize: Merge small, fragmented updates into cohesive building summaries.
+
+Alert: Nudge the Property Manager if a critical fact in the building.md has expired or reached a low confidence score.
+
+6. User-Modeling (Nutzer-Modellierung)
+
+The agent tracks how the Property Manager interacts with the building.md.
+
+Preference Learning: If the manager consistently moves "Emergency Contacts" to the top, the agent updates its internal style.md to ensure all future buildings follow this layout.
+
+Tone Alignment: It learns to prioritize the specific data points the user cares about (e.g., cost-efficiency vs. speed of repair).
+
+📝 The building.md Schema (Knowledge State)
 
 The output is a structured Markdown file that acts as the "Source of Truth" for any other AI agent.
 
-# [Property Name/ID] - Context File
+# [Property ID] - Living Context
 
 ## 📊 Core Metadata
-- **Address:** ...
-- **Year Built:** ...
-- **ERP-UID:** [Reference ID]
+- **Owner:** ...
+- **Risk Profile:** High (due to aging boiler [^GMAIL-88])
 
-## 🛠️ Physical State (The "Living" Section)
-- **Roof:** Last inspected 2024-01-10 [^PDF-44]
-- **HVAC:** Centralized, maintenance due in 3 months.
-- **Critical Codes:** [Keybox: 1234] (Update: 2024-02-15 via Slack)
+## 📜 Procedural Memory (Skills Learned via Hermes Loop)
+- **Emergency Escalation:** "For leaks after 6 PM, call [Contractor X]. They have the master fob." (Extracted after a 7-step resolution event on 2024-03-01)
 
-## 📜 Procedural Memory (Hermes Extension)
-- **Access Logic:** "To enter the basement, use the blue fob. If it fails, contact the super at..."
-- **Tenant Handling:** "Tenants in Unit 4 prefer email over phone."
+## 🛠️ Physical State & Facts
+- **Keybox:** 5543 [Updated 2024-03-10 via Slack]
+- **HVAC:** Filter changed 2024-01-15 [^PDF-12]
 
-## 🔗 Provenance & History
-[^PDF-44]: Google Drive / Surveys / Jan_Report.pdf
-[^GMAIL-123]: thread_id_abc123 (Subject: Boiler Issue)
+## 🔗 Provenance & Audit Trail
+[^GMAIL-88]: Email Thread "Boiler Issues"
+[^PDF-12]: Maintenance_Log_Q1.pdf
 
 
 💉 Surgical Update Strategy (The "Novelty")
 
-To prevent the LLM from destroying human edits or nuking important context, we use a Markdown AST (Abstract Syntax Tree) merge approach:
+To preserve human edits, we use a Markdown AST (Abstract Syntax Tree) merge:
 
-Parse: Convert current building.md into a JSON-based AST.
+Parse: building.md -> JSON AST.
 
-Propose: The Agent generates a "diff" based on new data (e.g., Update Section: Physical State -> Roof).
+Diff: New Fact vs. Current State.
 
-Validate: A secondary "Linter" LLM checks if the update contradicts existing "High-Confidence" facts.
+Verify: Check against User-Modeling rules (Does this update break a user-preferred format?).
 
-Merge: The engine injects the new facts into the specific Markdown nodes while preserving manual human annotations.
-
-🚀 The Hermes Learning Loop
-
-How the system gets smarter over time:
-
-Feedback: If a Property Manager manually corrects a fact in the .md, the engine triggers a Self-Correction Event.
-
-User Modeling: It learns which facts the manager prioritizes (e.g., "Always keep the keybox code at the top") and updates its synthesis rules in system_prompts/style.md.
+Merge: Injected without overwriting manual notes.
 
 🛠️ Stack Suggestion
 
-Core: Python / FastAPI
+LLM: gemini-2.5-flash for high-speed ingestion; Hermes-3-Llama-3.1 for the "Skill Extraction" reasoning.
 
-LLM: gemini-2.5-flash (for fast, high-context extraction) or Hermes-3-Llama-3.1 (for agentic reasoning).
-
-Parsing: marko or mistune for Markdown AST manipulation.
-
-Database: SQLite (FTS5) for indexing the source documents for provenance lookups.
+Workflow: Python (FastAPI) + marko (AST Parsing) + SQLite (Source Indexing).
 
 🎯 Hackathon Goals
 
-MVP: A script that takes 1 PDF and 1 Email and produces a merged property.md.
+MVP: Successful extraction of a "Skill" into Markdown after a simulated >5 step tool-use chain.
 
-Stretch: Demonstrate the "Surgical Update" where a human edit is preserved while the AI updates a technical fact elsewhere in the doc.
-
-Vision: A dashboard showing the "Confidence Score" of the building's current context state.
+Stretch: Trigger a "Periodic Nudge" that detects an outdated fact and asks for confirmation.

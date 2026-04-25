@@ -1,0 +1,184 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "29cebc38bccd",
+  "session_id": "b614e7cb-af3d-4cfb-bde4-7039e8e95a6d",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:19.618007Z",
+  "branch": "main",
+  "checkpoints_count": 8,
+  "files_touched": [
+    ".env.example",
+    "AGENTS.md",
+    "app/core/config.py",
+    "app/main.py",
+    "app/mcp/__init__.py",
+    "app/mcp/auth.py",
+    "app/mcp/context.py",
+    "app/mcp/orgs.py",
+    "app/mcp/prompts.py",
+    "app/mcp/resources.py",
+    "app/mcp/server.py",
+    "app/mcp/tools.py",
+    "pyproject.toml",
+    "tests/test_mcp.py",
+    "uv.lock"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "460601373af2",
+  "token_usage": {
+    "input_tokens": 2619,
+    "cache_creation_tokens": 158342,
+    "cache_read_tokens": 7036869,
+    "output_tokens": 42186,
+    "api_call_count": 66
+  },
+  "session_metrics": {
+    "turn_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:19.601133Z",
+    "agent_lines": 1121,
+    "agent_removed": 10,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 1121,
+    "total_lines_changed": 1131,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 264,
+      "user_lines_removed": 59,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 222,
+        "optimisation-checklist.md": 25
+      },
+      "user_removed_per_file": {
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 54
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 195,
+      "user_lines_removed": 31,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/services/human_notes.py": 146,
+        "app/services/patcher/apply.py": 3,
+        "app/services/patcher/git.py": 34
+      },
+      "user_removed_per_file": {
+        "app/services/patcher/apply.py": 31
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 168,
+      "user_lines_removed": 2,
+      "agent_lines_added": 435,
+      "agent_lines_removed": 91,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/services/human_notes.py": 120,
+        "app/services/patcher/git.py": 34,
+        "tests/api/test_human_notes.py": 2
+      },
+      "user_removed_per_file": {
+        "tests/api/test_human_notes.py": 2
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 216,
+      "user_lines_removed": 2,
+      "agent_lines_added": 435,
+      "agent_lines_removed": 91,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/services/human_notes.py": 120,
+        "app/services/patcher/git.py": 34,
+        "tests/api/test_human_notes.py": 2,
+        "ui/src/api.ts": 33,
+        "ui/src/lib/markdown.ts": 15
+      },
+      "user_removed_per_file": {
+        "tests/api/test_human_notes.py": 2
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 184,
+      "user_lines_removed": 4,
+      "agent_lines_added": 617,
+      "agent_lines_removed": 91,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/services/human_notes.py": 120,
+        "app/services/patcher/git.py": 34,
+        "tests/api/test_human_notes.py": 2,
+        "ui/src/components/Viewer.tsx": 16
+      },
+      "user_removed_per_file": {
+        "tests/api/test_human_notes.py": 2,
+        "ui/src/components/Viewer.tsx": 2
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 168,
+      "user_lines_removed": 2,
+      "agent_lines_added": 642,
+      "agent_lines_removed": 94,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/services/human_notes.py": 120,
+        "app/services/patcher/git.py": 34,
+        "tests/api/test_human_notes.py": 2
+      },
+      "user_removed_per_file": {
+        "tests/api/test_human_notes.py": 2
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 2004,
+      "agent_lines_removed": 190,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    }
+  ]
+}

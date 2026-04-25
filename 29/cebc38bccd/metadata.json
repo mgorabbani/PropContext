@@ -3,13 +3,22 @@
   "checkpoint_id": "29cebc38bccd",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 2,
+  "checkpoints_count": 10,
   "files_touched": [
     ".env.example",
     "AGENTS.md",
     "app/core/config.py",
     "app/main.py",
+    "app/mcp/__init__.py",
+    "app/mcp/auth.py",
+    "app/mcp/context.py",
+    "app/mcp/orgs.py",
+    "app/mcp/prompts.py",
+    "app/mcp/resources.py",
+    "app/mcp/server.py",
+    "app/mcp/tools.py",
     "pyproject.toml",
+    "tests/test_mcp.py",
     "uv.lock"
   ],
   "sessions": [
@@ -24,13 +33,19 @@
       "transcript": "/29/cebc38bccd/1/full.jsonl",
       "content_hash": "/29/cebc38bccd/1/content_hash.txt",
       "prompt": "/29/cebc38bccd/1/prompt.txt"
+    },
+    {
+      "metadata": "/29/cebc38bccd/2/metadata.json",
+      "transcript": "/29/cebc38bccd/2/full.jsonl",
+      "content_hash": "/29/cebc38bccd/2/content_hash.txt",
+      "prompt": "/29/cebc38bccd/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 245,
-    "cache_creation_tokens": 208402,
-    "cache_read_tokens": 12692269,
-    "output_tokens": 66158,
-    "api_call_count": 135
+    "input_tokens": 2864,
+    "cache_creation_tokens": 366744,
+    "cache_read_tokens": 19729138,
+    "output_tokens": 108344,
+    "api_call_count": 201
   }
 }

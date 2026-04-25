@@ -1,0 +1,29 @@
+let's add mcp server using Oauth, also read docs for 2026 april for how to setup MCP
+
+---
+
+our own MCP so that people can connect to claude code or any ai agents like chatgpt or such
+
+---
+
+is there any better auth type things for python, popular, even own anthropics own? 2. check internet and use the one is better. 3. yes all 3 sounds good. 4. b, simple.
+
+---
+
+i want local owned things, no dependenices with 3rd party for auth, 2. hardcode, 3. yes inside /mcp
+
+---
+
+so if we use workOs, is tjis complicated?
+
+---
+
+can we use in localhost?
+
+---
+
+i mean can i connect with claude desktop?
+
+---
+
+ok ;et's do it

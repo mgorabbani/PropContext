@@ -23,24 +23,18 @@ class IdempotencyStore:
         self._conn.execute(_SCHEMA_SQL)
 
     def claim(self, event_id: str) -> bool:
-        existing = self._conn.execute(
-            "SELECT status FROM event_idempotency WHERE event_id = ?",
+        row = self._conn.execute(
+            """
+            INSERT INTO event_idempotency (event_id, status) VALUES (?, 'pending')
+            ON CONFLICT (event_id) DO UPDATE SET
+                status = 'pending',
+                received_at = now()
+            WHERE event_idempotency.status = 'failed'
+            RETURNING status
+            """,
             [event_id],
         ).fetchone()
-        if existing is None:
-            self._conn.execute(
-                "INSERT INTO event_idempotency (event_id) VALUES (?)",
-                [event_id],
-            )
-            return True
-        if existing[0] == "failed":
-            self._conn.execute(
-                "UPDATE event_idempotency SET status = 'pending', received_at = current_timestamp "
-                "WHERE event_id = ?",
-                [event_id],
-            )
-            return True
-        return False
+        return row is not None
 
     def mark_done(self, event_id: str) -> None:
         self._conn.execute(

@@ -1,0 +1,17 @@
+[Image #5] 3 isseus, 1. sidebar doesn't show or hide profperly. 2. responsive ui is not working properly either. 3 light mode is broken [Image #6]
+
+---
+
+light mode still not working, also [Image #7] jump to file is breaking, [Image #8] also this might be not needed to be here, can be in sidebar
+
+---
+
+[Image #9] on mobile chat or menu button doesn't work
+
+---
+
+on mobile, lets' make the drawer full sreen.
+
+---
+
+[Image #10] [Image #11] close button doesn't positioned right

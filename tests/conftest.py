@@ -11,15 +11,20 @@ from app.main import app
 
 
 @pytest.fixture
-def output_dir(tmp_path: Path) -> Path:
-    d = tmp_path / "output"
+def wiki_dir(tmp_path: Path) -> Path:
+    d = tmp_path / "wiki"
     d.mkdir()
     return d
 
 
 @pytest.fixture
-def settings(output_dir: Path) -> Settings:
-    return Settings(output_dir=output_dir, env="dev")
+def settings(wiki_dir: Path, tmp_path: Path) -> Settings:
+    return Settings(
+        wiki_dir=wiki_dir,
+        normalize_dir=tmp_path / "normalize",
+        output_dir=tmp_path / "output",
+        env="dev",
+    )
 
 
 @pytest.fixture
@@ -29,3 +34,17 @@ async def client(settings: Settings) -> AsyncIterator[AsyncClient]:
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+def write_property_index(wiki_dir: Path, property_id: str, body: str) -> Path:
+    p = wiki_dir / property_id / "index.md"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(body, encoding="utf-8")
+    return p
+
+
+def write_building_index(wiki_dir: Path, property_id: str, building_id: str, body: str) -> Path:
+    p = wiki_dir / property_id / "02_buildings" / building_id / "index.md"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(body, encoding="utf-8")
+    return p

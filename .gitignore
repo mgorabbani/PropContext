@@ -11,3 +11,5 @@ dist/
 build/
 .env
 .env.local
+*.duckdb
+*.duckdb.wal

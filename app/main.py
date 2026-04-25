@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from app.api.v1.router import api_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.core.middleware import RequestIdMiddleware
 
 log = structlog.get_logger(__name__)
 
@@ -31,6 +32,7 @@ def create_app() -> FastAPI:
         docs_url="/docs" if settings.env != "prod" else None,
         redoc_url=None,
     )
+    app.add_middleware(RequestIdMiddleware)
     app.include_router(api_router, prefix="/api/v1")
     return app
 

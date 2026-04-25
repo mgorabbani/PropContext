@@ -9,6 +9,9 @@ dependencies = [
     "pydantic-settings>=2.7",
     "structlog>=24.4",
     "httpx>=0.28",
+    "anthropic>=0.97.0",
+    "duckdb>=1.5.2",
+    "pypdf>=6.10.2",
 ]
 
 [dependency-groups]

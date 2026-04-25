@@ -26,6 +26,14 @@ class Settings(BaseSettings):
 
     data_dir: Path = Field(default=REPO_ROOT / "data")
     output_dir: Path = Field(default=REPO_ROOT / "output")
+    wiki_dir: Path = Field(default=REPO_ROOT / "wiki")
+    normalize_dir: Path = Field(default=REPO_ROOT / "normalize")
+
+    anthropic_api_key: str | None = Field(default=None)
+    webhook_hmac_secret: str | None = Field(default=None)
+
+    haiku_model: str = "claude-haiku-4-5-20251001"
+    sonnet_model: str = "claude-sonnet-4-6"
 
 
 @lru_cache(maxsize=1)

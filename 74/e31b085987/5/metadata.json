@@ -1,0 +1,130 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "74e31b085987",
+  "session_id": "eb9dddf3-5871-4ec8-9867-32a9635e3f13",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:12:13.998507Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "app/static/assets/index-BuHqYBQi.css",
+    "app/static/assets/index-PKtUfYij.js",
+    "app/static/index.html",
+    "ui/.gitignore",
+    "ui/README.md",
+    "ui/eslint.config.js",
+    "ui/index.html",
+    "ui/package-lock.json",
+    "ui/package.json",
+    "ui/src/App.tsx",
+    "ui/src/api.ts",
+    "ui/src/components/Breadcrumb.tsx",
+    "ui/src/components/FrontmatterCard.tsx",
+    "ui/src/components/Palette.tsx",
+    "ui/src/components/Query.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/components/Tree.tsx",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/lib/cn.ts",
+    "ui/src/lib/markdown.ts",
+    "ui/src/lib/rehypeStripComments.ts",
+    "ui/src/main.tsx",
+    "ui/src/styles.css",
+    "ui/tsconfig.app.json",
+    "ui/tsconfig.json",
+    "ui/tsconfig.node.json",
+    "ui/vite.config.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "1071562b7d0c",
+  "token_usage": {
+    "input_tokens": 111,
+    "cache_creation_tokens": 371800,
+    "cache_read_tokens": 8896811,
+    "output_tokens": 50971,
+    "api_call_count": 71
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:12:13.966196Z",
+    "agent_lines": 152,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 57,
+    "total_committed": 152,
+    "total_lines_changed": 209,
+    "agent_percentage": 72.72727272727273,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 7461,
+      "user_lines_removed": 116,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/static/assets/index-BwdLm7LZ.js": 82,
+        "app/static/assets/index-rBfk7Y2v.css": 2,
+        "app/static/index.html": 20,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 222,
+        "optimisation-checklist.md": 25,
+        "ui/.gitignore": 24,
+        "ui/README.md": 73,
+        "ui/eslint.config.js": 22,
+        "ui/index.html": 20,
+        "ui/package-lock.json": 5382,
+        "ui/package.json": 43,
+        "ui/src/App.tsx": 177,
+        "ui/src/api.ts": 44,
+        "ui/src/components/Breadcrumb.tsx": 37,
+        "ui/src/components/FrontmatterCard.tsx": 72,
+        "ui/src/components/Palette.tsx": 59,
+        "ui/src/components/Query.tsx": 152,
+        "ui/src/components/TopBar.tsx": 136,
+        "ui/src/components/Tree.tsx": 118,
+        "ui/src/components/Viewer.tsx": 125,
+        "ui/src/lib/cn.ts": 6,
+        "ui/src/lib/markdown.ts": 46,
+        "ui/src/lib/rehypeStripComments.ts": 40,
+        "ui/src/main.tsx": 22,
+        "ui/src/styles.css": 414,
+        "ui/tsconfig.app.json": 25,
+        "ui/tsconfig.json": 7,
+        "ui/tsconfig.node.json": 24,
+        "ui/vite.config.ts": 25
+      },
+      "user_removed_per_file": {
+        "app/static/index.html": 57,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 54
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 7497,
+      "agent_lines_removed": 115,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 7574,
+      "agent_lines_removed": 115,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    }
+  ]
+}

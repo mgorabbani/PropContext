@@ -31,3 +31,7 @@ i will use gemini actually,
 ---
 
 ok i added gemini api key
+
+---
+
+i updated the key, try again and see if still not premium key

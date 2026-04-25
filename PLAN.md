@@ -14,5 +14,29 @@ concept to use
 5. Tavily for real time search
 6. [Google Deepmind](https://deepmind.google/)
 7. MCP
-8. Anthropic
-9. Pi.dev or Hermes agent or Google ADK
+8. langgraph
+
+## Ingest process
+
+1. Markitdown
+2. context agent - will pull .md files , use filesystem tools and create wiki
+3. chat agent with same arch , maybe it can update context in realtime
+
+raw/
+
+preproceesed/
+/building 1
+/apartment 73
+
+- apartment 73.md
+- emails.md <- new email
+- xxx.md
+- xxx.md
+  /property 2
+
+---
+
+/property 1
+
+- agents.md
+- property1.md

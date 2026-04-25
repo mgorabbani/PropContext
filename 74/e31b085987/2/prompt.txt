@@ -1,0 +1,13 @@
+can you review if our ingestion concept is good? following karpathys llm-wiki
+
+---
+
+https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+
+---
+
+in implemation i don't see any descriptions why
+
+---
+
+yes, please fix everything also follow karpathys good things too

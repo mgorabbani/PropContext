@@ -374,9 +374,7 @@ def render_einheit(einheit: dict[str, Any], stammdaten: dict[str, Any]) -> str:
         cross_refs.append(f"{eig['id']} (owner)")
     if mieter:
         cross_refs.append(f"{mieter['id']} (tenant)")
-    cross_part = (
-        f" Cross-references {' and '.join(cross_refs)}." if cross_refs else ""
-    )
+    cross_part = f" Cross-references {' and '.join(cross_refs)}." if cross_refs else ""
     desc = (
         f"Apartment {eh_id} ({einheit.get('einheit_nr', '')}, "
         f"{einheit.get('lage', '')}) in {haus_id} ({lie.get('name', lie_id)}). "

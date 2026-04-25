@@ -7,6 +7,7 @@ from fastmcp.exceptions import ToolError
 from pydantic import Field, StringConstraints
 
 from app.mcp.context import allowed_properties, assert_property_access
+from app.services.ask import AskResult, AskService
 from app.services.wiki import WikiService
 
 PropertyIdParam = Annotated[
@@ -24,9 +25,14 @@ RelPathParam = Annotated[
     StringConstraints(pattern=r"^[A-Za-z0-9._/-]+$", min_length=1, max_length=512),
     Field(description="Path relative to wiki_dir"),
 ]
+QuestionParam = Annotated[
+    str,
+    StringConstraints(min_length=1, max_length=4000),
+    Field(description="Natural-language question about the property wiki"),
+]
 
 
-def register_tools(mcp: FastMCP, wiki: WikiService) -> None:
+def register_tools(mcp: FastMCP, wiki: WikiService, ask_service: AskService) -> None:
     @mcp.tool
     async def list_properties() -> list[str]:
         """List property IDs the caller's organization can access."""
@@ -66,3 +72,12 @@ def register_tools(mcp: FastMCP, wiki: WikiService) -> None:
         if body is None:
             raise ToolError(f"file {path!r} not found")
         return body
+
+    @mcp.tool
+    async def ask_wiki(
+        property_id: PropertyIdParam,
+        question: QuestionParam,
+    ) -> AskResult:
+        """Answer a natural-language question against a property's wiki."""
+        assert_property_access(property_id)
+        return await ask_service.answer(property_id=property_id, question=question)

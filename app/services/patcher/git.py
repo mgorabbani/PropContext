@@ -4,9 +4,7 @@ import subprocess
 from pathlib import Path
 
 
-def run_git(
-    args: list[str], cwd: Path, *, check: bool = True
-) -> subprocess.CompletedProcess[str]:
+def run_git(args: list[str], cwd: Path, *, check: bool = True) -> subprocess.CompletedProcess[str]:
     return subprocess.run(  # noqa: S603
         ["git", *args],  # noqa: S607
         cwd=cwd,

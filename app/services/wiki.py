@@ -63,9 +63,7 @@ class WikiService:
         if not self._wiki_dir.is_dir():
             return []
         return sorted(
-            p.name
-            for p in self._wiki_dir.iterdir()
-            if p.is_dir() and not p.name.startswith(".")
+            p.name for p in self._wiki_dir.iterdir() if p.is_dir() and not p.name.startswith(".")
         )
 
     def walk_tree(self, lie_id: str) -> TreeNode | None:

@@ -3,10 +3,18 @@
   "checkpoint_id": "96c3b1c0f037",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 1,
+  "checkpoints_count": 4,
   "files_touched": [
+    "app/api/v1/ask.py",
     "app/api/v1/router.py",
-    "app/services/wiki.py"
+    "app/mcp/server.py",
+    "app/mcp/tools.py",
+    "app/schemas/ask.py",
+    "app/services/ask.py",
+    "app/services/patcher/git.py",
+    "app/services/wiki.py",
+    "app/tools/wiki_templates.py",
+    "tests/api/test_ask.py"
   ],
   "sessions": [
     {
@@ -14,13 +22,19 @@
       "transcript": "/96/c3b1c0f037/0/full.jsonl",
       "content_hash": "/96/c3b1c0f037/0/content_hash.txt",
       "prompt": "/96/c3b1c0f037/0/prompt.txt"
+    },
+    {
+      "metadata": "/96/c3b1c0f037/1/metadata.json",
+      "transcript": "/96/c3b1c0f037/1/full.jsonl",
+      "content_hash": "/96/c3b1c0f037/1/content_hash.txt",
+      "prompt": "/96/c3b1c0f037/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 236,
-    "cache_creation_tokens": 179012,
-    "cache_read_tokens": 12550208,
-    "output_tokens": 64671,
-    "api_call_count": 131
+    "input_tokens": 286,
+    "cache_creation_tokens": 207929,
+    "cache_read_tokens": 15121604,
+    "output_tokens": 78136,
+    "api_call_count": 166
   }
 }

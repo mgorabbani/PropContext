@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "4e3fa538819f",
+  "session_id": "27100b76-e4f6-4277-847d-2122e63dace8",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:52.814421Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/api/v1/wiki.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "c309a340c44d",
+  "token_usage": {
+    "input_tokens": 236,
+    "cache_creation_tokens": 179012,
+    "cache_read_tokens": 12550208,
+    "output_tokens": 64671,
+    "api_call_count": 131
+  },
+  "session_metrics": {
+    "turn_count": 15
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:52.766829Z",
+    "agent_lines": 43,
+    "agent_removed": 1,
+    "human_added": 835,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 878,
+    "total_lines_changed": 1053,
+    "agent_percentage": 4.178537511870846,
+    "metric_version": 2
+  }
+}

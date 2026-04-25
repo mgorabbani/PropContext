@@ -1,0 +1,166 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "29cebc38bccd",
+  "session_id": "eb9dddf3-5871-4ec8-9867-32a9635e3f13",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:20.072467Z",
+  "branch": "main",
+  "checkpoints_count": 9,
+  "files_touched": [
+    ".env.example",
+    "AGENTS.md",
+    "app/core/config.py",
+    "app/main.py",
+    "pyproject.toml",
+    "tests/test_mcp.py",
+    "uv.lock"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "2f4292d60f06",
+  "checkpoint_transcript_start": 228,
+  "transcript_lines_at_start": 228,
+  "token_usage": {
+    "input_tokens": 110,
+    "cache_creation_tokens": 67671,
+    "cache_read_tokens": 12828111,
+    "output_tokens": 38231,
+    "api_call_count": 55
+  },
+  "session_metrics": {
+    "turn_count": 12
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:20.032452Z",
+    "agent_lines": 840,
+    "agent_removed": 9,
+    "human_added": 529,
+    "human_modified": 1,
+    "human_removed": 0,
+    "total_committed": 1370,
+    "total_lines_changed": 1379,
+    "agent_percentage": 61.566352429296586,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 264,
+      "user_lines_removed": 59,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 222,
+        "optimisation-checklist.md": 25
+      },
+      "user_removed_per_file": {
+        "app/tools/bootstrap_wiki.py": 5,
+        "app/tools/wiki_templates.py": 54
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 12,
+      "user_lines_removed": 0,
+      "agent_lines_added": 252,
+      "agent_lines_removed": 59,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12
+      }
+    },
+    {
+      "checkpoint_number": 8,
+      "user_lines_added": 267,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1562,
+      "agent_lines_removed": 180,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "app/core/config.py": 5,
+        "app/mcp/__init__.py": 5,
+        "app/mcp/auth.py": 20,
+        "app/mcp/context.py": 32,
+        "app/mcp/orgs.py": 16,
+        "app/mcp/prompts.py": 29,
+        "app/mcp/resources.py": 45,
+        "app/mcp/server.py": 35,
+        "app/mcp/tools.py": 68
+      }
+    },
+    {
+      "checkpoint_number": 9,
+      "user_lines_added": 287,
+      "user_lines_removed": 1,
+      "agent_lines_added": 1591,
+      "agent_lines_removed": 189,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        ".env.example": 9,
+        "AGENTS.md": 16,
+        "app/mcp/__init__.py": 5,
+        "app/mcp/auth.py": 20,
+        "app/mcp/context.py": 32,
+        "app/mcp/orgs.py": 16,
+        "app/mcp/prompts.py": 29,
+        "app/mcp/resources.py": 45,
+        "app/mcp/server.py": 35,
+        "app/mcp/tools.py": 68
+      },
+      "user_removed_per_file": {
+        "AGENTS.md": 1
+      }
+    }
+  ]
+}

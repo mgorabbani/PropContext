@@ -1,0 +1,28 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "3edfd37c64c7",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/tools/backfill.py",
+    "app/tools/replay.py",
+    "tests/tools/test_backfill.py",
+    "tests/tools/test_replay.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/3e/dfd37c64c7/0/metadata.json",
+      "transcript": "/3e/dfd37c64c7/0/full.jsonl",
+      "content_hash": "/3e/dfd37c64c7/0/content_hash.txt",
+      "prompt": "/3e/dfd37c64c7/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 59,
+    "cache_creation_tokens": 149038,
+    "cache_read_tokens": 3075419,
+    "output_tokens": 22728,
+    "api_call_count": 44
+  }
+}

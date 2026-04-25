@@ -39,3 +39,7 @@ i updated the key, try again and see if still not premium key
 ---
 
 ok let's implement UI app
+
+---
+
+[Image #2] looks like this, i think it looks bad, u should look google 2026 april and use proper library to mkae the UI modern looking

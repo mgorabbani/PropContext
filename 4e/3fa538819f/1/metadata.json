@@ -1,0 +1,57 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "4e3fa538819f",
+  "session_id": "b0e4c26d-82f5-4cd9-982c-98373fd713cb",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:55.979158Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/api/v1/wiki.py",
+    "app/services/patcher/apply.py",
+    "app/static/index.html",
+    "app/tools/bootstrap_wiki.py",
+    "app/tools/wiki_templates.py",
+    "ui/src/api.ts",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/lib/markdown.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "1c3a51ff78d1",
+  "token_usage": {
+    "input_tokens": 21,
+    "cache_creation_tokens": 44819,
+    "cache_read_tokens": 489736,
+    "output_tokens": 2811,
+    "api_call_count": 11
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:55.968564Z",
+    "agent_lines": 348,
+    "agent_removed": 96,
+    "human_added": 535,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 883,
+    "total_lines_changed": 1063,
+    "agent_percentage": 41.76857949200377,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 858,
+      "agent_lines_removed": 180,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 12,
+        "optimisation-checklist.md": 25
+      }
+    }
+  ]
+}

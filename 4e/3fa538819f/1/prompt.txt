@@ -1,0 +1,5 @@
+why chat is not working
+
+---
+
+now that we have mcp, we should have it, also mcp should also work same as agent, to response to user query via mcp query

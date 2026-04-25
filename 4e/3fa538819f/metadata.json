@@ -3,14 +3,21 @@
   "checkpoint_id": "4e3fa538819f",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 2,
+  "checkpoints_count": 4,
   "files_touched": [
     "app/api/v1/wiki.py",
+    "app/schemas/human_notes.py",
     "app/services/patcher/apply.py",
+    "app/static/assets/index-BuHqYBQi.css",
+    "app/static/assets/index-CSqBIAjj.js",
+    "app/static/assets/index-DTMDm8Aa.css",
+    "app/static/assets/index-PKtUfYij.js",
     "app/static/index.html",
     "app/tools/bootstrap_wiki.py",
     "app/tools/wiki_templates.py",
+    "tests/api/test_human_notes.py",
     "ui/src/api.ts",
+    "ui/src/components/HumanNotesEditor.tsx",
     "ui/src/components/Viewer.tsx",
     "ui/src/lib/markdown.ts"
   ],
@@ -26,13 +33,19 @@
       "transcript": "/4e/3fa538819f/1/full.jsonl",
       "content_hash": "/4e/3fa538819f/1/content_hash.txt",
       "prompt": "/4e/3fa538819f/1/prompt.txt"
+    },
+    {
+      "metadata": "/4e/3fa538819f/2/metadata.json",
+      "transcript": "/4e/3fa538819f/2/full.jsonl",
+      "content_hash": "/4e/3fa538819f/2/content_hash.txt",
+      "prompt": "/4e/3fa538819f/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 257,
-    "cache_creation_tokens": 223831,
-    "cache_read_tokens": 13039944,
-    "output_tokens": 67482,
-    "api_call_count": 142
+    "input_tokens": 2877,
+    "cache_creation_tokens": 383306,
+    "cache_read_tokens": 20226161,
+    "output_tokens": 109715,
+    "api_call_count": 209
   }
 }

@@ -1,0 +1,60 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "4e3fa538819f",
+  "session_id": "b614e7cb-af3d-4cfb-bde4-7039e8e95a6d",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T23:44:56.282262Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/api/v1/wiki.py",
+    "app/schemas/human_notes.py",
+    "app/services/patcher/apply.py",
+    "app/static/assets/index-BuHqYBQi.css",
+    "app/static/assets/index-CSqBIAjj.js",
+    "app/static/assets/index-DTMDm8Aa.css",
+    "app/static/assets/index-PKtUfYij.js",
+    "app/static/index.html",
+    "app/tools/bootstrap_wiki.py",
+    "app/tools/wiki_templates.py",
+    "tests/api/test_human_notes.py",
+    "ui/src/api.ts",
+    "ui/src/components/HumanNotesEditor.tsx",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/lib/markdown.ts"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "460601373af2",
+  "token_usage": {
+    "input_tokens": 2620,
+    "cache_creation_tokens": 159475,
+    "cache_read_tokens": 7186217,
+    "output_tokens": 42233,
+    "api_call_count": 67
+  },
+  "session_metrics": {
+    "turn_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T23:44:56.266836Z",
+    "agent_lines": 704,
+    "agent_removed": 180,
+    "human_added": 179,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 883,
+    "total_lines_changed": 1063,
+    "agent_percentage": 83.16086547507055,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    }
+  ]
+}

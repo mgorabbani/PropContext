@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "fc8aed89d91f",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "app/api/v1/webhook.py",
+    "app/schemas/webhook.py",
+    "app/services/conflict.py",
+    "app/services/extract.py",
+    "app/services/patcher/apply.py",
+    "app/services/patcher/paths.py",
+    "app/services/supervisor.py",
+    "tests/api/test_webhook_auth.py",
+    "tests/e2e/test_day01_replay.py",
+    "tests/llm/test_extract.py",
+    "tests/patcher/test_apply_plan.py",
+    "tests/tools/test_backfill.py",
+    "tests/tools/test_replay.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/fc/8aed89d91f/0/metadata.json",
+      "transcript": "/fc/8aed89d91f/0/full.jsonl",
+      "content_hash": "/fc/8aed89d91f/0/content_hash.txt",
+      "prompt": "/fc/8aed89d91f/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 150,
+    "cache_creation_tokens": 118490,
+    "cache_read_tokens": 6644735,
+    "output_tokens": 34664,
+    "api_call_count": 85
+  }
+}

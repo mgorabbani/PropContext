@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "53f26655d0f8",
+  "session_id": "92a01305-2d77-4e28-b2e9-1e84559619e7",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T22:40:38.034193Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/api/v1/router.py",
+    "app/services/wiki.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "755c676bb40c",
+  "checkpoint_transcript_start": 126,
+  "transcript_lines_at_start": 126,
+  "token_usage": {
+    "input_tokens": 4,
+    "cache_creation_tokens": 3444,
+    "cache_read_tokens": 287213,
+    "output_tokens": 719,
+    "api_call_count": 4
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T22:40:38.028185Z",
+    "agent_lines": 59,
+    "agent_removed": 7,
+    "human_added": 69,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 128,
+    "total_lines_changed": 135,
+    "agent_percentage": 48.888888888888886,
+    "metric_version": 2
+  }
+}

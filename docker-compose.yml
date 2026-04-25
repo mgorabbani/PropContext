@@ -1,0 +1,47 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: buena-context:latest
+    container_name: buena-context-api
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: prod
+      LOG_LEVEL: INFO
+      OUTPUT_DIR: /app/output
+    volumes:
+      - output:/app/output
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health').status==200 else 1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    profiles: ["prod", "default"]
+
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    image: buena-context:dev
+    container_name: buena-context-api-dev
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: dev
+      LOG_LEVEL: DEBUG
+      OUTPUT_DIR: /app/output
+    volumes:
+      - ./app:/app/app
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+      - output:/app/output
+    command: ["uv", "run", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
+    profiles: ["dev"]
+
+volumes:
+  output:

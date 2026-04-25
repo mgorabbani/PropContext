@@ -1,0 +1,46 @@
+# vcs
+.git
+.gitignore
+.gitattributes
+
+# python
+__pycache__
+*.py[cod]
+.venv
+.python-version
+
+# tooling caches
+.pytest_cache
+.ruff_cache
+.ty_cache
+.mypy_cache
+*.egg-info
+build
+dist
+
+# editor / os
+.DS_Store
+.idea
+.vscode
+*.swp
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# project data + outputs (never bake into image)
+data
+output
+.entire/logs
+
+# tests + docs not needed at runtime
+tests
+docs
+*.md
+!README.md
+
+# docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore

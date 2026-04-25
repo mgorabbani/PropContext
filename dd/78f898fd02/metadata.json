@@ -1,0 +1,33 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "dd78f898fd02",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/services/conflict.py",
+    "app/services/patcher/pending_review.py",
+    "app/services/patcher/validate.py",
+    "app/services/supervisor.py",
+    "app/storage/idempotency.py",
+    "app/storage/wiki_chunks.py",
+    "app/tools/bootstrap_wiki.py",
+    "tests/storage/test_idempotency.py",
+    "tests/storage/test_wiki_chunks.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/dd/78f898fd02/0/metadata.json",
+      "transcript": "/dd/78f898fd02/0/full.jsonl",
+      "content_hash": "/dd/78f898fd02/0/content_hash.txt",
+      "prompt": "/dd/78f898fd02/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 90,
+    "cache_creation_tokens": 192590,
+    "cache_read_tokens": 5544344,
+    "output_tokens": 25112,
+    "api_call_count": 70
+  }
+}

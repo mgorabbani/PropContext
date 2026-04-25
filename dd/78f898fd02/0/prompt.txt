@@ -1,0 +1,9 @@
+let's review phase 0-7 that i completed, see if i missed anything or read the code to see if you can improve anything
+
+---
+
+all
+
+---
+
+ok, actually for stemmer or things like this, we should use ai agent instead with a system propmpt to understand, i think?

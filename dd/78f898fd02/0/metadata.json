@@ -1,0 +1,61 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "dd78f898fd02",
+  "session_id": "b531d592-e688-4b76-bf9d-1bec02d0433e",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T21:22:43.679794Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/services/conflict.py",
+    "app/services/patcher/pending_review.py",
+    "app/services/patcher/validate.py",
+    "app/services/supervisor.py",
+    "app/storage/idempotency.py",
+    "app/storage/wiki_chunks.py",
+    "app/tools/bootstrap_wiki.py",
+    "tests/storage/test_idempotency.py",
+    "tests/storage/test_wiki_chunks.py"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "bc7f2ed6f877",
+  "token_usage": {
+    "input_tokens": 90,
+    "cache_creation_tokens": 192590,
+    "cache_read_tokens": 5544344,
+    "output_tokens": 25112,
+    "api_call_count": 70
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T21:22:43.667111Z",
+    "agent_lines": 189,
+    "agent_removed": 126,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 189,
+    "total_lines_changed": 315,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 0,
+      "user_lines_removed": 0,
+      "agent_lines_added": 189,
+      "agent_lines_removed": 126
+    }
+  ]
+}

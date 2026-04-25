@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "74e31b085987",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 5,
+  "files_touched": [
+    "app/static/index.html",
+    "ui/.gitignore",
+    "ui/README.md",
+    "ui/eslint.config.js",
+    "ui/index.html",
+    "ui/package-lock.json",
+    "ui/package.json",
+    "ui/src/App.tsx",
+    "ui/src/api.ts",
+    "ui/src/components/Breadcrumb.tsx",
+    "ui/src/components/FrontmatterCard.tsx",
+    "ui/src/components/Palette.tsx",
+    "ui/src/components/Query.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/components/Tree.tsx",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/lib/cn.ts",
+    "ui/src/lib/markdown.ts",
+    "ui/src/lib/rehypeStripComments.ts",
+    "ui/src/main.tsx",
+    "ui/src/styles.css",
+    "ui/tsconfig.app.json",
+    "ui/tsconfig.json",
+    "ui/tsconfig.node.json",
+    "ui/vite.config.ts"
+  ],
+  "sessions": [
+    {
+      "metadata": "/74/e31b085987/0/metadata.json",
+      "transcript": "/74/e31b085987/0/full.jsonl",
+      "content_hash": "/74/e31b085987/0/content_hash.txt",
+      "prompt": "/74/e31b085987/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 236,
+    "cache_creation_tokens": 179012,
+    "cache_read_tokens": 12550208,
+    "output_tokens": 64671,
+    "api_call_count": 131
+  }
+}

@@ -1,0 +1,57 @@
+lets run it
+
+---
+
+how can i see the UI where i can see md files
+
+---
+
+let's actually make a react vite app to view the markdown in the middle, [Image #1] like how vscode or cursor looks like then use right side chat window to query? what do you think or do u have better idea?
+
+---
+
+what could be the actual usecase for buena for this application
+
+---
+
+so do you think it would be more cool if we make mcp and connect with claude?
+
+---
+
+so seems like u lost the idea of core concept of following karpaths llm-wiki https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
+
+---
+
+so we are using ai to write code, don't worry about hrs, and don't panick for hackathon, just think for clean implementation wihtout bloating with over engineering or too much boilerplate
+
+---
+
+i will use gemini actually,
+
+---
+
+ok i added gemini api key
+
+---
+
+i updated the key, try again and see if still not premium key
+
+---
+
+ok let's implement UI app
+
+---
+
+[Image #2] looks like this, i think it looks bad, u should look google 2026 april and use proper library to mkae the UI modern looking
+
+---
+
+why this ask in the bottom?
+
+---
+
+[Image #3] so responsive issues, also dark and light mode not workin
+
+---
+
+do i have to close the server and re-run? i see no changes

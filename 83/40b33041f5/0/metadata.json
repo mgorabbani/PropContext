@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "8340b33041f5",
+  "session_id": "27100b76-e4f6-4277-847d-2122e63dace8",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T22:23:48.118085Z",
+  "branch": "main",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "app/storage/idempotency.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "2d8da3d36f8f",
+  "token_usage": {
+    "input_tokens": 150,
+    "cache_creation_tokens": 118490,
+    "cache_read_tokens": 6644735,
+    "output_tokens": 34664,
+    "api_call_count": 85
+  },
+  "session_metrics": {
+    "turn_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T22:23:48.094689Z",
+    "agent_lines": 10,
+    "agent_removed": 16,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 10,
+    "total_lines_changed": 26,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "f47de55bfab2",
+  "session_id": "4fb7a68c-24dd-4fc2-84fd-94b774039cf2",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-25T21:41:43.249846Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/tools/reconcile.py",
+    "tests/tools/test_reconcile.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "cad486fe99bd",
+  "checkpoint_transcript_start": 348,
+  "transcript_lines_at_start": 348,
+  "token_usage": {
+    "input_tokens": 23,
+    "cache_creation_tokens": 27210,
+    "cache_read_tokens": 3531998,
+    "output_tokens": 15916,
+    "api_call_count": 23
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-25T21:41:43.231386Z",
+    "agent_lines": 579,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 579,
+    "total_lines_changed": 579,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

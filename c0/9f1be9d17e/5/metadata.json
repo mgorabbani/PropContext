@@ -1,0 +1,71 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "c09f1be9d17e",
+  "session_id": "8f1db92a-daeb-4d54-a943-ae7ec504aa1d",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T11:38:56.478569Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/api/v1/sim.py",
+    "tests/api/test_sim.py"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "fdfe76b60933",
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T11:38:56.474442Z",
+    "agent_lines": 0,
+    "agent_removed": 0,
+    "human_added": 26,
+    "human_modified": 19,
+    "human_removed": 0,
+    "total_committed": 26,
+    "total_lines_changed": 45,
+    "agent_percentage": 0,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 1314,
+      "user_lines_removed": 147,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 32,
+        "LANDING_PAGE_BRIEF.md": 135,
+        "app/api/v1/sim.py": 75,
+        "app/core/config.py": 3,
+        "app/mcp/server.py": 14,
+        "app/mcp/tools.py": 24,
+        "app/services/agent_local.py": 252,
+        "app/services/patcher/apply.py": 9,
+        "app/services/supervisor.py": 80,
+        "app/static/assets/index-CdhdyBXu.js": 86,
+        "app/static/assets/index-sDNpUnAB.css": 2,
+        "app/static/index.html": 2,
+        "ui/src/api.ts": 69,
+        "ui/src/pages/Ingest.tsx": 531
+      },
+      "user_removed_per_file": {
+        "app/api/v1/sim.py": 19,
+        "app/mcp/server.py": 1,
+        "app/services/patcher/apply.py": 3,
+        "app/services/supervisor.py": 3,
+        "app/static/assets/index-BgewsGLc.css": 2,
+        "app/static/assets/index-q8CIw2_f.js": 83,
+        "app/static/index.html": 2,
+        "optimisation-checklist.md": 6,
+        "ui/src/pages/Ingest.tsx": 28
+      }
+    }
+  ]
+}

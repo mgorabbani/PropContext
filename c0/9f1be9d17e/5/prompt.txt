@@ -1,0 +1,2 @@
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/LANDING_PAGE_BRIEF.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+https://docs.tavily.com/llms.txt find gap and implement tavily in our pipeline for ingestion

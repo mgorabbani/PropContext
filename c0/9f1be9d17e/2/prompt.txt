@@ -1,0 +1,10 @@
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/wiki/LIE-001/index.md in the IDE. This may or may not be related to the current task.</ide_opened_file>
+can we let user to update anywhere in the md file, and user update shound't be changed.
+
+---
+
+i want to let user to edit anywhere in the file and agent shoudn't alter that but can flag it
+
+---
+
+remove human notes boundary and let human edit anywhere

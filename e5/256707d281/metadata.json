@@ -1,0 +1,39 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e5256707d281",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    ".mcp.json",
+    "app/api/v1/router.py",
+    "app/main.py",
+    "app/mcp/context.py",
+    "app/mcp/tools.py",
+    "app/static/assets/index-CSqBIAjj.js",
+    "app/static/assets/index-DTMDm8Aa.css",
+    "app/static/index.html",
+    "optimisation-checklist.md",
+    "pyproject.toml",
+    "ui/src/App.tsx",
+    "ui/src/api.ts",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/main.tsx",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e5/256707d281/0/metadata.json",
+      "transcript": "/e5/256707d281/0/full.jsonl",
+      "content_hash": "/e5/256707d281/0/content_hash.txt",
+      "prompt": "/e5/256707d281/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 809,
+    "cache_creation_tokens": 61439,
+    "cache_read_tokens": 2057259,
+    "output_tokens": 8341,
+    "api_call_count": 37
+  }
+}

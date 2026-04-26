@@ -1,0 +1,32 @@
+are we having http://localhost:8000/mcp working? as agent?
+
+---
+
+can u connect it with this claude here
+
+---
+
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/.mcp.json in the IDE. This may or may not be related to the current task.</ide_opened_file>
+i don't see buena
+
+---
+
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/.claude/settings.json in the IDE. This may or may not be related to the current task.</ide_opened_file>
+still don't have it
+
+---
+
+Listing accessible properties.
+
+⏺ buena-context - list_properties (MCP)
+{
+  "result": []
+}
+
+No properties accessible for this org. MCP server responds but org has no properties mapped yet.
+
+Check app/mcp/orgs.py to add your org → property mapping.
+
+---
+
+seems like mcp own agents' not working?

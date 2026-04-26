@@ -1,0 +1,105 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e7be135fc8d5",
+  "session_id": "2b0ca7f1-5838-4e92-8b9e-e6c8067ccb66",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T10:33:46.227413Z",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "app/api/v1/sim.py",
+    "app/services/patcher/apply.py",
+    "app/services/supervisor.py",
+    "app/static/assets/index-BgewsGLc.css",
+    "app/static/assets/index-CdhdyBXu.js",
+    "app/static/assets/index-q8CIw2_f.js",
+    "app/static/assets/index-sDNpUnAB.css",
+    "app/static/index.html",
+    "ui/src/api.ts",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "324ffd8d80e5",
+  "token_usage": {
+    "input_tokens": 116,
+    "cache_creation_tokens": 170392,
+    "cache_read_tokens": 7636629,
+    "output_tokens": 45133,
+    "api_call_count": 81
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T10:33:46.199361Z",
+    "agent_lines": 854,
+    "agent_removed": 140,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 854,
+    "total_lines_changed": 994,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 92,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 25,
+        "app/core/config.py": 4,
+        "app/tools/setup_managed_agent.py": 63
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 49,
+      "user_lines_removed": 1,
+      "agent_lines_added": 224,
+      "agent_lines_removed": 1,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 25,
+        "app/mcp/tools.py": 22,
+        "app/services/managed_agent.py": 2
+      },
+      "user_removed_per_file": {
+        "app/services/managed_agent.py": 1
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 28,
+      "user_lines_removed": 0,
+      "agent_lines_added": 870,
+      "agent_lines_removed": 60,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 28
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 28,
+      "user_lines_removed": 0,
+      "agent_lines_added": 870,
+      "agent_lines_removed": 60,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 28
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 32,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1282,
+      "agent_lines_removed": 147,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 32
+      }
+    }
+  ]
+}

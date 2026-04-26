@@ -1,0 +1,13 @@
+[Image #1] instead of pausing it here when click ingest, can we show simulation on whats' going on in backend step by step like a UI similar to n8n with highlights
+
+---
+
+1
+
+---
+
+u run
+
+---
+
+ok make a way so that i can go back and forth in teh simulaiton flow, also add some icons to understand better each step of the flow

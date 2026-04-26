@@ -1,0 +1,34 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e7be135fc8d5",
+  "strategy": "manual-commit",
+  "branch": "main",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "app/api/v1/sim.py",
+    "app/services/patcher/apply.py",
+    "app/services/supervisor.py",
+    "app/static/assets/index-BgewsGLc.css",
+    "app/static/assets/index-CdhdyBXu.js",
+    "app/static/assets/index-q8CIw2_f.js",
+    "app/static/assets/index-sDNpUnAB.css",
+    "app/static/index.html",
+    "ui/src/api.ts",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/e7/be135fc8d5/0/metadata.json",
+      "transcript": "/e7/be135fc8d5/0/full.jsonl",
+      "content_hash": "/e7/be135fc8d5/0/content_hash.txt",
+      "prompt": "/e7/be135fc8d5/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 116,
+    "cache_creation_tokens": 170392,
+    "cache_read_tokens": 7636629,
+    "output_tokens": 45133,
+    "api_call_count": 81
+  }
+}

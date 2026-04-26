@@ -92,11 +92,11 @@ export function IngestPage() {
       <header className="glass flex h-12 shrink-0 items-center gap-3 border-b border-[var(--color-border)] px-4">
         <a
           href="/"
-          className="font-display text-[14px] font-medium text-[var(--color-ink-50)] hover:text-[var(--color-accent)]"
+          className="font-display text-[19.5px] font-medium text-[var(--color-ink-50)] hover:text-[var(--color-accent)]"
         >
           ← Buena Wiki
         </a>
-        <span className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+        <span className="text-[16.5px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
           Simulate ingest
         </span>
       </header>
@@ -109,7 +109,7 @@ export function IngestPage() {
                 value={day ?? ""}
                 onChange={(e) => setDay(Number(e.target.value))}
                 disabled={!days || days.length === 0}
-                className="h-7 w-full appearance-none rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)] px-2 font-mono text-[12px] text-[var(--color-fg)]"
+                className="h-7 w-full appearance-none rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)] px-2 font-mono text-[17.5px] text-[var(--color-fg)]"
               >
                 {(days ?? []).map((d) => (
                   <option key={d.day} value={d.day}>
@@ -125,7 +125,7 @@ export function IngestPage() {
                   key={k}
                   onClick={() => setKind(k)}
                   className={cn(
-                    "flex-1 rounded-md border px-2 py-1 font-mono text-[11px] uppercase tracking-wide transition-colors",
+                    "flex-1 rounded-md border px-2 py-1 font-mono text-[16.5px] uppercase tracking-wide transition-colors",
                     kind === k
                       ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
                       : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
@@ -139,7 +139,7 @@ export function IngestPage() {
 
           <div className="min-h-0 flex-1 overflow-auto px-1.5 py-2">
             {items.length === 0 ? (
-              <p className="px-3 py-6 text-center text-[12px] text-[var(--color-fg-muted)]">
+              <p className="px-3 py-6 text-center text-[17.5px] text-[var(--color-fg-muted)]">
                 No items.
               </p>
             ) : (
@@ -155,14 +155,14 @@ export function IngestPage() {
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[10.5px] text-[var(--color-accent)]">
+                    <span className="font-mono text-[16px] text-[var(--color-accent)]">
                       {it.id}
                     </span>
                   </div>
-                  <div className="mt-0.5 line-clamp-1 text-[12.5px] font-medium text-[var(--color-fg)]">
+                  <div className="mt-0.5 line-clamp-1 text-[18px] font-medium text-[var(--color-fg)]">
                     {it.label}
                   </div>
-                  <div className="mt-0.5 line-clamp-2 text-[11px] text-[var(--color-fg-muted)]">
+                  <div className="mt-0.5 line-clamp-2 text-[16.5px] text-[var(--color-fg-muted)]">
                     {it.detail}
                   </div>
                 </button>
@@ -178,7 +178,7 @@ export function IngestPage() {
                     key={m}
                     onClick={() => setMode(m)}
                     className={cn(
-                      "flex-1 rounded-md border px-2 py-1 font-mono text-[11px] transition-colors",
+                      "flex-1 rounded-md border px-2 py-1 font-mono text-[16.5px] transition-colors",
                       mode === m
                         ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
                         : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
@@ -188,7 +188,7 @@ export function IngestPage() {
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[10.5px] text-[var(--color-fg-muted)]">
+              <p className="mt-1 text-[16px] text-[var(--color-fg-muted)]">
                 {mode === "isolated"
                   ? "Fresh tmp wiki per run. Real Gemini, no live mutation."
                   : "Writes to wiki/LIE-001 + commits."}
@@ -198,7 +198,7 @@ export function IngestPage() {
               onClick={handleRun}
               disabled={!itemId || running}
               className={cn(
-                "mt-3 w-full rounded-md border px-3 py-2 font-mono text-[12px] font-medium transition-colors",
+                "mt-3 w-full rounded-md border px-3 py-2 font-mono text-[17.5px] font-medium transition-colors",
                 running
                   ? "border-[var(--color-border-2)] bg-[var(--color-surface)] text-[var(--color-fg-muted)]"
                   : "border-[var(--color-accent)] bg-[var(--color-accent)] text-[#0b0b0a] hover:opacity-90",
@@ -212,17 +212,17 @@ export function IngestPage() {
 
         <main className="flex min-w-0 flex-1 flex-col">
           {error && (
-            <div className="border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-[12px] text-red-400">
+            <div className="border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-[17.5px] text-red-400">
               {error}
             </div>
           )}
           {!result && !running && !error && (
-            <div className="grid flex-1 place-items-center text-[12.5px] text-[var(--color-fg-muted)]">
+            <div className="grid flex-1 place-items-center text-[18px] text-[var(--color-fg-muted)]">
               Pick a day + item, then run. Uses real Gemini ({"gemini-2.5-flash-lite"} → {"gemini-2.5-pro"}).
             </div>
           )}
           {running && (
-            <div className="grid flex-1 place-items-center text-[12.5px] text-[var(--color-fg-muted)]">
+            <div className="grid flex-1 place-items-center text-[18px] text-[var(--color-fg-muted)]">
               Calling supervisor → classify → resolve → extract → patch → commit…
             </div>
           )}
@@ -249,7 +249,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block pb-1 font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+      <span className="block pb-1 font-mono text-[16px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
         {label}
       </span>
       {children}
@@ -270,7 +270,7 @@ function ResultView({
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="grid grid-cols-2 gap-x-6 gap-y-1 border-b border-[var(--color-border)] px-4 py-3 font-mono text-[11.5px]">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-1 border-b border-[var(--color-border)] px-4 py-3 font-mono text-[17px]">
         <Stat label="status" value={result.status} accent />
         <Stat label="duration" value={`${result.duration_ms} ms`} />
         <Stat label="applied_ops" value={String(result.applied_ops)} />
@@ -301,7 +301,7 @@ function ResultView({
 
       <div className="flex min-h-0 flex-1">
         <aside className="flex w-[260px] shrink-0 flex-col border-r border-[var(--color-border)]">
-          <div className="border-b border-[var(--color-border)] px-3 py-2 font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+          <div className="border-b border-[var(--color-border)] px-3 py-2 font-mono text-[16px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
             Touched files ({result.files.length})
           </div>
           <div className="min-h-0 flex-1 overflow-auto px-1.5 py-1.5">
@@ -310,7 +310,7 @@ function ResultView({
                 key={f.path}
                 onClick={() => onActiveFile(f.path)}
                 className={cn(
-                  "block w-full truncate rounded px-2 py-1 text-left font-mono text-[11.5px]",
+                  "block w-full truncate rounded px-2 py-1 text-left font-mono text-[17px]",
                   activeFile === f.path
                     ? "bg-[var(--color-surface)] text-[var(--color-accent)]"
                     : "text-[var(--color-fg-muted)] hover:bg-[var(--color-surface)]/60 hover:text-[var(--color-fg)]",
@@ -322,10 +322,10 @@ function ResultView({
           </div>
           {result.git_log.length > 0 && (
             <div className="border-t border-[var(--color-border)] px-3 py-2">
-              <div className="pb-1 font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+              <div className="pb-1 font-mono text-[16px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
                 git log
               </div>
-              <ul className="space-y-0.5 font-mono text-[10.5px] text-[var(--color-fg-muted)]">
+              <ul className="space-y-0.5 font-mono text-[16px] text-[var(--color-fg-muted)]">
                 {result.git_log.map((ln) => (
                   <li key={ln} className="truncate">
                     {ln}
@@ -336,10 +336,10 @@ function ResultView({
           )}
         </aside>
 
-        <section className="prose min-w-0 flex-1 overflow-auto px-6 py-4 text-[13.5px] dark:prose-invert">
+        <section className="prose min-w-0 flex-1 overflow-auto px-6 py-4 text-[19px] dark:prose-invert">
           {activeFile ? (
             <>
-              <div className="mb-3 font-mono text-[10.5px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+              <div className="mb-3 font-mono text-[16px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
                 {activeFile}
               </div>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>

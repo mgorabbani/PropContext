@@ -1,0 +1,144 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "f08feec774cb",
+  "session_id": "df0d24de-719f-479e-90f8-36f8544c61c1",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T11:12:09.155556Z",
+  "branch": "main",
+  "checkpoints_count": 6,
+  "files_touched": [
+    "app/api/v1/sim.py",
+    "app/core/config.py",
+    "app/mcp/server.py",
+    "app/mcp/tools.py",
+    "app/services/llm/client.py",
+    "app/services/llm/json.py",
+    "app/services/supervisor.py",
+    "app/static/assets/index-CVwxQ-Bq.js",
+    "app/static/assets/index-CdhdyBXu.js",
+    "app/static/assets/index-rTspzvYV.css",
+    "app/static/assets/index-sDNpUnAB.css",
+    "app/static/index.html",
+    "data/incremental/day-10/emails_index.csv",
+    "pyproject.toml",
+    "tests/test_enrich.py",
+    "ui/src/api.ts",
+    "ui/src/pages/Ingest.tsx",
+    "ui/src/styles.css",
+    "uv.lock"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "34d6a8a1511b",
+  "token_usage": {
+    "input_tokens": 123,
+    "cache_creation_tokens": 130996,
+    "cache_read_tokens": 8371396,
+    "output_tokens": 36558,
+    "api_call_count": 83
+  },
+  "session_metrics": {
+    "turn_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T11:12:09.069463Z",
+    "agent_lines": 977,
+    "agent_removed": 172,
+    "human_added": 59,
+    "human_modified": 6,
+    "human_removed": 0,
+    "total_committed": 1042,
+    "total_lines_changed": 1214,
+    "agent_percentage": 94.64579901153213,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 274,
+      "user_lines_removed": 4,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 35,
+        "app/core/config.py": 4,
+        "app/mcp/tools.py": 3,
+        "app/services/enrich.py": 112,
+        "app/services/supervisor.py": 20,
+        "app/services/tavily.py": 99,
+        "pyproject.toml": 1
+      },
+      "user_removed_per_file": {
+        "app/services/supervisor.py": 4
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 919,
+      "agent_lines_removed": 149,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 42,
+      "user_lines_removed": 0,
+      "agent_lines_added": 962,
+      "agent_lines_removed": 166,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37,
+        "app/services/enrich.py": 5
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 97,
+      "user_lines_removed": 2,
+      "agent_lines_added": 1121,
+      "agent_lines_removed": 172,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37,
+        "app/services/enrich.py": 29,
+        "data/incremental/day-10/emails/2026-01/20260111_093000_EMAIL-09999.eml": 25,
+        "ui/src/pages/Ingest.tsx": 6
+      },
+      "user_removed_per_file": {
+        "app/services/enrich.py": 1,
+        "ui/src/pages/Ingest.tsx": 1
+      }
+    },
+    {
+      "checkpoint_number": 5,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1233,
+      "agent_lines_removed": 173,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 6,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1281,
+      "agent_lines_removed": 176,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 7,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1281,
+      "agent_lines_removed": 177,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+[Image #3] can we do 2 things, one showthe diff of what changed, and as u can see the ui is not scrollable and cut[Image #4] not full width eitehr. fix it
+
+---
+
+[Image #5] the font is too thin, and light, let's ust bold and regular font, also use orange red type color take from shadnc preset apply
+
+---
+
+still make things bold not visble
+
+---
+
+500: ingest failed: expected JSON object after repair
+
+---
+
+500: ingest failed: json_repair returned str, raw head: ''
+
+---
+
+don't have max token cap

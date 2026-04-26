@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>b60dux9t2</task-id>
+<tool-use-id>REDACTED</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-golamrabbani-expatal-PropContext/8d9b03bf-8e25-4c61-bac1-586db1f69615/tasks/b60dux9t2.output</output-file>
+<status>killed</status>
+<summary>Background command "Wait for agent test to finish" was stopped</summary>
+</task-notification>

@@ -5,7 +5,8 @@
   "branch": "main",
   "checkpoints_count": 1,
   "files_touched": [
-    "app/api/v1/sim.py"
+    "app/api/v1/sim.py",
+    "tests/api/test_sim.py"
   ],
   "sessions": [
     {
@@ -31,6 +32,12 @@
       "transcript": "/c0/9f1be9d17e/3/full.jsonl",
       "content_hash": "/c0/9f1be9d17e/3/content_hash.txt",
       "prompt": "/c0/9f1be9d17e/3/prompt.txt"
+    },
+    {
+      "metadata": "/c0/9f1be9d17e/4/metadata.json",
+      "transcript": "/c0/9f1be9d17e/4/full.jsonl",
+      "content_hash": "/c0/9f1be9d17e/4/content_hash.txt",
+      "prompt": "/c0/9f1be9d17e/4/prompt.txt"
     }
   ],
   "token_usage": {

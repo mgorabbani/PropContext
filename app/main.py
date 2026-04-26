@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import AsyncExitStack, asynccontextmanager
+from http import HTTPStatus
+from pathlib import Path
 
 import structlog
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.types import Lifespan
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import FileResponse, Response
+from starlette.types import Lifespan, Scope
 
 from app.api.v1.router import api_router
 from app.core.config import REPO_ROOT, get_settings
@@ -18,6 +22,24 @@ from app.mcp import build_mcp
 PRM_LOCAL_PATH = "/mcp/.well-known/oauth-protected-resource"
 
 log = structlog.get_logger(__name__)
+
+
+class SPAStaticFiles(StaticFiles):
+    """Static mount that falls back to index.html for unknown HTML paths (SPA routes)."""
+
+    async def get_response(self, path: str, scope: Scope) -> Response:  # type: ignore[override]
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            if exc.status_code != HTTPStatus.NOT_FOUND or "." in path.rsplit("/", 1)[-1]:
+                raise
+            directory = Path(str(self.directory)) if self.directory else None
+            if directory is None:
+                raise
+            index = directory / "index.html"
+            if not index.is_file():
+                raise
+            return FileResponse(index)
 
 
 def _make_lifespan(child: Lifespan | None) -> Lifespan:
@@ -61,7 +83,7 @@ def create_app() -> FastAPI:
         app.mount("/mcp", mcp_app)
     static_dir = REPO_ROOT / "app" / "static"
     if static_dir.is_dir():
-        app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+        app.mount("/", SPAStaticFiles(directory=static_dir, html=True), name="static")
     return app
 
 

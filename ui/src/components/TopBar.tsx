@@ -1,9 +1,11 @@
-import { Building2, Command, MessageSquare, Moon, PanelLeft, Sun, Sparkles } from "lucide-react";
+import { Building2, Command, MessageSquare, Moon, PanelLeft, Play, Settings, Sun, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "../lib/cn";
 
 type Props = {
   onOpenPalette: () => void;
+  onOpenMcpSettings: () => void;
+  askEnabled?: boolean;
   askActive: boolean;
   onToggleAsk: () => void;
   treeActive: boolean;
@@ -12,6 +14,8 @@ type Props = {
 
 export function TopBar({
   onOpenPalette,
+  onOpenMcpSettings,
+  askEnabled = true,
   askActive,
   onToggleAsk,
   treeActive,
@@ -76,18 +80,46 @@ export function TopBar({
           </kbd>
         </button>
 
-        <button
-          onClick={onToggleAsk}
-          aria-label={askActive ? "Close Ask panel" : "Open Ask panel"}
-          title={askActive ? "Close Ask panel" : "Open Ask panel"}
+        {askEnabled && (
+          <button
+            onClick={onToggleAsk}
+            aria-label={askActive ? "Close Ask panel" : "Open Ask panel"}
+            title={askActive ? "Close Ask panel" : "Open Ask panel"}
+            className={cn(
+              "grid h-7 w-7 place-items-center rounded-md border transition-colors",
+              askActive
+                ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
+                : "border-[var(--color-border-2)] bg-[var(--color-surface)] text-[var(--color-fg-muted)] hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
+            )}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+          </button>
+        )}
+
+        <a
+          href="/ingest"
+          aria-label="Simulate ingest"
+          title="Simulate ingest"
           className={cn(
-            "grid h-7 w-7 place-items-center rounded-md border transition-colors",
-            askActive
-              ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
-              : "border-[var(--color-border-2)] bg-[var(--color-surface)] text-[var(--color-fg-muted)] hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
+            "grid h-7 w-7 place-items-center rounded-md border border-[var(--color-border-2)]",
+            "bg-[var(--color-surface)] text-[var(--color-fg-muted)]",
+            "transition-colors hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
           )}
         >
-          <MessageSquare className="h-3.5 w-3.5" />
+          <Play className="h-3.5 w-3.5" />
+        </a>
+
+        <button
+          onClick={onOpenMcpSettings}
+          aria-label="MCP connection settings"
+          title="Connect via MCP"
+          className={cn(
+            "grid h-7 w-7 place-items-center rounded-md border border-[var(--color-border-2)]",
+            "bg-[var(--color-surface)] text-[var(--color-fg-muted)]",
+            "transition-colors hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
+          )}
+        >
+          <Settings className="h-3.5 w-3.5" />
         </button>
 
         <button

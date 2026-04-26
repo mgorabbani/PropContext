@@ -7,9 +7,12 @@ import { Tree } from "./components/Tree";
 import { Viewer } from "./components/Viewer";
 import { Query } from "./components/Query";
 import { Palette } from "./components/Palette";
+import { McpSettings } from "./components/McpSettings";
 import { fetchFile, fetchProperties, fetchTree } from "./api";
 import type { TreeNode } from "./api";
 import { flattenTree } from "./lib/markdown";
+
+const ASK_ENABLED = false;
 
 export default function App() {
   const [properties, setProperties] = useState<string[]>([]);
@@ -20,6 +23,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [mcpSettingsOpen, setMcpSettingsOpen] = useState(false);
   const [askCollapsed, setAskCollapsed] = useState(false);
   const [treeCollapsed, setTreeCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -158,6 +162,8 @@ export default function App() {
     <div className="flex h-screen flex-col overflow-hidden">
       <TopBar
         onOpenPalette={() => setPaletteOpen(true)}
+        onOpenMcpSettings={() => setMcpSettingsOpen(true)}
+        askEnabled={ASK_ENABLED}
         askActive={askButtonActive}
         onToggleAsk={toggleAsk}
         treeActive={treeButtonActive}
@@ -193,7 +199,11 @@ export default function App() {
 
             <Separator />
 
-            <Panel defaultSize="56%" minSize="32%" className="overflow-hidden">
+            <Panel
+              defaultSize={ASK_ENABLED ? "56%" : "80%"}
+              minSize="32%"
+              className="overflow-hidden"
+            >
               <main className="flex h-full min-w-0 flex-col">
                 <div className="min-h-0 flex-1">
                   <Viewer
@@ -206,20 +216,23 @@ export default function App() {
               </main>
             </Panel>
 
-            <Separator />
-
-            <Panel
-              panelRef={askPanelRef}
-              defaultSize="24%"
-              minSize="18%"
-              maxSize="42%"
-              collapsible
-              collapsedSize="0%"
-              onResize={(size) => setAskCollapsed(size.asPercentage < 1)}
-              className="ask-panel overflow-hidden"
-            >
-              {!askCollapsed && <Query lie={lie} onResolved={selectPath} />}
-            </Panel>
+            {ASK_ENABLED && (
+              <>
+                <Separator />
+                <Panel
+                  panelRef={askPanelRef}
+                  defaultSize="24%"
+                  minSize="18%"
+                  maxSize="42%"
+                  collapsible
+                  collapsedSize="0%"
+                  onResize={(size) => setAskCollapsed(size.asPercentage < 1)}
+                  className="ask-panel overflow-hidden"
+                >
+                  {!askCollapsed && <Query lie={lie} onResolved={selectPath} />}
+                </Panel>
+              </>
+            )}
           </Group>
         )}
       </div>
@@ -238,7 +251,7 @@ export default function App() {
         </div>
       )}
 
-      {isMobile && (
+      {ASK_ENABLED && isMobile && (
         <div
           className={`fixed inset-0 z-50 flex transform flex-col bg-[var(--color-bg)] transition-transform duration-200 ${
             mobileAskOpen ? "translate-x-0" : "translate-x-full"
@@ -260,6 +273,7 @@ export default function App() {
         files={flatFiles}
         onSelect={selectPath}
       />
+      <McpSettings open={mcpSettingsOpen} onClose={() => setMcpSettingsOpen(false)} />
     </div>
   );
 }

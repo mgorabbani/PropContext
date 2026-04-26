@@ -46,7 +46,10 @@ def register_tools(
     async def list_properties() -> list[str]:
         """List property IDs the caller's organization can access."""
         on_disk = set(wiki.list_properties())
-        return sorted(on_disk & allowed_properties())
+        allowed = allowed_properties()
+        if "*" in allowed:
+            return sorted(on_disk)
+        return sorted(on_disk & allowed)
 
     @mcp.tool
     async def list_pages(property_id: PropertyIdParam) -> list[str]:

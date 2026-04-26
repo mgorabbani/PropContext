@@ -23,3 +23,9 @@ Build an engine that produces a single Context Markdown File per property. That'
 2. Surgical updates: when an new email arrives you can't generate a whole new file. Regenerating the file destroys human edits and burns tokens. You must patch exactly the right section.
 
 3. Signal vs. noise: 90% of emails are irrelevant. The engine must judge what belongs in the context and what doesn't.
+
+-- todo
+
+1. dynamic schema updates/ hermes concept
+2. mcp connector tests
+3. test ingestor

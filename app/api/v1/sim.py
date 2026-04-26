@@ -157,6 +157,7 @@ async def _run_sim_ingest(
 
     item, source_path, payload = _resolve_item(day_dir, kind=body.kind, item_id=body.id)
     sim_settings, workspace = _build_sim_settings(settings, mode=body.mode)
+    baseline_ref = _git_head_ref(sim_settings.wiki_dir)
     llm = get_llm_client(sim_settings)
     sup = Supervisor(settings=sim_settings, llm=llm)
 
@@ -182,7 +183,7 @@ async def _run_sim_ingest(
     for rel in touched:
         f = root / rel
         content = f.read_text(encoding="utf-8") if f.is_file() else ""
-        prev = _git_show_previous(sim_settings.wiki_dir, f"{body.property_id}/{rel}")
+        prev = _git_show_at(sim_settings.wiki_dir, baseline_ref, f"{body.property_id}/{rel}")
         files.append(TouchedFile(path=rel, content=content, previous=prev))
 
     git_lines = await anyio.to_thread.run_sync(_git_log_lines, sim_settings.wiki_dir)  # ty: ignore[unresolved-attribute]
@@ -215,9 +216,24 @@ async def _run_sim_ingest(
     }
 
 
-def _git_show_previous(wiki_dir: Path, rel_from_repo_root: str) -> str:
+def _git_head_ref(wiki_dir: Path) -> str | None:
+    proc = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],  # noqa: S607
+        cwd=wiki_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return None
+    return proc.stdout.strip() or None
+
+
+def _git_show_at(wiki_dir: Path, ref: str | None, rel_from_repo_root: str) -> str:
+    if ref is None:
+        return ""
     proc = subprocess.run(  # noqa: S603
-        ["git", "show", f"HEAD^:{rel_from_repo_root}"],  # noqa: S607
+        ["git", "show", f"{ref}:{rel_from_repo_root}"],  # noqa: S607
         cwd=wiki_dir,
         capture_output=True,
         text=True,

@@ -3,7 +3,7 @@
   "checkpoint_id": "e7be135fc8d5",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 9,
+  "checkpoints_count": 11,
   "files_touched": [
     "app/api/v1/sim.py",
     "app/services/patcher/apply.py",
@@ -34,13 +34,19 @@
       "transcript": "/e7/be135fc8d5/2/full.jsonl",
       "content_hash": "/e7/be135fc8d5/2/content_hash.txt",
       "prompt": "/e7/be135fc8d5/2/prompt.txt"
+    },
+    {
+      "metadata": "/e7/be135fc8d5/3/metadata.json",
+      "transcript": "/e7/be135fc8d5/3/full.jsonl",
+      "content_hash": "/e7/be135fc8d5/3/content_hash.txt",
+      "prompt": "/e7/be135fc8d5/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 220,
-    "cache_creation_tokens": 243781,
-    "cache_read_tokens": 24327998,
-    "output_tokens": 78921,
-    "api_call_count": 150
+    "input_tokens": 246,
+    "cache_creation_tokens": 322375,
+    "cache_read_tokens": 24484353,
+    "output_tokens": 79679,
+    "api_call_count": 156
   }
 }

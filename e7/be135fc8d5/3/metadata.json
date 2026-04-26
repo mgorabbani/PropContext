@@ -1,0 +1,85 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e7be135fc8d5",
+  "session_id": "a303040c-2d9e-415b-ac20-e1f58798a931",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T10:33:53.273673Z",
+  "branch": "main",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/api/v1/sim.py",
+    "app/services/patcher/apply.py",
+    "app/services/supervisor.py",
+    "app/static/assets/index-BgewsGLc.css",
+    "app/static/assets/index-CdhdyBXu.js",
+    "app/static/assets/index-q8CIw2_f.js",
+    "app/static/assets/index-sDNpUnAB.css",
+    "app/static/index.html",
+    "ui/src/api.ts",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "f0bf30b27dc8",
+  "token_usage": {
+    "input_tokens": 26,
+    "cache_creation_tokens": 78594,
+    "cache_read_tokens": 156355,
+    "output_tokens": 758,
+    "api_call_count": 6
+  },
+  "session_metrics": {
+    "turn_count": 2
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T10:33:53.27065Z",
+    "agent_lines": 39,
+    "agent_removed": 87,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 53,
+    "total_committed": 39,
+    "total_lines_changed": 179,
+    "agent_percentage": 70.39106145251397,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 1083,
+      "user_lines_removed": 60,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 28,
+        "app/api/v1/sim.py": 75,
+        "app/core/config.py": 3,
+        "app/mcp/server.py": 14,
+        "app/mcp/tools.py": 24,
+        "app/services/agent_local.py": 252,
+        "app/services/patcher/apply.py": 9,
+        "app/services/supervisor.py": 80,
+        "ui/src/api.ts": 69,
+        "ui/src/pages/Ingest.tsx": 529
+      },
+      "user_removed_per_file": {
+        "app/api/v1/sim.py": 19,
+        "app/mcp/server.py": 1,
+        "app/services/patcher/apply.py": 3,
+        "app/services/supervisor.py": 3,
+        "optimisation-checklist.md": 6,
+        "ui/src/pages/Ingest.tsx": 28
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 28,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1057,
+      "agent_lines_removed": 60,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 28
+      }
+    }
+  ]
+}

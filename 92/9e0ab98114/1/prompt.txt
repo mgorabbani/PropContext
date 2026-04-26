@@ -1,0 +1,19 @@
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/.env in the IDE. This may or may not be related to the current task.</ide_opened_file>
+just use sonnet and haiku, i will give u key
+
+---
+
+but sysem prompt should show the constraint
+
+---
+
+<ide_opened_file>The user opened the file /Users/golamrabbani/expatal/PropContext/.env in the IDE. This may or may not be related to the current task.</ide_opened_file>
+u there/
+
+---
+
+<task-notification>
+<task-id>bh5109ctt</task-id>
+<summary>Monitor event: "agent_query completion + tool errors"</summary>
+<event>[Monitor timed out — re-arm if needed.]</event>
+</task-notification>

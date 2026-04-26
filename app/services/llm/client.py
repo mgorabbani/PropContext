@@ -6,9 +6,12 @@ from typing import Annotated, Protocol
 
 import anyio
 import httpx
+import structlog
 from fastapi import Depends
 
 from app.core.config import REPO_ROOT, Settings, get_settings
+
+log = structlog.get_logger(__name__)
 
 
 class LLMClient(Protocol):
@@ -42,7 +45,7 @@ class AnthropicClient:
         }
         payload = {
             "model": model,
-            "max_tokens": 4096,
+            "max_tokens": 32000,
             "system": [
                 {
                     "type": "text",
@@ -79,10 +82,24 @@ class GeminiClient:
 
     async def complete(self, *, model: str, system_prompt: str, user_prompt: str) -> str:
         url = f"{self._base_url}/{model}:generateContent"
+        safety = [
+            {"category": cat, "threshold": "BLOCK_NONE"}
+            for cat in (
+                "HARM_CATEGORY_HARASSMENT",
+                "HARM_CATEGORY_HATE_SPEECH",
+                "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                "HARM_CATEGORY_DANGEROUS_CONTENT",
+                "HARM_CATEGORY_CIVIC_INTEGRITY",
+            )
+        ]
         payload = {
             "systemInstruction": {"parts": [{"text": system_prompt}]},
             "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
-            "generationConfig": {"maxOutputTokens": 4096, "temperature": 0.2},
+            "generationConfig": {
+                "temperature": 0.2,
+                "responseMimeType": "application/json",
+            },
+            "safetySettings": safety,
         }
         headers = {"content-type": "application/json", "x-goog-api-key": self._api_key}
         delays = [2.0, 5.0, 15.0]
@@ -95,10 +112,37 @@ class GeminiClient:
         response.raise_for_status()
         data = response.json()
         candidates = data.get("candidates") or []
+        prompt_feedback = data.get("promptFeedback") or {}
         if not candidates:
+            log.warning(
+                "gemini_no_candidates",
+                model=model,
+                prompt_feedback=prompt_feedback,
+            )
+            block_reason = prompt_feedback.get("blockReason")
+            if block_reason:
+                raise RuntimeError(f"gemini blocked prompt: {block_reason}")
             return ""
-        parts = candidates[0].get("content", {}).get("parts", [])
-        return "".join(p.get("text", "") for p in parts if isinstance(p, Mapping))
+        cand = candidates[0]
+        finish = cand.get("finishReason")
+        parts = cand.get("content", {}).get("parts", [])
+        text = "".join(p.get("text", "") for p in parts if isinstance(p, Mapping))
+        if not text:
+            log.warning(
+                "gemini_empty_text",
+                model=model,
+                finish_reason=finish,
+                safety_ratings=cand.get("safetyRatings"),
+                prompt_feedback=prompt_feedback,
+            )
+            if finish in {"SAFETY", "RECITATION", "BLOCKLIST", "PROHIBITED_CONTENT"}:
+                raise RuntimeError(f"gemini blocked output: {finish}")
+            if finish == "MAX_TOKENS":
+                raise RuntimeError(
+                    "gemini hit MAX_TOKENS with no text — bump maxOutputTokens or shorten prompt"
+                )
+            raise RuntimeError(f"gemini returned no text (finish={finish})")
+        return text
 
     @staticmethod
     def _retry_after(response: httpx.Response, *, fallback: float) -> float:

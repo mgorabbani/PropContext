@@ -52,6 +52,13 @@ const PIPELINE: StageNode[] = [
       <Icon cls={cls} d="M7 4h10v16H7z|M9 8h6|M9 12h6|M9 16h4" />,
   },
   {
+    key: "enrich",
+    label: "enrich",
+    hint: "Tavily fetch public URLs found in body",
+    icon: (cls) =>
+      <Icon cls={cls} d="M12 2a10 10 0 100 20 10 10 0 000-20z|M2 12h20|M12 2a15 15 0 010 20|M12 2a15 15 0 000 20" />,
+  },
+  {
     key: "classify",
     label: "classify",
     hint: "Signal? category + priority",
@@ -102,17 +109,34 @@ const PIPELINE: StageNode[] = [
   },
 ];
 
+type ToolCall = {
+  tool: string;
+  status: "start" | "ok" | "fail";
+  url?: string;
+  ms?: number;
+  chars?: number;
+  ts: number | null;
+  meta: Record<string, unknown>;
+};
+
 type StageRecord = {
   state: StageState;
   data: Record<string, unknown> | null;
   startedAt: number | null;
   endedAt: number | null;
+  toolCalls: ToolCall[];
 };
 
 function emptyStages(): Record<string, StageRecord> {
   const out: Record<string, StageRecord> = {};
   for (const n of PIPELINE) {
-    out[n.key] = { state: "pending", data: null, startedAt: null, endedAt: null };
+    out[n.key] = {
+      state: "pending",
+      data: null,
+      startedAt: null,
+      endedAt: null,
+      toolCalls: [],
+    };
   }
   return out;
 }
@@ -136,6 +160,11 @@ export function IngestPage() {
   const [events, setEvents] = useState<SimStageEvent[]>([]);
   const [cursor, setCursor] = useState<number>(-1);
   const [followLive, setFollowLive] = useState(true);
+  const [tab, setTab] = useState<"flow" | "files">("flow");
+
+  useEffect(() => {
+    if (result) setTab("files");
+  }, [result]);
 
   useEffect(() => {
     fetchIncremental()
@@ -211,9 +240,6 @@ export function IngestPage() {
       setRunning(false);
     }
   }
-
-  const activeContent =
-    result?.files.find((f) => f.path === activeFile)?.content ?? "";
 
   return (
     <div className="flex h-screen flex-col bg-[var(--color-bg)] text-[var(--color-fg)]">
@@ -349,12 +375,33 @@ export function IngestPage() {
               Pick a day + item, then run. Uses real Gemini ({"gemini-2.5-flash-lite"} → {"gemini-2.5-pro"}).
             </div>
           )}
-          {(running || events.length > 0) && (
+          {result && (
+            <div className="flex shrink-0 gap-1 border-b border-[var(--color-border)] px-4 py-2 font-mono text-[11px]">
+              {(["flow", "files"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={cn(
+                    "rounded border px-2.5 py-1 uppercase tracking-wide transition-colors",
+                    tab === t
+                      ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
+                      : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
+                  )}
+                >
+                  {t === "flow"
+                    ? `Flow (${events.length})`
+                    : `Files (${result.files.length})`}
+                </button>
+              ))}
+            </div>
+          )}
+          {(running || events.length > 0) && (!result || tab === "flow") && (
             <PipelineView
               events={events}
               cursor={cursor}
               followLive={followLive}
               running={running}
+              compact={false}
               onCursor={(idx) => {
                 setCursor(idx);
                 setFollowLive(idx === events.length - 1);
@@ -365,12 +412,11 @@ export function IngestPage() {
               }}
             />
           )}
-          {result && (
+          {result && tab === "files" && (
             <ResultView
               result={result}
               activeFile={activeFile}
               onActiveFile={setActiveFile}
-              activeContent={activeContent}
             />
           )}
         </main>
@@ -396,20 +442,31 @@ function Field({
   );
 }
 
+type ViewMode = "diff" | "rendered" | "raw";
+
 function ResultView({
   result,
   activeFile,
   onActiveFile,
-  activeContent,
 }: {
   result: SimIngestResponse;
   activeFile: string | null;
   onActiveFile: (p: string) => void;
-  activeContent: string;
 }) {
+  const [view, setView] = useState<ViewMode>("diff");
+  const active = result.files.find((f) => f.path === activeFile) ?? null;
+  const stats = useMemo(() => {
+    if (!active) return { added: 0, removed: 0 };
+    const lines = diffLines(active.previous, active.content);
+    return {
+      added: lines.filter((l) => l.kind === "add").length,
+      removed: lines.filter((l) => l.kind === "del").length,
+    };
+  }, [active]);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="grid grid-cols-2 gap-x-6 gap-y-1 border-b border-[var(--color-border)] px-4 py-3 font-mono text-[13px]">
+      <div className="grid shrink-0 grid-cols-2 gap-x-6 gap-y-1 border-b border-[var(--color-border)] px-4 py-3 font-mono text-[13px]">
         <Stat label="status" value={result.status} accent />
         <Stat label="duration" value={`${result.duration_ms} ms`} />
         <Stat label="applied_ops" value={String(result.applied_ops)} />
@@ -444,20 +501,27 @@ function ResultView({
             Touched files ({result.files.length})
           </div>
           <div className="min-h-0 flex-1 overflow-auto px-1.5 py-1.5">
-            {result.files.map((f) => (
-              <button
-                key={f.path}
-                onClick={() => onActiveFile(f.path)}
-                className={cn(
-                  "block w-full truncate rounded px-2 py-1 text-left font-mono text-[13px]",
-                  activeFile === f.path
-                    ? "bg-[var(--color-surface)] text-[var(--color-accent)]"
-                    : "text-[var(--color-fg-muted)] hover:bg-[var(--color-surface)]/60 hover:text-[var(--color-fg)]",
-                )}
-              >
-                {f.path}
-              </button>
-            ))}
+            {result.files.map((f) => {
+              const ds = quickDiffStats(f.previous, f.content);
+              return (
+                <button
+                  key={f.path}
+                  onClick={() => onActiveFile(f.path)}
+                  className={cn(
+                    "block w-full rounded px-2 py-1 text-left font-mono text-[13px]",
+                    activeFile === f.path
+                      ? "bg-[var(--color-surface)] text-[var(--color-accent)]"
+                      : "text-[var(--color-fg-muted)] hover:bg-[var(--color-surface)]/60 hover:text-[var(--color-fg)]",
+                  )}
+                >
+                  <div className="truncate">{f.path}</div>
+                  <div className="mt-0.5 flex gap-2 text-[11px]">
+                    <span className="text-emerald-500">+{ds.added}</span>
+                    <span className="text-red-500">−{ds.removed}</span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
           {result.git_log.length > 0 && (
             <div className="border-t border-[var(--color-border)] px-3 py-2">
@@ -475,22 +539,142 @@ function ResultView({
           )}
         </aside>
 
-        <section className="prose min-w-0 flex-1 overflow-auto px-6 py-4 text-[15px] dark:prose-invert">
-          {activeFile ? (
-            <>
-              <div className="mb-3 font-mono text-[12px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
-                {activeFile}
+        <section className="flex min-w-0 flex-1 flex-col">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[var(--color-border)] px-4 py-2">
+            <div className="min-w-0 truncate font-mono text-[12px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+              {activeFile ?? "—"}
+              {active && (
+                <span className="ml-3 normal-case tracking-normal">
+                  <span className="text-emerald-500">+{stats.added}</span>{" "}
+                  <span className="text-red-500">−{stats.removed}</span>
+                </span>
+              )}
+            </div>
+            <div className="flex shrink-0 gap-1 font-mono text-[11px]">
+              {(["diff", "rendered", "raw"] as ViewMode[]).map((v) => (
+                <button
+                  key={v}
+                  onClick={() => setView(v)}
+                  className={cn(
+                    "rounded border px-2 py-1 uppercase tracking-wide transition-colors",
+                    view === v
+                      ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
+                      : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
+                  )}
+                >
+                  {v}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="min-h-0 flex-1 overflow-auto">
+            {!active ? (
+              <p className="px-6 py-4 text-[13.5px] text-[var(--color-fg-muted)]">
+                No files touched.
+              </p>
+            ) : view === "diff" ? (
+              <DiffView previous={active.previous} current={active.content} />
+            ) : view === "raw" ? (
+              <pre className="whitespace-pre-wrap break-words px-4 py-3 font-mono text-[12.5px] leading-relaxed text-[var(--color-fg)]">
+                {active.content}
+              </pre>
+            ) : (
+              <div className="prose prose-sm max-w-none px-6 py-4 dark:prose-invert prose-headings:mt-4 prose-headings:mb-2">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {active.content}
+                </ReactMarkdown>
               </div>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {activeContent}
-              </ReactMarkdown>
-            </>
-          ) : (
-            <p className="text-[var(--color-fg-muted)]">No files touched.</p>
-          )}
+            )}
+          </div>
         </section>
       </div>
     </div>
+  );
+}
+
+type DiffLine = { kind: "add" | "del" | "ctx"; text: string };
+
+function diffLines(a: string, b: string): DiffLine[] {
+  if (a === b) return a.split("\n").map((text) => ({ kind: "ctx", text }));
+  const al = a === "" ? [] : a.split("\n");
+  const bl = b === "" ? [] : b.split("\n");
+  const m = al.length;
+  const n = bl.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () =>
+    new Array(n + 1).fill(0),
+  );
+  for (let i = m - 1; i >= 0; i--) {
+    for (let j = n - 1; j >= 0; j--) {
+      dp[i][j] =
+        al[i] === bl[j]
+          ? dp[i + 1][j + 1] + 1
+          : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const out: DiffLine[] = [];
+  let i = 0;
+  let j = 0;
+  while (i < m && j < n) {
+    if (al[i] === bl[j]) {
+      out.push({ kind: "ctx", text: al[i] });
+      i++;
+      j++;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      out.push({ kind: "del", text: al[i] });
+      i++;
+    } else {
+      out.push({ kind: "add", text: bl[j] });
+      j++;
+    }
+  }
+  while (i < m) out.push({ kind: "del", text: al[i++] });
+  while (j < n) out.push({ kind: "add", text: bl[j++] });
+  return out;
+}
+
+function quickDiffStats(a: string, b: string): { added: number; removed: number } {
+  if (a === b) return { added: 0, removed: 0 };
+  if (a === "") return { added: b.split("\n").length, removed: 0 };
+  if (b === "") return { added: 0, removed: a.split("\n").length };
+  const lines = diffLines(a, b);
+  return {
+    added: lines.filter((l) => l.kind === "add").length,
+    removed: lines.filter((l) => l.kind === "del").length,
+  };
+}
+
+function DiffView({ previous, current }: { previous: string; current: string }) {
+  const lines = useMemo(() => diffLines(previous, current), [previous, current]);
+  if (previous === "" && current !== "") {
+    return (
+      <pre className="whitespace-pre-wrap break-words px-4 py-3 font-mono text-[12.5px] leading-relaxed">
+        {lines.map((l, i) => (
+          <div key={i} className="bg-emerald-500/10 text-emerald-500">
+            <span className="select-none opacity-60">+ </span>
+            {l.text || " "}
+          </div>
+        ))}
+      </pre>
+    );
+  }
+  return (
+    <pre className="whitespace-pre-wrap break-words px-4 py-3 font-mono text-[12.5px] leading-relaxed">
+      {lines.map((l, i) => {
+        const cls =
+          l.kind === "add"
+            ? "bg-emerald-500/10 text-emerald-500"
+            : l.kind === "del"
+              ? "bg-red-500/10 text-red-500"
+              : "text-[var(--color-fg-muted)]";
+        const prefix = l.kind === "add" ? "+ " : l.kind === "del" ? "− " : "  ";
+        return (
+          <div key={i} className={cls}>
+            <span className="select-none opacity-60">{prefix}</span>
+            {l.text || " "}
+          </div>
+        );
+      })}
+    </pre>
   );
 }
 
@@ -552,6 +736,37 @@ function deriveFromEvents(events: SimStageEvent[], upto: number): DerivedView {
       }
       continue;
     }
+    const isToolEvent = raw.includes(".tool") && !raw.endsWith(".done");
+    if (isToolEvent) {
+      const parentKey = raw.split(".tool", 1)[0];
+      if (!PIPELINE.some((n) => n.key === parentKey)) continue;
+      const cur = stages[parentKey];
+      const data = ev.data as Record<string, unknown>;
+      const tsRaw = data._recvAt;
+      const ts = typeof tsRaw === "number" ? tsRaw : null;
+      const status = (data.status as ToolCall["status"]) ?? "ok";
+      const next: ToolCall[] = [...cur.toolCalls];
+      const existingIdx =
+        status !== "start"
+          ? next.findIndex(
+              (t) =>
+                t.tool === data.tool && t.url === data.url && t.status === "start",
+            )
+          : -1;
+      const call: ToolCall = {
+        tool: String(data.tool ?? "tool"),
+        status,
+        url: typeof data.url === "string" ? data.url : undefined,
+        ms: typeof data.ms === "number" ? data.ms : undefined,
+        chars: typeof data.chars === "number" ? data.chars : undefined,
+        ts,
+        meta: data,
+      };
+      if (existingIdx >= 0) next[existingIdx] = call;
+      else next.push(call);
+      stages[parentKey] = { ...cur, toolCalls: next };
+      continue;
+    }
     const isDone = raw.endsWith(".done");
     const key = isDone ? raw.slice(0, -5) : raw;
     if (!PIPELINE.some((n) => n.key === key)) continue;
@@ -584,6 +799,7 @@ function PipelineView({
   cursor,
   followLive,
   running,
+  compact,
   onCursor,
   onFollowLive,
 }: {
@@ -591,6 +807,7 @@ function PipelineView({
   cursor: number;
   followLive: boolean;
   running: boolean;
+  compact: boolean;
   onCursor: (idx: number) => void;
   onFollowLive: () => void;
 }) {
@@ -601,7 +818,12 @@ function PipelineView({
   const total = events.length;
   const idx = cursor < 0 ? 0 : cursor + 1;
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div
+      className={cn(
+        "flex flex-col",
+        compact ? "shrink-0" : "min-h-0 flex-1",
+      )}
+    >
       <div className="border-b border-[var(--color-border)] px-4 py-3">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -704,21 +926,28 @@ function PipelineView({
           </div>
         )}
       </div>
-      <div className="grid grid-cols-2 gap-3 overflow-auto px-4 py-3">
-        {PIPELINE.filter((n) => stages[n.key].data || stages[n.key].state === "active").map(
-          (n) => (
-            <StagePanel key={n.key} node={n} record={stages[n.key]} />
-          ),
-        )}
-        {Object.values(stages).every(
-          (s) => s.state === "pending" || s.state === "active",
-        ) &&
-          running && (
-            <div className="col-span-2 text-[12.5px] text-[var(--color-fg-muted)]">
-              waiting for first stage…
-            </div>
+      {!compact && (
+        <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 overflow-auto px-4 py-3">
+          {PIPELINE.filter(
+            (n) =>
+              stages[n.key].data ||
+              stages[n.key].state === "active" ||
+              stages[n.key].toolCalls.length > 0,
+          ).map(
+            (n) => (
+              <StagePanel key={n.key} node={n} record={stages[n.key]} />
+            ),
           )}
-      </div>
+          {Object.values(stages).every(
+            (s) => s.state === "pending" || s.state === "active",
+          ) &&
+            running && (
+              <div className="col-span-2 text-[12.5px] text-[var(--color-fg-muted)]">
+                waiting for first stage…
+              </div>
+            )}
+        </div>
+      )}
     </div>
   );
 }
@@ -842,6 +1071,11 @@ function chipSummary(
     const chars = data.chars as number | undefined;
     if (typeof chars === "number") return `${chars} chars`;
   }
+  if (label === "enrich") {
+    const fetched = (data.fetched as unknown[] | undefined)?.length ?? 0;
+    const skipped = (data.skipped as unknown[] | undefined)?.length ?? 0;
+    if (fetched || skipped) return `${fetched} fetched · ${skipped} skipped`;
+  }
   if (label === "reindex") {
     const c = data.count as number | undefined;
     if (typeof c === "number") return `${c} files`;
@@ -856,7 +1090,12 @@ function StagePanel({
   node: StageNode;
   record: StageRecord;
 }) {
-  if (!record.data && record.state !== "active") return null;
+  if (
+    !record.data &&
+    record.state !== "active" &&
+    record.toolCalls.length === 0
+  )
+    return null;
   return (
     <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/40 p-2">
       <div className="mb-1 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-dim)]">
@@ -873,14 +1112,58 @@ function StagePanel({
           {record.state}
         </span>
       </div>
+      {record.toolCalls.length > 0 && (
+        <div className="mb-2 space-y-1">
+          <div className="font-mono text-[10px] uppercase tracking-wide text-[var(--color-fg-dim)]">
+            tool calls ({record.toolCalls.length})
+          </div>
+          {record.toolCalls.map((t, i) => (
+            <ToolCallRow key={`${t.tool}:${t.url ?? i}:${i}`} call={t} />
+          ))}
+        </div>
+      )}
       {record.data ? (
         <pre className="max-h-[220px] overflow-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-snug text-[var(--color-fg-muted)]">
           {JSON.stringify(record.data, null, 2)}
         </pre>
-      ) : (
+      ) : record.toolCalls.length === 0 ? (
         <div className="font-mono text-[11px] text-[var(--color-fg-muted)]">
           working…
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ToolCallRow({ call }: { call: ToolCall }) {
+  const dot =
+    call.status === "ok"
+      ? "●"
+      : call.status === "fail"
+        ? "✕"
+        : "◌";
+  const tone =
+    call.status === "ok"
+      ? "text-[var(--color-accent)]"
+      : call.status === "fail"
+        ? "text-red-400"
+        : "text-[var(--color-fg-muted)] animate-pulse";
+  return (
+    <div className="flex items-center gap-1.5 rounded border border-[var(--color-border-2)] bg-[var(--color-bg)]/50 px-1.5 py-0.5 font-mono text-[10.5px]">
+      <span className={cn("text-[10px]", tone)}>{dot}</span>
+      <span className="font-medium uppercase tracking-wide text-[var(--color-fg-dim)]">
+        {call.tool}
+      </span>
+      {call.url && (
+        <span className="flex-1 truncate text-[var(--color-fg-muted)]">
+          {call.url}
+        </span>
+      )}
+      {call.ms != null && (
+        <span className="text-[var(--color-fg-dim)]">{call.ms}ms</span>
+      )}
+      {call.chars != null && call.chars > 0 && (
+        <span className="text-[var(--color-fg-dim)]">{call.chars}c</span>
       )}
     </div>
   );

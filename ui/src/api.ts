@@ -60,7 +60,7 @@ export type SimDay = {
   bank: SimItem[];
 };
 
-export type SimTouched = { path: string; content: string };
+export type SimTouched = { path: string; content: string; previous: string };
 
 export type SimIngestResponse = {
   status: string;

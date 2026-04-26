@@ -23,9 +23,9 @@
   --color-ink-900: #0e0e0c;
   --color-ink-950: #070706;
 
-  --color-accent: #d4ff3c;
-  --color-accent-soft: #b9e333;
-  --color-accent-dim: #5e6e1f;
+  --color-accent: #f97316;
+  --color-accent-soft: #ea580c;
+  --color-accent-dim: #7c2d12;
 
   --color-bg: #0b0b0a;
   --color-surface: #131311;
@@ -70,21 +70,21 @@
     --color-ink-800: #181816;
     --color-ink-900: #0e0e0c;
     --color-ink-950: #070706;
-    --color-accent: #8fb91d;
-    --color-accent-soft: #7ba517;
-    --color-accent-dim: #b5d245;
+    --color-accent: #ea580c;
+    --color-accent-soft: #c2410c;
+    --color-accent-dim: #fed7aa;
   }
 
   html.light body {
     background:
       radial-gradient(
         ellipse 1200px 600px at 80% -10%,
-        rgba(143, 185, 29, 0.07),
+        rgba(234, 88, 12, 0.07),
         transparent 60%
       ),
       radial-gradient(
         ellipse 800px 500px at 0% 100%,
-        rgba(143, 185, 29, 0.04),
+        rgba(234, 88, 12, 0.04),
         transparent 60%
       ),
       var(--color-bg);
@@ -98,19 +98,36 @@
     background:
       radial-gradient(
         ellipse 1200px 600px at 80% -10%,
-        rgba(212, 255, 60, 0.04),
+        rgba(249, 115, 22, 0.05),
         transparent 60%
       ),
       radial-gradient(
         ellipse 800px 500px at 0% 100%,
-        rgba(212, 255, 60, 0.025),
+        rgba(249, 115, 22, 0.03),
         transparent 60%
       ),
       var(--color-bg);
     color: var(--color-fg);
     font-family: var(--font-sans);
     font-feature-settings: "cv11", "ss01", "ss03";
-    letter-spacing: -0.005em;
+    font-weight: 500;
+    letter-spacing: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  b,
+  strong,
+  th,
+  h1, h2, h3, h4, h5, h6,
+  .font-medium,
+  .font-semibold,
+  .font-bold {
+    font-weight: 700 !important;
+  }
+
+  button {
+    font-weight: 600;
   }
 
   *,
@@ -121,7 +138,7 @@
 
   ::selection {
     background: var(--color-accent);
-    color: #0b0b0a;
+    color: #ffffff;
   }
 
   /* film grain overlay */
@@ -168,8 +185,8 @@
 
   .ring-accent-glow {
     box-shadow:
-      0 0 0 1px rgba(212, 255, 60, 0.35),
-      0 0 24px -4px rgba(212, 255, 60, 0.4);
+      0 0 0 1px rgba(249, 115, 22, 0.4),
+      0 0 24px -4px rgba(249, 115, 22, 0.45);
   }
 
   .hairline {
@@ -328,7 +345,7 @@
   overflow: hidden;
   box-shadow:
     0 30px 80px -20px rgba(0, 0, 0, 0.7),
-    0 0 0 1px rgba(212, 255, 60, 0.06);
+    0 0 0 1px rgba(249, 115, 22, 0.08);
 }
 [cmdk-input] {
   width: 100%;

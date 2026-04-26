@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal, cast
 
 import anyio
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 from pydantic import Field, StringConstraints
 
+from app.core.config import Settings
 from app.mcp.context import allowed_properties, assert_property_access
-from app.services.ask import AskResult, AskService
 from app.services.agent_local import LocalAgentService
+from app.services.ask import AskResult, AskService
+from app.services.tavily import TavilyDisabled, search_web
 from app.services.wiki import WikiService
 from app.storage.wiki_chunks import open_wiki_chunks
 
@@ -43,6 +45,7 @@ def register_tools(
     *,
     wiki_chunks_db_path: Path | None = None,
     agent_service: LocalAgentService | None = None,
+    settings: Settings | None = None,
 ) -> None:
     @mcp.tool
     async def list_properties() -> list[str]:
@@ -106,6 +109,49 @@ def register_tools(
         """Answer a natural-language question against a property's wiki."""
         assert_property_access(property_id)
         return await ask_service.answer(property_id=property_id, question=question)
+
+    if settings is not None and settings.tavily_api_key:
+
+        @mcp.tool
+        async def web_search(
+            query: Annotated[
+                str,
+                StringConstraints(min_length=1, max_length=512),
+                Field(description="Free-text query — vendor name, legal §, regulation, etc."),
+            ],
+            topic: Annotated[
+                str,
+                Field(
+                    description="'general' (default) or 'news' for recent updates",
+                    pattern=r"^(general|news)$",
+                ),
+            ] = "general",
+            max_results: Annotated[int, Field(ge=1, le=10)] = 5,
+            include_domains: Annotated[
+                list[str] | None,
+                Field(description="Optional domain allowlist (e.g. ['gesetze-im-internet.de'])"),
+            ] = None,
+        ) -> list[dict[str, object]]:
+            """Search the public web (Tavily) for vendor profiles, legal references, regulations.
+
+            Use for: looking up a Hausmeister/Dienstleister name, German legal § references
+            (BGB, WEG, BauO Bln), recent BMJV/Senat updates. Not scoped to a property — web is
+            global. Prefer ask_wiki / search_pages for anything inside the property memory.
+            """
+            try:
+                hits = await search_web(
+                    query,
+                    settings=settings,
+                    max_results=max_results,
+                    topic=cast(Literal["general", "news"], topic),
+                    include_domains=include_domains,
+                )
+            except TavilyDisabled as exc:
+                raise ToolError(str(exc)) from exc
+            return [
+                {"title": h.title, "url": h.url, "content": h.content, "score": h.score}
+                for h in hits
+            ]
 
     if agent_service is not None:
 

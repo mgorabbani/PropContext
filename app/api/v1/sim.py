@@ -55,6 +55,7 @@ class SimIngestRequest(BaseModel):
 class TouchedFile(BaseModel):
     path: str
     content: str
+    previous: str = ""
 
 
 class SimIngestResponse(BaseModel):
@@ -180,8 +181,9 @@ async def _run_sim_ingest(
     files: list[TouchedFile] = []
     for rel in touched:
         f = root / rel
-        if f.is_file():
-            files.append(TouchedFile(path=rel, content=f.read_text(encoding="utf-8")))
+        content = f.read_text(encoding="utf-8") if f.is_file() else ""
+        prev = _git_show_previous(sim_settings.wiki_dir, f"{body.property_id}/{rel}")
+        files.append(TouchedFile(path=rel, content=content, previous=prev))
 
     git_lines = await anyio.to_thread.run_sync(_git_log_lines, sim_settings.wiki_dir)  # ty: ignore[unresolved-attribute]
 
@@ -211,6 +213,19 @@ async def _run_sim_ingest(
         "normalized_text": normalized_text,
         "git_log": git_lines,
     }
+
+
+def _git_show_previous(wiki_dir: Path, rel_from_repo_root: str) -> str:
+    proc = subprocess.run(  # noqa: S603
+        ["git", "show", f"HEAD^:{rel_from_repo_root}"],  # noqa: S607
+        cwd=wiki_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return ""
+    return proc.stdout
 
 
 def _git_log_lines(wiki_dir: Path) -> list[str]:

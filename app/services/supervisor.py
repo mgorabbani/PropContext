@@ -11,6 +11,7 @@ from fastapi import Depends
 from app.core.config import Settings, get_settings
 from app.schemas.webhook import IngestEvent
 from app.services.classify import Classification, classify_document
+from app.services.enrich import enrich_with_web_sources
 from app.services.extract import extract_patch_plan
 from app.services.handlers import get_event_handler
 from app.services.llm.client import LLMClient, get_llm_client
@@ -45,7 +46,7 @@ class Supervisor:
         self._settings = settings
         self._llm = llm
 
-    async def handle(
+    async def handle(  # noqa: PLR0915  # supervisor pipeline orchestrates 9 sequential stages
         self,
         event: IngestEvent,
         *,
@@ -67,9 +68,25 @@ class Supervisor:
             },
         )
 
+        await emit("enrich", {})
+        enrichment = await enrich_with_web_sources(
+            normalized_text=normalized.normalized_text,
+            settings=self._settings,
+            on_tool_call=emit,
+        )
+        enriched_text = enrichment.enriched_text
+        await emit(
+            "enrich.done",
+            {
+                "fetched": [p.url for p in enrichment.pages],
+                "skipped": enrichment.skipped,
+                "chars": len(enriched_text),
+            },
+        )
+
         await emit("classify", {})
         classification = await classify_document(
-            normalized_text=normalized.normalized_text,
+            normalized_text=enriched_text,
             llm=self._llm,
             settings=self._settings,
         )
@@ -95,7 +112,7 @@ class Supervisor:
         await emit("resolve", {})
         stammdaten = self._open_stammdaten(property_id=event.property_id)
         resolution = resolve_context(
-            normalized_text=normalized.normalized_text,
+            normalized_text=enriched_text,
             stammdaten=stammdaten,
             property_id=event.property_id,
         )
@@ -120,7 +137,7 @@ class Supervisor:
                 wiki_chunks=wiki_chunks,
                 property_id=event.property_id,
                 entity_ids=resolution.entity_ids,
-                query_text=normalized.normalized_text,
+                query_text=enriched_text,
             )
         else:
             sections = []
@@ -136,7 +153,7 @@ class Supervisor:
             event_id=event.event_id,
             event_type=event.event_type,
             property_id=event.property_id,
-            normalized_text=normalized.normalized_text,
+            normalized_text=enriched_text,
             resolution=resolution,
             sections=sections,
             existing_pages=existing_pages,

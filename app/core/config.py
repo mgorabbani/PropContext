@@ -31,7 +31,11 @@ class Settings(BaseSettings):
 
     anthropic_api_key: str | None = Field(default=None)
     gemini_api_key: str | None = Field(default=None)
+    tavily_api_key: str | None = Field(default=None)
     webhook_hmac_secret: str | None = Field(default=None)
+
+    enrich_urls: bool = Field(default=True)
+    enrich_max_urls: int = Field(default=5, ge=0, le=20)
 
     llm_provider: Literal["anthropic", "gemini", "fake"] = "gemini"
 

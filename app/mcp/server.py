@@ -8,9 +8,9 @@ from app.mcp.auth import build_auth_provider
 from app.mcp.prompts import register_prompts
 from app.mcp.resources import register_resources
 from app.mcp.tools import register_tools
+from app.services.agent_local import LocalAgentService
 from app.services.ask import AskService
 from app.services.llm.client import AnthropicClient, FakeLLMClient, GeminiClient, LLMClient
-from app.services.agent_local import LocalAgentService
 from app.services.wiki import WikiService
 
 log = structlog.get_logger(__name__)
@@ -42,6 +42,7 @@ def build_mcp(settings: Settings) -> FastMCP:
         ask_service,
         wiki_chunks_db_path=wiki_chunks_db_path,
         agent_service=agent_service,
+        settings=settings,
     )
     register_resources(mcp, wiki)
     register_prompts(mcp)

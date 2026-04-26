@@ -1,0 +1,97 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e5256707d281",
+  "session_id": "f4e1ed4f-c14d-47cc-ba66-436503517bca",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T10:00:25.365746Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    ".mcp.json",
+    "app/api/v1/router.py",
+    "app/api/v1/sim.py",
+    "app/main.py",
+    "app/static/assets/index--5H1U9oU.js",
+    "app/static/assets/index-BezCL5xJ.css",
+    "app/static/assets/index-CSqBIAjj.js",
+    "app/static/assets/index-DTMDm8Aa.css",
+    "app/static/index.html",
+    "app/tools/sim_ingest.py",
+    "optimisation-checklist.md",
+    "pyproject.toml",
+    "ui/src/App.tsx",
+    "ui/src/api.ts",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/main.tsx",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "da838a21964f",
+  "token_usage": {
+    "input_tokens": 138,
+    "cache_creation_tokens": 250806,
+    "cache_read_tokens": 11421555,
+    "output_tokens": 43807,
+    "api_call_count": 113
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T10:00:25.333335Z",
+    "agent_lines": 976,
+    "agent_removed": 7,
+    "human_added": 0,
+    "human_modified": 17,
+    "human_removed": 92,
+    "total_committed": 993,
+    "total_lines_changed": 1096,
+    "agent_percentage": 89.6897810218978,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 293,
+      "user_lines_removed": 109,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 13,
+        "app/static/assets/index-l6UwtcJG.js": 83,
+        "app/static/index.html": 1,
+        "optimisation-checklist.md": 6,
+        "ui/src/App.tsx": 30,
+        "ui/src/components/McpSettings.tsx": 132,
+        "ui/src/components/TopBar.tsx": 28
+      },
+      "user_removed_per_file": {
+        "app/static/assets/index-CSqBIAjj.js": 83,
+        "app/static/index.html": 1,
+        "ui/src/App.tsx": 16,
+        "ui/src/components/TopBar.tsx": 9
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 13,
+      "user_lines_removed": 0,
+      "agent_lines_added": 283,
+      "agent_lines_removed": 112,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 13
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 17,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1282,
+      "agent_lines_removed": 116,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 17
+      }
+    }
+  ]
+}

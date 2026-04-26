@@ -1,0 +1,9 @@
+can u show me a simulated ingest
+
+---
+
+we have real gemini api, can u use that. and give a option to test myself
+
+---
+
+fixed the ui? color issue?

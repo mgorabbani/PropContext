@@ -1,0 +1,119 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e5256707d281",
+  "session_id": "e2619dd1-61db-48f5-bcbd-89a1519fef74",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T10:00:24.958915Z",
+  "branch": "main",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "app/api/v1/router.py",
+    "app/main.py",
+    "app/mcp/context.py",
+    "app/mcp/tools.py",
+    "app/static/assets/index-CSqBIAjj.js",
+    "app/static/assets/index-DTMDm8Aa.css",
+    "app/static/index.html",
+    "optimisation-checklist.md",
+    "pyproject.toml",
+    "ui/src/App.tsx",
+    "ui/src/api.ts",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/main.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "11f8783f60bf",
+  "token_usage": {
+    "input_tokens": 27,
+    "cache_creation_tokens": 30977,
+    "cache_read_tokens": 527772,
+    "output_tokens": 2971,
+    "api_call_count": 17
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T10:00:24.953969Z",
+    "agent_lines": 0,
+    "agent_removed": 3,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 117,
+    "total_committed": 15,
+    "total_lines_changed": 121,
+    "agent_percentage": 2.479338842975207,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 1302,
+      "user_lines_removed": 117,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.json": 2,
+        ".claude/settings.local.json": 18,
+        ".mcp.json": 7,
+        "app/api/v1/router.py": 2,
+        "app/api/v1/sim.py": 362,
+        "app/main.py": 24,
+        "app/static/assets/index--5H1U9oU.js": 83,
+        "app/static/assets/index-BezCL5xJ.css": 2,
+        "app/static/index.html": 2,
+        "app/tools/sim_ingest.py": 135,
+        "optimisation-checklist.md": 6,
+        "pyproject.toml": 1,
+        "ui/src/App.tsx": 30,
+        "ui/src/api.ts": 67,
+        "ui/src/components/McpSettings.tsx": 132,
+        "ui/src/components/TopBar.tsx": 41,
+        "ui/src/main.tsx": 4,
+        "ui/src/pages/Ingest.tsx": 384
+      },
+      "user_removed_per_file": {
+        ".claude/settings.json": 1,
+        "app/api/v1/router.py": 1,
+        "app/main.py": 2,
+        "app/static/assets/index-CSqBIAjj.js": 83,
+        "app/static/assets/index-DTMDm8Aa.css": 2,
+        "app/static/index.html": 2,
+        "ui/src/App.tsx": 16,
+        "ui/src/components/TopBar.tsx": 9,
+        "ui/src/main.tsx": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 19,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1299,
+      "agent_lines_removed": 120,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 19
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 19,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1299,
+      "agent_lines_removed": 120,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 19
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 22,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1299,
+      "agent_lines_removed": 120,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 22
+      }
+    }
+  ]
+}

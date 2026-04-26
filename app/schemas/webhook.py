@@ -39,6 +39,5 @@ class IngestResponse(BaseModel):
     event_id: str
     status: str
     applied_ops: int = 0
-    deferred_ops: int = 0
     commit_sha: str | None = None
     idempotent: bool = False

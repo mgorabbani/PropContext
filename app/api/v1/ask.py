@@ -19,8 +19,10 @@ async def ask(
     service: Annotated[AskService, Depends(get_ask_service)],
 ) -> AskResponse:
     try:
-        result = await service.answer(property_id=payload.lie, question=payload.question)
+        result = await service.answer(
+            property_id=payload.lie, question=payload.question, pin=payload.pin
+        )
     except Exception as exc:
         log.exception("ask_failed", lie=payload.lie)
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, "ask failed") from exc
-    return AskResponse(answer=result.answer, path=result.path)
+    return AskResponse(answer=result.answer, path=result.path, pinned_path=result.pinned_path)

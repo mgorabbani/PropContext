@@ -111,6 +111,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pypdf" },
+    { name = "pyyaml" },
     { name = "structlog" },
 ]
 
@@ -133,6 +134,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.10" },
     { name = "pydantic-settings", specifier = ">=2.7" },
     { name = "pypdf", specifier = ">=6.10.2" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "structlog", specifier = ">=24.4" },
 ]
 

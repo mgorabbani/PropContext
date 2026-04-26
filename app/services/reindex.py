@@ -62,23 +62,43 @@ def reindex_property(*, wiki_dir: Path, property_id: str, db_path: Path) -> int:
 
 
 def parse_markdown_sections(content: str, file: str) -> list[IndexedSection]:
-    managed = content.split("\n# Human Notes", 1)[0]
+    body = _strip_frontmatter(content)
+    managed = body.split("\n# Human Notes", 1)[0]
     matches = list(re.finditer(r"^## (?P<section>.+?)\s*$", managed, flags=re.MULTILINE))
     sections: list[IndexedSection] = []
+    if not matches and managed.strip():
+        sections.append(
+            IndexedSection(
+                file=file,
+                section="(body)",
+                body=managed.strip(),
+                entity_refs=_entity_refs(managed),
+            )
+        )
+        return sections
     for idx, match in enumerate(matches):
         start = match.end()
         end = matches[idx + 1].start() if idx + 1 < len(matches) else len(managed)
-        body = managed[start:end].strip()
+        section_body = managed[start:end].strip()
         section_name = match.group("section").strip()
         sections.append(
             IndexedSection(
                 file=file,
                 section=section_name,
-                body=body,
-                entity_refs=_entity_refs(f"{section_name}\n{body}"),
+                body=section_body,
+                entity_refs=_entity_refs(f"{section_name}\n{section_body}"),
             )
         )
     return sections
+
+
+def _strip_frontmatter(content: str) -> str:
+    if not content.startswith("---\n"):
+        return content
+    end = content.find("\n---\n", 4)
+    if end == -1:
+        return content
+    return content[end + 5 :].lstrip("\n")
 
 
 def _entity_refs(text: str) -> list[str]:

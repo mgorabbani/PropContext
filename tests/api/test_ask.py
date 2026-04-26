@@ -13,11 +13,7 @@ from tests.conftest import write_property_index
 async def test_ask_returns_answer_and_path(client: AsyncClient, wiki_dir: Path) -> None:
     write_property_index(wiki_dir, "LIE-001", "# LIE-001\n\nManager: Anna.")
     fake = FakeLLMClient(
-        responses={
-            "*": json.dumps(
-                {"answer": "Manager is Anna.", "path": "LIE-001/index.md"}
-            )
-        }
+        responses={"*": json.dumps({"answer": "Manager is Anna.", "path": "LIE-001/index.md"})}
     )
     app.dependency_overrides[get_llm_client] = lambda: fake
     try:
@@ -57,9 +53,7 @@ async def test_ask_rejects_bad_lie(client: AsyncClient) -> None:
     assert resp.status_code == 422
 
 
-async def test_ask_falls_back_to_raw_text_on_bad_json(
-    client: AsyncClient, wiki_dir: Path
-) -> None:
+async def test_ask_falls_back_to_raw_text_on_bad_json(client: AsyncClient, wiki_dir: Path) -> None:
     write_property_index(wiki_dir, "LIE-001", "# LIE-001")
     fake = FakeLLMClient(responses={"*": "not json at all"})
     app.dependency_overrides[get_llm_client] = lambda: fake

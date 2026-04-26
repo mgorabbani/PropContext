@@ -28,7 +28,8 @@ def build_mcp(settings: Settings) -> FastMCP:
     wiki = WikiService(wiki_dir=settings.wiki_dir)
     llm = _build_llm(settings)
     ask_service = AskService(wiki=wiki, llm=llm, model=settings.fast_model)
-    register_tools(mcp, wiki, ask_service)
+    wiki_chunks_db_path = settings.output_dir / "wiki_chunks.duckdb"
+    register_tools(mcp, wiki, ask_service, wiki_chunks_db_path=wiki_chunks_db_path)
     register_resources(mcp, wiki)
     register_prompts(mcp)
     log.info(

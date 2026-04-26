@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Annotated
@@ -8,18 +7,18 @@ from typing import Annotated
 import structlog
 from fastapi import Depends
 
-from app.core.config import REPO_ROOT, Settings, get_settings
+from app.core.config import Settings, get_settings
 from app.schemas.webhook import IngestEvent
 from app.services.classify import Classification, classify_document
-from app.services.conflict import scan_patch_plan_conflicts
 from app.services.extract import extract_patch_plan
 from app.services.handlers import get_event_handler
 from app.services.llm.client import LLMClient, get_llm_client
 from app.services.locate import locate_sections
 from app.services.patcher.apply import PatchApplyResult, apply_patch_plan
-from app.services.patcher.atomic import atomic_write_text
-from app.services.reindex import reindex_property
+from app.services.patcher.git import commit_all, head_sha
+from app.services.reindex import reindex_files, reindex_property
 from app.services.resolve import resolve_context
+from app.services.wiki_index import regenerate_index
 from app.storage.stammdaten import StammdatenStore, open_stammdaten
 from app.storage.wiki_chunks import open_wiki_chunks
 
@@ -57,29 +56,35 @@ class Supervisor:
             )
             return SupervisorResult(event.event_id, "no_signal", classification, None)
 
-        stammdaten = _open_stammdaten(self._settings, property_id=event.property_id)
+        stammdaten = self._open_stammdaten(property_id=event.property_id)
         resolution = resolve_context(
             normalized_text=normalized.normalized_text,
             stammdaten=stammdaten,
             property_id=event.property_id,
         )
-        wiki_chunks_db = _wiki_chunks_db_path(self._settings)
-        wiki_chunks = open_wiki_chunks(wiki_chunks_db)
-        if (self._settings.wiki_dir / event.property_id).is_dir() and not wiki_chunks.has_property(
-            event.property_id
-        ):
-            reindex_property(
-                wiki_dir=self._settings.wiki_dir,
-                property_id=event.property_id,
-                db_path=wiki_chunks_db,
-            )
+
+        wiki_chunks_db = self._wiki_chunks_db_path()
+        property_root = self._settings.wiki_dir / event.property_id
+        if property_root.is_dir():
             wiki_chunks = open_wiki_chunks(wiki_chunks_db)
-        sections = locate_sections(
-            wiki_chunks=wiki_chunks,
-            property_id=event.property_id,
-            entity_ids=resolution.entity_ids,
-            query_text=normalized.normalized_text,
-        )
+            if not wiki_chunks.has_property(event.property_id):
+                reindex_property(
+                    wiki_dir=self._settings.wiki_dir,
+                    property_id=event.property_id,
+                    db_path=wiki_chunks_db,
+                )
+                wiki_chunks = open_wiki_chunks(wiki_chunks_db)
+            sections = locate_sections(
+                wiki_chunks=wiki_chunks,
+                property_id=event.property_id,
+                entity_ids=resolution.entity_ids,
+                query_text=normalized.normalized_text,
+            )
+        else:
+            sections = []
+
+        existing_pages = _list_existing_pages(property_root)
+
         plan = await extract_patch_plan(
             event_id=event.event_id,
             event_type=event.event_type,
@@ -87,55 +92,72 @@ class Supervisor:
             normalized_text=normalized.normalized_text,
             resolution=resolution,
             sections=sections,
+            existing_pages=existing_pages,
             llm=self._llm,
             settings=self._settings,
         )
-        plan, conflict_issues = scan_patch_plan_conflicts(plan, wiki_dir=self._settings.wiki_dir)
-        if conflict_issues:
-            log.info(
-                "ingest_conflicts_deferred",
-                event_id=event.event_id,
-                deferred=len(conflict_issues),
+
+        patch = apply_patch_plan(plan, wiki_dir=self._settings.wiki_dir)
+
+        index_path = regenerate_index(self._settings.wiki_dir / event.property_id)
+        if index_path is not None:
+            commit_all(
+                self._settings.wiki_dir,
+                message=f"index({event.property_id}): regen after {event.event_id}",
+            )
+            patch = PatchApplyResult(
+                event_id=patch.event_id,
+                applied_ops=patch.applied_ops,
+                commit_sha=head_sha(self._settings.wiki_dir),
+                touched=(*patch.touched, index_path.relative_to(property_root).as_posix()),
+                idempotent=patch.idempotent,
             )
 
-        patch = apply_patch_plan(
-            plan.model_dump(exclude_none=True),
-            wiki_dir=self._settings.wiki_dir,
-            vocabulary_path=REPO_ROOT / "schema" / "VOCABULARY.md",
-            wiki_chunks_db_path=wiki_chunks_db,
-        )
+        files_to_reindex = [t for t in patch.touched if t.endswith(".md")]
+        if files_to_reindex:
+            reindex_files(
+                wiki_dir=self._settings.wiki_dir,
+                property_id=event.property_id,
+                files=files_to_reindex,
+                db_path=wiki_chunks_db,
+            )
+
         return SupervisorResult(event.event_id, "applied", classification, patch)
 
     def record_failed_event(self, event: IngestEvent, reason: str) -> None:
-        property_root = self._settings.wiki_dir / event.property_id
-        property_root.mkdir(parents=True, exist_ok=True)
-        path = property_root / "_hermes_feedback.jsonl"
-        existing = path.read_text(encoding="utf-8") if path.exists() else ""
-        record = {
-            "kind": "ingest",
-            "event_id": event.event_id,
-            "property_id": event.property_id,
-            "event_type": event.event_type,
-            "retrieval_success": False,
-            "error": reason,
-        }
-        atomic_write_text(path, existing + json.dumps(record, ensure_ascii=False) + "\n")
+        log.warning(
+            "ingest_failed",
+            event_id=event.event_id,
+            property_id=event.property_id,
+            event_type=event.event_type,
+            reason=reason,
+        )
+
+    def _open_stammdaten(self, *, property_id: str) -> StammdatenStore:
+        db_path = self._settings.output_dir / "stammdaten.duckdb"
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        store = open_stammdaten(db_path)
+        if store.find_entity_by_id(property_id) is None:
+            source = self._settings.data_dir / "stammdaten" / "stammdaten.json"
+            if source.is_file():
+                store.load_from_json(source)
+        return store
+
+    def _wiki_chunks_db_path(self) -> Path:
+        self._settings.output_dir.mkdir(parents=True, exist_ok=True)
+        return self._settings.output_dir / "wiki_chunks.duckdb"
 
 
-def _open_stammdaten(settings: Settings, *, property_id: str) -> StammdatenStore:
-    db_path = settings.output_dir / "stammdaten.duckdb"
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    store = open_stammdaten(db_path)
-    if store.find_entity_by_id(property_id) is None:
-        source = settings.data_dir / "stammdaten" / "stammdaten.json"
-        if source.is_file():
-            store.load_from_json(source)
-    return store
-
-
-def _wiki_chunks_db_path(settings: Settings) -> Path:
-    settings.output_dir.mkdir(parents=True, exist_ok=True)
-    return settings.output_dir / "wiki_chunks.duckdb"
+def _list_existing_pages(property_root: Path) -> list[str]:
+    if not property_root.is_dir():
+        return []
+    pages: list[str] = []
+    for path in sorted(property_root.rglob("*.md")):
+        rel = path.relative_to(property_root)
+        if any(part.startswith("_") for part in rel.parts):
+            continue
+        pages.append(rel.as_posix())
+    return pages
 
 
 def get_supervisor(

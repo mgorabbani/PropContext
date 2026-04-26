@@ -13,7 +13,6 @@ class IngestPulse:
     event_type: str
     status: str
     applied_ops: int
-    deferred_ops: int
     commit_sha: str | None
 
     def to_payload(self) -> dict[str, Any]:
@@ -23,7 +22,6 @@ class IngestPulse:
             "event_type": self.event_type,
             "status": self.status,
             "applied_ops": self.applied_ops,
-            "deferred_ops": self.deferred_ops,
             "commit_sha": self.commit_sha,
         }
 

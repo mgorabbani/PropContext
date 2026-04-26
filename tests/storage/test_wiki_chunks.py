@@ -12,6 +12,11 @@ def _row_count(store: WikiChunksStore) -> int:
     return int(row[0]) if row else 0
 
 
+def _require_fts(store: WikiChunksStore) -> None:
+    if not store._fts_available:
+        pytest.skip("DuckDB fts extension not available in this environment")
+
+
 def test_init_schema_creates_table(tmp_path: Path) -> None:
     store = open_wiki_chunks(tmp_path / "wiki.duckdb")
     row = store._conn.execute(
@@ -54,6 +59,7 @@ def test_find_by_entity_filters_by_property_and_ref(tmp_path: Path) -> None:
 
 def test_query_ranks_relevant_higher(tmp_path: Path) -> None:
     store = open_wiki_chunks(tmp_path / "wiki.duckdb")
+    _require_fts(store)
     store.upsert("LIE-001", "f1.md", "S", "Heizung defekt im Erdgeschoss", ["EH-014"])
     store.upsert("LIE-001", "f2.md", "S", "Aufzug Wartung fällig", ["EH-015"])
     store.upsert("LIE-001", "f3.md", "S", "Allgemeine Hausordnung Müll", ["EH-016"])
@@ -66,6 +72,7 @@ def test_query_ranks_relevant_higher(tmp_path: Path) -> None:
 
 def test_query_filters_by_property(tmp_path: Path) -> None:
     store = open_wiki_chunks(tmp_path / "wiki.duckdb")
+    _require_fts(store)
     store.upsert("LIE-001", "f.md", "S", "Heizung defekt im Erdgeschoss", ["EH-014"])
     store.upsert("LIE-002", "f.md", "S", "Heizung defekt im Erdgeschoss", ["EH-014"])
     store.build_index()
@@ -77,6 +84,7 @@ def test_query_filters_by_property(tmp_path: Path) -> None:
 
 def test_query_raises_if_no_index(tmp_path: Path) -> None:
     store = open_wiki_chunks(tmp_path / "wiki.duckdb")
+    _require_fts(store)
     store.upsert("LIE-001", "f.md", "S", "Heizung defekt", ["EH-014"])
 
     with pytest.raises(RuntimeError, match="build_index"):
@@ -85,6 +93,7 @@ def test_query_raises_if_no_index(tmp_path: Path) -> None:
 
 def test_query_stems_german_plural(tmp_path: Path) -> None:
     store = open_wiki_chunks(tmp_path / "wiki.duckdb")
+    _require_fts(store)
     store.upsert("LIE-001", "a.md", "S", "Heizungen sind defekt", ["EH-014"])
     store.upsert("LIE-001", "b.md", "S", "Aufzug Wartung fällig", ["EH-015"])
     store.build_index()

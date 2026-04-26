@@ -31,7 +31,6 @@ def _pulse(event_id: str, property_id: str = "LIE-001") -> IngestPulse:
         event_type="email",
         status="applied",
         applied_ops=1,
-        deferred_ops=0,
         commit_sha="abc1234",
     )
 

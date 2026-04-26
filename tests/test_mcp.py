@@ -71,7 +71,7 @@ async def test_build_mcp_registers_tools_resources_prompts(tmp_path: Path) -> No
     )
     mcp = build_mcp(settings)
     tool_names = {t.name for t in await mcp.list_tools()}
-    assert {"list_properties", "get_property", "get_building", "read_wiki_file"} <= tool_names
+    assert {"list_properties", "list_pages", "read_page", "search_pages", "ask_wiki"} <= tool_names
 
     template_uris = {t.uri_template for t in await mcp.list_resource_templates()}
     assert any("property://" in u for u in template_uris)

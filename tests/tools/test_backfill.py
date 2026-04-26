@@ -25,7 +25,12 @@ class CapturingSupervisor:
             event.event_id,
             "applied",
             None,
-            PatchApplyResult(event.event_id, 0, 0, "deadbeef"),
+            PatchApplyResult(
+                event_id=event.event_id,
+                applied_ops=0,
+                commit_sha="deadbeef",
+                touched=(),
+            ),
         )
 
     def record_failed_event(self, event: IngestEvent, reason: str) -> None:

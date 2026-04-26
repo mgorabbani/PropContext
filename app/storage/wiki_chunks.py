@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from pathlib import Path
 from typing import Any
 
@@ -12,10 +13,10 @@ class WikiChunksStore:
     def __init__(self, conn: duckdb.DuckDBPyConnection) -> None:
         self._conn = conn
         self._index_built = False
+        self._fts_available = False
 
     def init_schema(self) -> None:
-        self._conn.execute("INSTALL fts;")
-        self._conn.execute("LOAD fts;")
+        self._fts_available = self._load_fts()
         self._conn.execute(
             """
             CREATE TABLE IF NOT EXISTS wiki_chunks (
@@ -86,6 +87,9 @@ class WikiChunksStore:
         ]
 
     def build_index(self) -> None:
+        if not self._fts_available:
+            self._index_built = False
+            return
         self._conn.execute(
             "PRAGMA create_fts_index('wiki_chunks', 'rowid', 'body', "
             "stemmer='german', stopwords='none', overwrite=1);"
@@ -98,6 +102,8 @@ class WikiChunksStore:
         property_id: str | None = None,
         limit: int = 8,
     ) -> list[dict[str, Any]]:
+        if not self._fts_available:
+            return []
         if not self._index_built:
             raise RuntimeError("call build_index() first")
         if not q.strip():
@@ -134,6 +140,15 @@ class WikiChunksStore:
             }
             for r in rows
         ]
+
+    def _load_fts(self) -> bool:
+        with contextlib.suppress(duckdb.Error):
+            self._conn.execute("INSTALL fts;")
+        try:
+            self._conn.execute("LOAD fts;")
+        except duckdb.Error:
+            return False
+        return True
 
 
 def open_wiki_chunks(db_path: Path) -> WikiChunksStore:

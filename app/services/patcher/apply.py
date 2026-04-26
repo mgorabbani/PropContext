@@ -1,225 +1,144 @@
 from __future__ import annotations
 
-import json
 import re
-from collections.abc import Mapping
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
 
+from app.schemas.patch_plan import (
+    AppendSectionOp,
+    CreatePageOp,
+    PatchOp,
+    PatchPlan,
+    PrependLogOp,
+    UpsertSectionOp,
+)
 from app.services.patcher.atomic import atomic_write_text
 from app.services.patcher.git import commit_all, head_sha
 from app.services.patcher.ops import (
-    delete_bullet,
-    delete_row,
-    gc_footnotes,
-    prepend_row,
-    prune_ring,
-    update_state,
-    upsert_bullet,
-    upsert_footnote,
-    upsert_row,
+    PatchOperationError,
+    append_section,
+    create_page,
+    prepend_log,
+    render_page,
+    upsert_section,
 )
 from app.services.patcher.paths import property_file_path
-from app.services.patcher.validate import (
-    append_pending_review,
-    parse_vocabulary,
-    validate_keyed_values,
-)
-from app.services.reindex import reindex_files
 
-_PROPERTY_ID_RE = re.compile(r"^LIE-\d{3}$")
+_PROPERTY_ID_RE = re.compile(r"^[A-Z]+-\d+$")
+_LOG_PATH = "log.md"
 
 
 @dataclass(frozen=True)
 class PatchApplyResult:
     event_id: str
     applied_ops: int
-    deferred_ops: int
     commit_sha: str | None
+    touched: tuple[str, ...]
     idempotent: bool = False
 
 
-def apply_patch_plan(
-    plan: Mapping[str, Any],
-    *,
-    wiki_dir: Path,
-    vocabulary_path: Path,
-    wiki_chunks_db_path: Path | None = None,
-) -> PatchApplyResult:
-    event_id = str(plan["event_id"])
-    property_id = str(plan["property_id"])
-    if _PROPERTY_ID_RE.fullmatch(property_id) is None:
-        raise ValueError("invalid property_id")
-    property_root = wiki_dir / property_id
-    feedback_path = property_root / "_hermes_feedback.jsonl"
+def apply_patch_plan(plan: PatchPlan, *, wiki_dir: Path) -> PatchApplyResult:
+    if _PROPERTY_ID_RE.fullmatch(plan.property_id) is None:
+        raise ValueError(f"invalid property_id: {plan.property_id!r}")
 
-    if _feedback_contains_event(feedback_path, event_id):
-        return PatchApplyResult(
-            event_id=event_id,
-            applied_ops=0,
-            deferred_ops=0,
-            commit_sha=head_sha(wiki_dir),
-            idempotent=True,
-        )
+    property_root = wiki_dir / plan.property_id
+    property_root.mkdir(parents=True, exist_ok=True)
 
-    ops = [op for op in plan.get("ops", []) if isinstance(op, dict)]
-    vocabulary = parse_vocabulary(vocabulary_path)
-    valid_ops, issues = validate_keyed_values(ops, vocabulary)
-    append_pending_review(property_root, issues)
+    touched: list[Path] = []
+    for op in plan.ops:
+        path = _apply_one(property_root, op)
+        if path is not None:
+            touched.append(path)
 
-    touched: set[Path] = set()
-    for op in valid_ops:
-        touched.update(_apply_one(property_root, op))
-
-    _append_feedback(feedback_path, plan, applied_ops=len(valid_ops), deferred_ops=len(issues))
-    touched.add(feedback_path)
-    if issues:
-        touched.add(property_root / "_pending_review.md")
-
-    commit_sha = commit_all(
-        wiki_dir,
-        message=f"ingest({event_id}): {str(plan.get('summary', 'patch')).strip()}",
-    )
-    if wiki_chunks_db_path is not None:
-        _reindex_touched_files(
-            wiki_dir=wiki_dir,
-            property_id=property_id,
-            property_root=property_root,
-            touched=touched,
-            db_path=wiki_chunks_db_path,
-        )
+    summary = plan.summary.strip() or plan.event_type
+    commit_sha = commit_all(wiki_dir, message=f"ingest({plan.event_id}): {summary}".strip())
+    rels = tuple(_relative_posix(p, property_root) for p in touched)
     return PatchApplyResult(
-        event_id=event_id,
-        applied_ops=len(valid_ops),
-        deferred_ops=len(issues),
+        event_id=plan.event_id,
+        applied_ops=len(touched),
         commit_sha=commit_sha,
+        touched=rels,
     )
 
 
-def _apply_one(property_root: Path, op: Mapping[str, Any]) -> set[Path]:
-    op_name = str(op["op"])
-    if op_name == "update_state":
-        path = property_file_path(property_root, str(op.get("file", "_state.json")))
-        state = update_state(
-            path,
-            updates=_mapping_or_none(op.get("updates")),
-            counters=_mapping_or_none(op.get("counters")),
-        )
-        atomic_write_text(path, json.dumps(state, indent=2, ensure_ascii=False) + "\n")
-        return {path}
-
-    file_path = property_file_path(property_root, str(op["file"]))
-    content = file_path.read_text(encoding="utf-8")
-    section = str(op.get("section", ""))
-
-    if op_name == "upsert_bullet":
-        content = upsert_bullet(
-            content,
-            section=section,
-            key=str(op["key"]),
-            text=str(op["text"]),
-        )
-    elif op_name == "delete_bullet":
-        content = delete_bullet(content, section=section, key=str(op["key"]))
-    elif op_name == "upsert_row":
-        content = upsert_row(
-            content,
-            section=section,
-            key=str(op["key"]),
-            row=op["row"],
-            header=_sequence_or_none(op.get("header")),
-        )
-    elif op_name == "delete_row":
-        content = delete_row(content, section=section, key=str(op["key"]))
-    elif op_name == "prepend_row":
-        content = prepend_row(
-            content,
-            section=section,
-            row=op["row"],
-            header=_sequence_or_none(op.get("header")),
-        )
-    elif op_name == "prune_ring":
-        content = prune_ring(content, section=section, max_rows=int(op["max_rows"]))
-    elif op_name == "upsert_footnote":
-        content = upsert_footnote(content, key=str(op["key"]), text=str(op["text"]))
-    elif op_name == "gc_footnotes":
-        content = gc_footnotes(content, ref_counts=_mapping_or_none(op.get("ref_counts")))
-    else:
-        raise ValueError(f"unknown patch op: {op_name}")
-
-    atomic_write_text(file_path, content)
-    return {file_path}
+def head_commit(wiki_dir: Path) -> str | None:
+    return head_sha(wiki_dir)
 
 
-def _sequence_or_none(value: object) -> list[object] | None:
-    if value is None:
+def _apply_one(property_root: Path, op: PatchOp) -> Path | None:
+    if isinstance(op, CreatePageOp):
+        return _do_create_page(property_root, op)
+    if isinstance(op, UpsertSectionOp):
+        return _do_upsert_section(property_root, op)
+    if isinstance(op, AppendSectionOp):
+        return _do_append_section(property_root, op)
+    if isinstance(op, PrependLogOp):
+        return _do_prepend_log(property_root, op)
+    raise PatchOperationError(f"unknown op: {op!r}")
+
+
+def _do_create_page(property_root: Path, op: CreatePageOp) -> Path | None:
+    file_path = property_file_path(property_root, op.path)
+    _require_md(file_path)
+    existing = file_path.read_text(encoding="utf-8") if file_path.is_file() else ""
+    new_content = create_page(
+        path_exists=file_path.is_file(),
+        existing=existing,
+        frontmatter=op.frontmatter,
+        body=op.body,
+    )
+    if new_content == existing:
         return None
-    if isinstance(value, list):
-        return cast("list[object]", value)
-    if isinstance(value, tuple):
-        return list(value)
-    return [value]
+    atomic_write_text(file_path, new_content)
+    return file_path
 
 
-def _mapping_or_none(value: object) -> dict[str, Any] | None:
-    if value is None:
+def _do_upsert_section(property_root: Path, op: UpsertSectionOp) -> Path | None:
+    file_path = property_file_path(property_root, op.path)
+    _require_md(file_path)
+    existing = file_path.read_text(encoding="utf-8") if file_path.is_file() else ""
+    base = existing or render_page(frontmatter=None, body="")
+    new_content = upsert_section(base, heading=op.heading, body=op.body)
+    if new_content == existing:
         return None
-    if isinstance(value, dict):
-        return cast("dict[str, Any]", value)
-    raise TypeError(f"expected mapping, got {type(value).__name__}")
+    atomic_write_text(file_path, new_content)
+    return file_path
 
 
-def _append_feedback(
-    path: Path,
-    plan: Mapping[str, Any],
-    *,
-    applied_ops: int,
-    deferred_ops: int,
-) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    existing = path.read_text(encoding="utf-8") if path.exists() else ""
-    record = {
-        "kind": "ingest",
-        "event_id": plan["event_id"],
-        "property_id": plan["property_id"],
-        "summary": plan.get("summary", ""),
-        "applied_ops": applied_ops,
-        "deferred_ops": deferred_ops,
-    }
-    atomic_write_text(path, existing + json.dumps(record, ensure_ascii=False) + "\n")
+def _do_append_section(property_root: Path, op: AppendSectionOp) -> Path | None:
+    file_path = property_file_path(property_root, op.path)
+    _require_md(file_path)
+    existing = file_path.read_text(encoding="utf-8") if file_path.is_file() else ""
+    base = existing or render_page(frontmatter=None, body="")
+    new_content = append_section(base, heading=op.heading, line=op.line)
+    if new_content == existing:
+        return None
+    atomic_write_text(file_path, new_content)
+    return file_path
 
 
-def _feedback_contains_event(path: Path, event_id: str) -> bool:
-    if not path.exists():
-        return False
-    for line in path.read_text(encoding="utf-8").splitlines():
-        if not line.strip():
-            continue
-        try:
-            record = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if record.get("event_id") == event_id:
-            return True
-    return False
+def _do_prepend_log(property_root: Path, op: PrependLogOp) -> Path | None:
+    file_path = property_root / _LOG_PATH
+    existing = file_path.read_text(encoding="utf-8") if file_path.is_file() else "# Log\n\n"
+    new_content = prepend_log(existing, line=op.line)
+    if new_content == existing:
+        return None
+    atomic_write_text(file_path, new_content)
+    return file_path
 
 
-def _reindex_touched_files(
-    *,
-    wiki_dir: Path,
-    property_id: str,
-    property_root: Path,
-    touched: set[Path],
-    db_path: Path,
-) -> None:
-    files = []
-    for path in touched:
-        if path.suffix != ".md":
-            continue
-        try:
-            files.append(path.relative_to(property_root))
-        except ValueError:
-            continue
-    if files:
-        reindex_files(wiki_dir=wiki_dir, property_id=property_id, files=files, db_path=db_path)
+def _require_md(path: Path) -> None:
+    if path.suffix != ".md":
+        raise PatchOperationError(f"path must be a markdown file: {path.name}")
+
+
+def _relative_posix(path: Path, root: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.name
+
+
+def touched_for_reindex(touched: Sequence[str]) -> list[str]:
+    return [t for t in touched if t.endswith(".md") and not t.startswith("_")]

@@ -57,7 +57,6 @@ async def ingest_webhook(
         event_id=event.event_id,
         status=result.status,
         applied_ops=patch.applied_ops if patch is not None else 0,
-        deferred_ops=patch.deferred_ops if patch is not None else 0,
         commit_sha=patch.commit_sha if patch is not None else None,
         idempotent=patch.idempotent if patch is not None else False,
     )
@@ -68,7 +67,6 @@ async def ingest_webhook(
             event_type=event.event_type,
             status=result.status,
             applied_ops=response.applied_ops,
-            deferred_ops=response.deferred_ops,
             commit_sha=response.commit_sha,
         )
     )

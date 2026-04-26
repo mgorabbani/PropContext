@@ -1,45 +1,49 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class PatchOp(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    op: str
-    file: str | None = None
-    section: str | None = None
-    key: str | None = None
-    text: str | None = None
-    row: str | list[Any] | None = None
-    header: list[Any] | None = None
-    updates: dict[str, Any] | None = None
-    counters: dict[str, int] | None = None
-    max_rows: int | None = None
-    ref_counts: dict[str, int] | None = None
+class CreatePageOp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    op: Literal["create_page"] = "create_page"
+    path: str
+    frontmatter: dict[str, Any] | None = None
+    body: str = ""
 
 
-class ReviewItem(BaseModel):
-    model_config = ConfigDict(extra="allow")
+class UpsertSectionOp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    op: Literal["upsert_section"] = "upsert_section"
+    path: str
+    heading: str
+    body: str = ""
 
-    review_type: str
-    title: str
-    description: str = ""
-    source_ids: list[str] = Field(default_factory=list)
-    severity: str = "medium"
+
+class AppendSectionOp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    op: Literal["append_section"] = "append_section"
+    path: str
+    heading: str
+    line: str
+
+
+class PrependLogOp(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    op: Literal["prepend_log"] = "prepend_log"
+    line: str
+
+
+PatchOp = CreatePageOp | UpsertSectionOp | AppendSectionOp | PrependLogOp
 
 
 class PatchPlan(BaseModel):
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="ignore")
 
     event_id: str
     property_id: str
-    summary: str = "patch"
+    summary: str = ""
     event_type: str = "unknown"
     source_ids: list[str] = Field(default_factory=list)
     ops: list[PatchOp] = Field(default_factory=list)
-    review_items: list[ReviewItem] = Field(default_factory=list)
-    complexity_score: int = 0
-    skill_candidate: bool = False

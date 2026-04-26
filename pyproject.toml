@@ -13,6 +13,7 @@ dependencies = [
     "duckdb>=1.5.2",
     "pypdf>=6.10.2",
     "fastmcp>=3.2.4",
+    "pyyaml>=6.0.3",
 ]
 
 [dependency-groups]

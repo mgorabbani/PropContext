@@ -1,0 +1,69 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "e5256707d281",
+  "session_id": "b0e4c26d-82f5-4cd9-982c-98373fd713cb",
+  "strategy": "manual-commit",
+  "created_at": "2026-04-26T10:00:21.833322Z",
+  "branch": "main",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "ui/src/App.tsx",
+    "ui/src/components/TopBar.tsx",
+    "app/mcp/tools.py",
+    "ui/src/components/McpSettings.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "1bb2c8f64a92",
+  "checkpoint_transcript_start": 248,
+  "transcript_lines_at_start": 248,
+  "token_usage": {
+    "input_tokens": 52,
+    "cache_creation_tokens": 301726,
+    "cache_read_tokens": 3434847,
+    "output_tokens": 14769,
+    "api_call_count": 41
+  },
+  "session_metrics": {
+    "turn_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-04-26T10:00:21.808365Z",
+    "agent_lines": 19,
+    "agent_removed": 29,
+    "human_added": 1049,
+    "human_modified": 27,
+    "human_removed": 0,
+    "total_committed": 1095,
+    "total_lines_changed": 1134,
+    "agent_percentage": 4.232804232804233,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 376,
+      "user_lines_removed": 110,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 13,
+        "app/mcp/tools.py": 38,
+        "app/services/wiki.py": 45,
+        "app/static/assets/index-l6UwtcJG.js": 83,
+        "app/static/index.html": 1,
+        "optimisation-checklist.md": 6,
+        "ui/src/App.tsx": 30,
+        "ui/src/components/McpSettings.tsx": 132,
+        "ui/src/components/TopBar.tsx": 28
+      },
+      "user_removed_per_file": {
+        "app/mcp/tools.py": 1,
+        "app/static/assets/index-CSqBIAjj.js": 83,
+        "app/static/index.html": 1,
+        "ui/src/App.tsx": 16,
+        "ui/src/components/TopBar.tsx": 9
+      }
+    }
+  ]
+}

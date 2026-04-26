@@ -17,6 +17,7 @@
     "pyproject.toml",
     "ui/src/App.tsx",
     "ui/src/api.ts",
+    "ui/src/components/McpSettings.tsx",
     "ui/src/components/TopBar.tsx",
     "ui/src/main.tsx",
     "ui/src/pages/Ingest.tsx"
@@ -27,13 +28,19 @@
       "transcript": "/e5/256707d281/0/full.jsonl",
       "content_hash": "/e5/256707d281/0/content_hash.txt",
       "prompt": "/e5/256707d281/0/prompt.txt"
+    },
+    {
+      "metadata": "/e5/256707d281/1/metadata.json",
+      "transcript": "/e5/256707d281/1/full.jsonl",
+      "content_hash": "/e5/256707d281/1/content_hash.txt",
+      "prompt": "/e5/256707d281/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 809,
-    "cache_creation_tokens": 61439,
-    "cache_read_tokens": 2057259,
-    "output_tokens": 8341,
-    "api_call_count": 37
+    "input_tokens": 861,
+    "cache_creation_tokens": 363165,
+    "cache_read_tokens": 5492106,
+    "output_tokens": 23110,
+    "api_call_count": 78
   }
 }

@@ -1,0 +1,13 @@
+https://docs.tavily.com/llms.txt find gap and implement tavily in our pipeline for ingestion
+
+---
+
+just do vendor leage lookup for now and url enrihcment if the url is publicly available
+
+---
+
+can we make a simulation where we use tavily in ingestion simulation page? also the n8n type flow show tavily being called too or really any tool calling should show in the UI
+
+---
+
+ok aded api key

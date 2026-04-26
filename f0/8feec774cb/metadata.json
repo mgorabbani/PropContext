@@ -3,20 +3,23 @@
   "checkpoint_id": "f08feec774cb",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 7,
+  "checkpoints_count": 10,
   "files_touched": [
     "app/api/v1/sim.py",
     "app/core/config.py",
     "app/mcp/server.py",
     "app/mcp/tools.py",
+    "app/services/enrich.py",
     "app/services/llm/client.py",
     "app/services/llm/json.py",
     "app/services/supervisor.py",
+    "app/services/tavily.py",
     "app/static/assets/index-CVwxQ-Bq.js",
     "app/static/assets/index-CdhdyBXu.js",
     "app/static/assets/index-rTspzvYV.css",
     "app/static/assets/index-sDNpUnAB.css",
     "app/static/index.html",
+    "data/incremental/day-10/emails/2026-01/20260111_093000_EMAIL-09999.eml",
     "data/incremental/day-10/emails_index.csv",
     "pyproject.toml",
     "tests/test_enrich.py",
@@ -37,13 +40,19 @@
       "transcript": "/f0/8feec774cb/1/full.jsonl",
       "content_hash": "/f0/8feec774cb/1/content_hash.txt",
       "prompt": "/f0/8feec774cb/1/prompt.txt"
+    },
+    {
+      "metadata": "/f0/8feec774cb/2/metadata.json",
+      "transcript": "/f0/8feec774cb/2/full.jsonl",
+      "content_hash": "/f0/8feec774cb/2/content_hash.txt",
+      "prompt": "/f0/8feec774cb/2/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 277,
-    "cache_creation_tokens": 515319,
-    "cache_read_tokens": 15392679,
-    "output_tokens": 73928,
-    "api_call_count": 176
+    "input_tokens": 2952,
+    "cache_creation_tokens": 824221,
+    "cache_read_tokens": 27709763,
+    "output_tokens": 119079,
+    "api_call_count": 295
   }
 }

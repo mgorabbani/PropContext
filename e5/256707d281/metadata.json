@@ -3,7 +3,7 @@
   "checkpoint_id": "e5256707d281",
   "strategy": "manual-commit",
   "branch": "main",
-  "checkpoints_count": 9,
+  "checkpoints_count": 11,
   "files_touched": [
     ".mcp.json",
     "app/api/v1/router.py",
@@ -40,13 +40,19 @@
       "transcript": "/e5/256707d281/2/full.jsonl",
       "content_hash": "/e5/256707d281/2/content_hash.txt",
       "prompt": "/e5/256707d281/2/prompt.txt"
+    },
+    {
+      "metadata": "/e5/256707d281/3/metadata.json",
+      "transcript": "/e5/256707d281/3/full.jsonl",
+      "content_hash": "/e5/256707d281/3/content_hash.txt",
+      "prompt": "/e5/256707d281/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 888,
-    "cache_creation_tokens": 394142,
-    "cache_read_tokens": 6019878,
-    "output_tokens": 26081,
-    "api_call_count": 95
+    "input_tokens": 897,
+    "cache_creation_tokens": 418315,
+    "cache_read_tokens": 6152960,
+    "output_tokens": 28823,
+    "api_call_count": 100
   }
 }

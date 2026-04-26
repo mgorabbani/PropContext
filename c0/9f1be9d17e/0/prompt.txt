@@ -1,0 +1,17 @@
+how can i share the seed data to git
+
+---
+
+wiki is not going to git
+
+---
+
+1
+
+---
+
+2
+
+---
+
+i have ssh

@@ -19,3 +19,7 @@ still make things bold not visble
 ---
 
 don't have max token cap
+
+---
+
+so now,  i feel like mostly index.md file is chanign, but not really updating or adding sub md files if new events comes

@@ -179,6 +179,7 @@ export default function App() {
                 content={content}
                 loading={loading}
                 error={error}
+                onNavigate={selectPath}
               />
             </div>
           </main>
@@ -211,6 +212,7 @@ export default function App() {
                     content={content}
                     loading={loading}
                     error={error}
+                    onNavigate={selectPath}
                   />
                 </div>
               </main>

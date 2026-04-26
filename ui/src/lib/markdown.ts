@@ -41,6 +41,20 @@ export function splitAtHumanNotes(content: string): {
   return { above, hasBoundary: true, body };
 }
 
+export function resolveRelativePath(currentPath: string, href: string): string {
+  const baseSegs = currentPath.split("/").slice(0, -1);
+  const hrefSegs = href.split("/");
+  for (const seg of hrefSegs) {
+    if (seg === "" || seg === ".") continue;
+    if (seg === "..") {
+      if (baseSegs.length > 0) baseSegs.pop();
+      continue;
+    }
+    baseSegs.push(seg);
+  }
+  return baseSegs.join("/");
+}
+
 export function flattenTree(
   node: { name: string; path: string; type: "file" | "dir"; children?: Array<unknown> | null },
   out: Array<{ name: string; path: string }> = [],

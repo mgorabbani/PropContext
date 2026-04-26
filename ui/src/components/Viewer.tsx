@@ -6,7 +6,7 @@ import { FileQuestion, FileWarning } from "lucide-react";
 import { Breadcrumb } from "./Breadcrumb";
 import { FrontmatterCard } from "./FrontmatterCard";
 import { HumanNotesEditor } from "./HumanNotesEditor";
-import { parseMarkdown, splitAtHumanNotes } from "../lib/markdown";
+import { parseMarkdown, resolveRelativePath, splitAtHumanNotes } from "../lib/markdown";
 import { rehypeStripComments } from "../lib/rehypeStripComments";
 
 type Props = {
@@ -14,11 +14,21 @@ type Props = {
   content: string;
   loading: boolean;
   error: string | null;
+  onNavigate?: (path: string) => void;
 };
 
 const PM_USER = "pm";
 
-export function Viewer({ path, content, loading, error }: Props) {
+function isExternalHref(href: string): boolean {
+  return (
+    /^[a-z][a-z0-9+.-]*:/i.test(href) ||
+    href.startsWith("//") ||
+    href.startsWith("#") ||
+    href.startsWith("mailto:")
+  );
+}
+
+export function Viewer({ path, content, loading, error, onNavigate }: Props) {
   const parsed = useMemo(() => parseMarkdown(content), [content]);
   const split = useMemo(
     () => splitAtHumanNotes(parsed.content),
@@ -55,7 +65,33 @@ export function Viewer({ path, content, loading, error }: Props) {
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw, rehypeStripComments]}
                   components={{
+                    a: ({ node: _node, href, children, ...props }) => {
+                      void _node;
+                      const hrefPath = href?.split(/[?#]/, 1)[0] ?? "";
+                      const canNavigate =
+                        Boolean(path && onNavigate && href) &&
+                        !isExternalHref(href ?? "") &&
+                        hrefPath.endsWith(".md");
+
+                      return (
+                        <a
+                          {...props}
+                          href={href}
+                          onClick={
+                            canNavigate
+                              ? (event) => {
+                                  event.preventDefault();
+                                  onNavigate?.(resolveRelativePath(path, hrefPath));
+                                }
+                              : undefined
+                          }
+                        >
+                          {children}
+                        </a>
+                      );
+                    },
                     span: ({ node: _node, className, children, ...props }) => {
+                      void _node;
                       const cls = Array.isArray(className)
                         ? className.join(" ")
                         : className;

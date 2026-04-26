@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     fast_model: str = ""
     smart_model: str = ""
 
+    agent_model: str = Field(default="claude-sonnet-4-6")
+    agent_max_iters: int = Field(default=20)
+
     @model_validator(mode="after")
     def _resolve_model_defaults(self) -> Settings:
         defaults = {

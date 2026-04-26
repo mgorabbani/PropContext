@@ -10,6 +10,7 @@ from app.mcp.resources import register_resources
 from app.mcp.tools import register_tools
 from app.services.ask import AskService
 from app.services.llm.client import AnthropicClient, FakeLLMClient, GeminiClient, LLMClient
+from app.services.agent_local import LocalAgentService
 from app.services.wiki import WikiService
 
 log = structlog.get_logger(__name__)
@@ -29,7 +30,19 @@ def build_mcp(settings: Settings) -> FastMCP:
     llm = _build_llm(settings)
     ask_service = AskService(wiki=wiki, llm=llm, model=settings.fast_model)
     wiki_chunks_db_path = settings.output_dir / "wiki_chunks.duckdb"
-    register_tools(mcp, wiki, ask_service, wiki_chunks_db_path=wiki_chunks_db_path)
+    agent_service: LocalAgentService | None = None
+    if settings.anthropic_api_key:
+        try:
+            agent_service = LocalAgentService(settings=settings)
+        except Exception as exc:
+            log.warning("agent_disabled", err=str(exc))
+    register_tools(
+        mcp,
+        wiki,
+        ask_service,
+        wiki_chunks_db_path=wiki_chunks_db_path,
+        agent_service=agent_service,
+    )
     register_resources(mcp, wiki)
     register_prompts(mcp)
     log.info(

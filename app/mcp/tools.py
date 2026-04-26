@@ -10,6 +10,7 @@ from pydantic import Field, StringConstraints
 
 from app.mcp.context import allowed_properties, assert_property_access
 from app.services.ask import AskResult, AskService
+from app.services.agent_local import LocalAgentService
 from app.services.wiki import WikiService
 from app.storage.wiki_chunks import open_wiki_chunks
 
@@ -41,6 +42,7 @@ def register_tools(
     ask_service: AskService,
     *,
     wiki_chunks_db_path: Path | None = None,
+    agent_service: LocalAgentService | None = None,
 ) -> None:
     @mcp.tool
     async def list_properties() -> list[str]:
@@ -104,6 +106,28 @@ def register_tools(
         """Answer a natural-language question against a property's wiki."""
         assert_property_access(property_id)
         return await ask_service.answer(property_id=property_id, question=question)
+
+    if agent_service is not None:
+
+        @mcp.tool
+        async def agent_query(
+            property_id: PropertyIdParam,
+            prompt: QuestionParam,
+        ) -> dict[str, object]:
+            """Run autonomous Claude agent (bash, read, write, grep, web) over a property's wiki.
+
+            Slower and more expensive than ask_wiki but handles multi-step questions,
+            cross-page reasoning, and computations. Use for hard questions; use ask_wiki
+            for simple lookups.
+            """
+            assert_property_access(property_id)
+            result = await agent_service.query(property_id=property_id, prompt=prompt)
+            return {
+                "answer": result.answer,
+                "session_id": result.session_id,
+                "output_files": result.output_files,
+                "usage_tokens": result.usage_tokens,
+            }
 
 
 def _collect_files(node: object, *, prefix: str) -> list[str]:

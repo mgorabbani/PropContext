@@ -15,9 +15,9 @@ from app.core.config import Settings
 
 log = structlog.get_logger(__name__)
 
-_SYSTEM_PROMPT = """You are an autonomous Buena property-management agent.
+_SYSTEM_PROMPT = """You are an autonomous PropContext property-management agent.
 
-You answer questions about a Berlin property's living-memory wiki. The wiki is on
+You answer questions about a property's living-memory wiki. The wiki is on
 the local filesystem at the path provided in your first user message — referred to
 below as the WIKI ROOT.
 

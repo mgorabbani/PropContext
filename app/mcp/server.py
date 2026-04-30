@@ -19,9 +19,9 @@ log = structlog.get_logger(__name__)
 def build_mcp(settings: Settings) -> FastMCP:
     auth = build_auth_provider(settings)
     mcp = FastMCP(
-        name="Buena Context",
+        name="PropContext",
         instructions=(
-            "Living building memory for Berlin property management. "
+            "Living building memory for property management. "
             "Tools and resources are scoped to the caller's organization."
         ),
         auth=auth,

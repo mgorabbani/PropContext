@@ -38,7 +38,7 @@ class DummySupervisor:
 
 def _signed(body: bytes, secret: str) -> dict[str, str]:
     digest = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
-    return {"x-buena-signature": f"sha256={digest}", "content-type": "application/json"}
+    return {"x-propcontext-signature": f"sha256={digest}", "content-type": "application/json"}
 
 
 def _body(event_id: str = "EVT-001") -> bytes:
@@ -65,7 +65,7 @@ async def test_webhook_rejects_bad_signature(client: AsyncClient, settings: Sett
     response = await client.post(
         "/api/v1/webhook/ingest",
         content=_body(),
-        headers={"x-buena-signature": "sha256=bad"},
+        headers={"x-propcontext-signature": "sha256=bad"},
     )
 
     assert response.status_code == 401

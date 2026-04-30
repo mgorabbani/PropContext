@@ -1,11 +1,11 @@
 ---
 name: wiki-schema-principles
-description: Architectural principles for the Buena property wiki. Page-per-entity layout, four-op patcher contract, frontmatter discipline, alias-as-context principle. Loaded as the second half of the extractor system prompt. Keep short.
+description: Architectural principles for the PropContext property wiki. Page-per-entity layout, four-op patcher contract, frontmatter discipline, alias-as-context principle. Loaded as the second half of the extractor system prompt. Keep short.
 ---
 
 # Wiki Schema — Principles
 
-Buena's living-context wiki for German WEG property management follows the Karpathy `llm-wiki` pattern, adapted for event-driven ingestion. **Principles, not templates.** The LLM owns the body shape; the runtime owns the patch primitives and page index.
+PropContext's living-context wiki for German WEG property management follows the Karpathy `llm-wiki` pattern, adapted for event-driven ingestion. **Principles, not templates.** The LLM owns the body shape; the runtime owns the patch primitives and page index.
 
 ## 1. One property, one tree
 

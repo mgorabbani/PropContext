@@ -28,7 +28,7 @@ def test_settings_loads_app_prefixed_env_vars(monkeypatch: pytest.MonkeyPatch) -
 
 def test_settings_defaults_for_gemini() -> None:
     s = Settings(_env_file=None)
-    assert s.app_name == "buena-context"
+    assert s.app_name == "propcontext"
     assert s.llm_provider == "gemini"
     assert s.fast_model == "gemini-2.5-flash-lite"
     assert s.smart_model == "gemini-2.5-pro"

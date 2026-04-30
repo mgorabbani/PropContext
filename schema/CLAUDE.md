@@ -82,7 +82,7 @@ Order ops so create_page comes before any `upsert_section`/`append_section` that
 
 ## The alias principle (no controlled vocabulary)
 
-Sources name the same entity in many ways: `Hans Schmidt`, `Herr Schmidt`, `EIG-04`, `eigentuemer.04@buena.local`, `Eigentümer EH-12`. The runtime gives you `resolved_entities` from the stammdaten store — these are the canonical IDs. Use them in your patches.
+Sources name the same entity in many ways: `Hans Schmidt`, `Herr Schmidt`, `EIG-04`, `eigentuemer.04@example.test`, `Eigentümer EH-12`. The runtime gives you `resolved_entities` from the stammdaten store — these are the canonical IDs. Use them in your patches.
 
 When you encounter a **new variant** of an existing entity's name/email/address that isn't yet recorded, append it to that entity's page (under whatever heading fits — `## Aliases`, `## Names`, `## Contact`). The wiki is its own dictionary; you grow it.
 

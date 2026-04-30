@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 ORG_PROPERTIES: dict[str, frozenset[str]] = {
-    "org_buena_berlin": frozenset({"LIE-001"}),
-    "org_buena_hamburg": frozenset(),
+    "org_demo_berlin": frozenset({"LIE-001"}),
+    "org_demo_hamburg": frozenset(),
 }
 
 

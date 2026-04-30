@@ -120,7 +120,7 @@ def _read_csv(path: Path) -> Iterator[dict[str, str]]:
 def sign_body(body: bytes, secret: str) -> dict[str, str]:
     digest = hmac.new(secret.encode("utf-8"), body, hashlib.sha256).hexdigest()
     return {
-        "x-buena-signature": f"sha256={digest}",
+        "x-propcontext-signature": f"sha256={digest}",
         "content-type": "application/json",
     }
 

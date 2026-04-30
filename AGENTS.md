@@ -1,4 +1,4 @@
-# AGENTS.md — Buena Context Engine
+# AGENTS.md — PropContext
 
 Cross-tool memory file for Claude Code, Cursor, Codex, and any other agent. Source of truth for design pattern and code style. **Keep current.** When patterns change, update this file in the same commit.
 
@@ -8,7 +8,7 @@ Cross-tool memory file for Claude Code, Cursor, Codex, and any other agent. Sour
 
 ## What this repo is
 
-Living building memory for Buena (Berlin property mgmt). Pipeline ingests emails / invoices / bank tx / `stammdaten.json`, compresses into one `building.md` per property. External AI agent fetches `building.md` over HTTP. Full PRD: `PRD_Overview`. Hackathon scope: 48h MVP.
+Living building memory for property management (German WEG domain). Pipeline ingests emails / invoices / bank tx / `stammdaten.json`, compresses into one `building.md` per property. External AI agent fetches `building.md` over HTTP. Full PRD: `PRD_Overview`. Hackathon scope: 48h MVP.
 
 ## Tech stack (2026-04 baseline)
 
@@ -139,8 +139,8 @@ CI gate (when added) must run, in order: `ruff format --check`, `ruff check`, `t
 
 ```bash
 # Prod image (multi-stage, runs as non-root, healthcheck on /api/v1/health)
-docker build -t buena-context:latest .
-docker run --rm -p 8000:8000 buena-context:latest
+docker build -t propcontext:latest .
+docker run --rm -p 8000:8000 propcontext:latest
 
 # Compose — prod profile (default)
 docker compose up --build

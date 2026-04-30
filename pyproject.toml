@@ -1,5 +1,5 @@
 [project]
-name = "buena-context"
+name = "propcontext"
 version = "0.1.0"
 description = "Living building memory — context compiler for property management"
 requires-python = ">=3.13"

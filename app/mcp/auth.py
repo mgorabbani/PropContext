@@ -16,5 +16,5 @@ def build_auth_provider(settings: Settings) -> AuthKitProvider | None:
         authkit_domain=settings.workos_authkit_domain,
         base_url=settings.mcp_base_url,
         required_scopes=settings.mcp_required_scopes,
-        resource_name="Buena Context",
+        resource_name="PropContext",
     )

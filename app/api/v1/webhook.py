@@ -77,7 +77,7 @@ def _verify_hmac(raw_body: bytes, *, request: Request, settings: Settings) -> No
     if settings.webhook_hmac_secret is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "webhook secret is not configured")
     signature = (
-        request.headers.get("x-buena-signature")
+        request.headers.get("x-propcontext-signature")
         or request.headers.get("x-hub-signature-256")
         or request.headers.get("x-signature")
     )

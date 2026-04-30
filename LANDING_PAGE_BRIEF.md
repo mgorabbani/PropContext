@@ -98,7 +98,7 @@ Dark band, mirrors Section 2.
 - Left: GitHub repo card — live stars, forks, last commit, license badge, contributor avatars.
 - Right: terminal block
   ```
-  git clone github.com/buena/propcontext
+  git clone github.com/&lt;your-org&gt;/propcontext
   uv sync
   uv run fastapi dev app/main.py
   ```

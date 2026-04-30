@@ -3,8 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: buena-context:latest
-    container_name: buena-context-api
+    image: propcontext:latest
+    container_name: propcontext-api
     ports:
       - "8000:8000"
     environment:
@@ -32,8 +32,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: builder
-    image: buena-context:dev
-    container_name: buena-context-api-dev
+    image: propcontext:dev
+    container_name: propcontext-api-dev
     ports:
       - "8000:8000"
     environment:

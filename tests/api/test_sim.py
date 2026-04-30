@@ -13,7 +13,7 @@ def _git(repo: Path, *args: str) -> None:
 def _git_init(repo: Path) -> None:
     repo.mkdir()
     _git(repo, "init", "-q")
-    _git(repo, "config", "user.email", "test@buena.local")
+    _git(repo, "config", "user.email", "test@example.test")
     _git(repo, "config", "user.name", "test")
     _git(repo, "config", "commit.gpgsign", "false")
 

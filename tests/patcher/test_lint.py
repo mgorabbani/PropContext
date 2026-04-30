@@ -11,7 +11,7 @@ from app.services.patcher.ops import render_page
 def _git_init(wiki_dir: Path) -> None:
     subprocess.run(["git", "init"], cwd=wiki_dir, check=True, capture_output=True)
     subprocess.run(
-        ["git", "config", "user.email", "test@buena.local"],
+        ["git", "config", "user.email", "test@example.test"],
         cwd=wiki_dir,
         check=True,
         capture_output=True,

@@ -1,4 +1,4 @@
-# Implementation Plan — Buena Context Engine
+# Implementation Plan — PropContext
 
 Hackathon target: 48h MVP. Tests folded into each phase (TDD-style).
 

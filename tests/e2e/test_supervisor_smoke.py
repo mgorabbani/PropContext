@@ -14,7 +14,7 @@ def _git_init(wiki_dir: Path) -> None:
     wiki_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run(["git", "init"], cwd=wiki_dir, check=True, capture_output=True)
     subprocess.run(
-        ["git", "config", "user.email", "test@buena.local"],
+        ["git", "config", "user.email", "test@example.test"],
         cwd=wiki_dir,
         check=True,
         capture_output=True,

@@ -21,7 +21,7 @@ def _git_init(wiki_dir: Path) -> None:
         return
     for cmd in (
         ["git", "init", "-q"],
-        ["git", "config", "user.email", "sim@buena.local"],
+        ["git", "config", "user.email", "sim@example.test"],
         ["git", "config", "user.name", "sim"],
         ["git", "config", "commit.gpgsign", "false"],
     ):

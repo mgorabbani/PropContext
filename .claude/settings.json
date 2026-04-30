@@ -81,5 +81,5 @@
       "Read(./.entire/metadata/**)"
     ]
   },
-  "enabledMcpjsonServers": ["buena-context"]
+  "enabledMcpjsonServers": ["propcontext"]
 }

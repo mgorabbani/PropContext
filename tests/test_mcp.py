@@ -29,9 +29,9 @@ def test_org_property_map_lookup() -> None:
 def test_org_can_access_rejects_unknown() -> None:
     assert org_can_access(None, "LIE-001") is False
     assert org_can_access("nonexistent", "LIE-001") is False
-    if ORG_PROPERTIES.get("org_buena_berlin"):
-        assert org_can_access("org_buena_berlin", "LIE-001") is True
-        assert org_can_access("org_buena_berlin", "LIE-XYZ") is False
+    if ORG_PROPERTIES.get("org_demo_berlin"):
+        assert org_can_access("org_demo_berlin", "LIE-001") is True
+        assert org_can_access("org_demo_berlin", "LIE-XYZ") is False
 
 
 def test_context_helpers_no_token() -> None:
@@ -50,11 +50,11 @@ class _FakeToken:
 
 
 def test_context_helpers_with_token() -> None:
-    fake = _FakeToken("org_buena_berlin")
+    fake = _FakeToken("org_demo_berlin")
     with patch("app.mcp.context.get_access_token", return_value=fake):
-        assert current_org_id() == "org_buena_berlin"
-        assert require_org_id() == "org_buena_berlin"
-        if "LIE-001" in ORG_PROPERTIES.get("org_buena_berlin", frozenset()):
+        assert current_org_id() == "org_demo_berlin"
+        assert require_org_id() == "org_demo_berlin"
+        if "LIE-001" in ORG_PROPERTIES.get("org_demo_berlin", frozenset()):
             assert_property_access("LIE-001")
         with pytest.raises(ToolError, match="no access"):
             assert_property_access("LIE-DOES-NOT-EXIST")

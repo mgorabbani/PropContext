@@ -81,7 +81,7 @@ Assumed raw email content:
 
 ```text
 From: anna.mueller@example.test
-To: pm@buena.test
+To: pm@example.test
 Date: Sat, 25 Apr 2026 14:32:00 +0200
 Subject: Heizung kalt in EH-014
 
@@ -98,7 +98,7 @@ Anna Mueller
 |---|---|---|---|---|
 | 2026-04-25T14:32:00.000+02:00 | source event | Mail adapter | New tenant email is detected and mapped to `event_id=EMAIL-12044`. | Reads mailbox; prepares webhook JSON. |
 | 2026-04-25T14:32:00.180+02:00 | webhook received | FastAPI webhook | `POST /api/v1/webhook/ingest` receives raw bytes. | Reads request body. |
-| 2026-04-25T14:32:00.184+02:00 | verify signature | `_verify_hmac` | Computes HMAC SHA-256 using `APP_WEBHOOK_HMAC_SECRET`; compares with `x-buena-signature`. | No files written. |
+| 2026-04-25T14:32:00.184+02:00 | verify signature | `_verify_hmac` | Computes HMAC SHA-256 using `APP_WEBHOOK_HMAC_SECRET`; compares with `x-propcontext-signature`. | No files written. |
 | 2026-04-25T14:32:00.188+02:00 | parse event | `_parse_event` | JSON is parsed into `IngestEvent`. | In-memory event object. |
 | 2026-04-25T14:32:00.194+02:00 | claim event | `IdempotencyStore.claim` | `EMAIL-12044` is inserted as `pending`. | Writes `output/idempotency.duckdb`. |
 | 2026-04-25T14:32:00.205+02:00 | dispatch | `get_event_handler` | `event_type=email` routes to `EmailHandler`. | In-memory handler selection. |
@@ -150,7 +150,7 @@ lang: "de"
 | ID | EMAIL-12044 |
 | Subject | Heizung kalt in EH-014 |
 | From | Anna Mueller <anna.mueller@example.test> |
-| To | pm@buena.test |
+| To | pm@example.test |
 | Date | Sat, 25 Apr 2026 14:32:00 +0200 |
 | Message-ID | <EMAIL-12044@example.test> |
 

@@ -1,0 +1,57 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "01cf08645ead",
+  "session_id": "0b5d410a-78c3-471c-b051-19ca66fb1bfc",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-04T22:55:19.130981Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/verticals/property_de/context/prompts/arbio_booking.md",
+    "app/verticals/property_de/context/examples/arbio_booking.json",
+    "app/verticals/property_de/extractors.py",
+    "tests/verticals/property_de/test_llm_extractor.py",
+    "tests/verticals/property_de/test_arbio_booking.py",
+    ".github/workflows/ci.yml",
+    "AGENTS.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "5e597706cee8",
+  "checkpoint_transcript_start": 928,
+  "transcript_lines_at_start": 928,
+  "token_usage": {
+    "input_tokens": 34,
+    "cache_creation_tokens": 136815,
+    "cache_read_tokens": 3282619,
+    "output_tokens": 12966,
+    "api_call_count": 27
+  },
+  "session_metrics": {
+    "turn_count": 8
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-04T22:55:19.082566Z",
+    "agent_lines": 481,
+    "agent_removed": 91,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 481,
+    "total_lines_changed": 572,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

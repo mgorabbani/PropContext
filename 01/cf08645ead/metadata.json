@@ -1,0 +1,31 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "01cf08645ead",
+  "strategy": "manual-commit",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    ".github/workflows/ci.yml",
+    "AGENTS.md",
+    "app/verticals/property_de/context/examples/arbio_booking.json",
+    "app/verticals/property_de/context/prompts/arbio_booking.md",
+    "app/verticals/property_de/extractors.py",
+    "tests/verticals/property_de/test_arbio_booking.py",
+    "tests/verticals/property_de/test_llm_extractor.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/01/cf08645ead/0/metadata.json",
+      "transcript": "/01/cf08645ead/0/full.jsonl",
+      "content_hash": "/01/cf08645ead/0/content_hash.txt",
+      "prompt": "/01/cf08645ead/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 34,
+    "cache_creation_tokens": 136815,
+    "cache_read_tokens": 3282619,
+    "output_tokens": 12966,
+    "api_call_count": 27
+  }
+}

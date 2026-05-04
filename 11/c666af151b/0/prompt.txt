@@ -1,0 +1,45 @@
+Current status:
+
+  - Plan revisions are in IMPLEMENTATION_PLAN.md.
+  - Added Phase 0.5 inventory: docs/phase0_inventory.md.
+  - Added bitemporal ADR: docs/adr/0001-bitemporal-facts.md.
+  - Phase 1 contracts/storage/minimal ingest are implemented.
+  - Baseline fixes are in app/main.py and app/mcp/context.py.
+  - Phase 2 sub-agent patches have landed but have not been locally reviewed/integrated after completion:
+      - app/storage/facts.py
+      - tests/storage/test_facts.py
+      - app/render/building.py
+      - app/render/__init__.py
+      - tests/engine/test_render.py
+
+  Next tasks:
+
+  1. Review Phase 2 patches for API consistency between FactsStore and renderer.
+  2. Run:
+      - uv run pytest tests/storage/test_facts.py tests/engine/test_render.py tests/api/test_ingest.py
+      - uv run ruff check .
+      - uv run pytest
+  3. Integrate renderer with facts store if needed:
+      - use active/pending facts from FactsStore
+      - write output/{property_id}/building.md
+      - probably add an integration test around ingest -> facts -> render.
+  4. Check git status --short; note IMPLEMENTATION_PLAN.md was already staged before my edits, so it may show MM.
+  5. Full uv run ty check previously still failed on pre-existing type debt outside the new slice:
+      - app/mcp/tools.py
+      - app/services/agent_local.py
+      - app/tools/sim_ingest.py
+      - tests/test_config.py
+
+  Important: do not start Phase 3 until Phase 2 is fully reviewed, integrated, and green.
+
+---
+
+go
+
+---
+
+continue one by one but if u can run something parallaly do that
+
+---
+
+let it break now, we will have clean system when all phases competes

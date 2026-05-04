@@ -1,0 +1,13 @@
+@IMPLEMENTATION_PLAN.md is this over engineered? also the primitives should be part of engine, and vertical simply use them,
+
+---
+
+keep Bitemporal, also do we have self healing hermes concept
+
+---
+
+we should parse most things with llm, with context, that will be agnostic already. instead of hardcoded functions, we can do those but as a plugin/skill to the engine
+
+---
+
+yes

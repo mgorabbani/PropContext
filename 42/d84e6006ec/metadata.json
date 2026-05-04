@@ -1,0 +1,35 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "42d84e6006ec",
+  "strategy": "manual-commit",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/api/v1/access.py",
+    "app/api/v1/properties.py",
+    "app/api/v1/router.py",
+    "app/main.py",
+    "app/mcp/access.py",
+    "app/mcp/server.py",
+    "app/schemas/properties.py",
+    "scripts/query_demo.py",
+    "tests/api/test_properties.py",
+    "tests/mcp/__init__.py",
+    "tests/mcp/test_server.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/42/d84e6006ec/0/metadata.json",
+      "transcript": "/42/d84e6006ec/0/full.jsonl",
+      "content_hash": "/42/d84e6006ec/0/content_hash.txt",
+      "prompt": "/42/d84e6006ec/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 69,
+    "cache_creation_tokens": 51364,
+    "cache_read_tokens": 6088990,
+    "output_tokens": 30654,
+    "api_call_count": 58
+  }
+}

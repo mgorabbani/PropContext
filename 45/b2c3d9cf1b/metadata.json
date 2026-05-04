@@ -1,0 +1,32 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "45b2c3d9cf1b",
+  "strategy": "manual-commit",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "README.md",
+    "app/hermes/__init__.py",
+    "app/hermes/aggregate.py",
+    "scripts/hermes_aggregate.py",
+    "scripts/ingest_fixture.py",
+    "scripts/reset.sh",
+    "tests/hermes/__init__.py",
+    "tests/hermes/test_aggregate.py"
+  ],
+  "sessions": [
+    {
+      "metadata": "/45/b2c3d9cf1b/0/metadata.json",
+      "transcript": "/45/b2c3d9cf1b/0/full.jsonl",
+      "content_hash": "/45/b2c3d9cf1b/0/content_hash.txt",
+      "prompt": "/45/b2c3d9cf1b/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 35,
+    "cache_creation_tokens": 27466,
+    "cache_read_tokens": 4217616,
+    "output_tokens": 14360,
+    "api_call_count": 30
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "45b2c3d9cf1b",
+  "session_id": "0b5d410a-78c3-471c-b051-19ca66fb1bfc",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-04T22:47:36.721388Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/hermes/__init__.py",
+    "app/hermes/aggregate.py",
+    "tests/hermes/__init__.py",
+    "tests/hermes/test_aggregate.py",
+    "scripts/reset.sh",
+    "scripts/ingest_fixture.py",
+    "scripts/hermes_aggregate.py",
+    "README.md"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "0c7c6df6def0",
+  "checkpoint_transcript_start": 820,
+  "transcript_lines_at_start": 820,
+  "token_usage": {
+    "input_tokens": 35,
+    "cache_creation_tokens": 27466,
+    "cache_read_tokens": 4217616,
+    "output_tokens": 14360,
+    "api_call_count": 30
+  },
+  "session_metrics": {
+    "turn_count": 6
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-04T22:47:36.677558Z",
+    "agent_lines": 547,
+    "agent_removed": 0,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 547,
+    "total_lines_changed": 547,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

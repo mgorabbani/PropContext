@@ -3,7 +3,7 @@
   "checkpoint_id": "11c666af151b",
   "strategy": "manual-commit",
   "branch": "arbio-focused",
-  "checkpoints_count": 11,
+  "checkpoints_count": 12,
   "files_touched": [
     "AGENTS.md",
     "IMPLEMENTATION_PLAN.md",
@@ -99,6 +99,7 @@
     "app/verticals/property_de/skills/__init__.py",
     "app/verticals/property_de/skills/bank.py",
     "app/verticals/property_de/skills/stammdaten.py",
+    "docs/archive/IMPLEMENTATION_PLAN.old.md",
     "schema/extractors/01_manifest.md",
     "schema/extractors/02_stammdaten.md",
     "schema/extractors/03_emails_index.md",
@@ -173,13 +174,19 @@
       "transcript": "/11/c666af151b/2/full.jsonl",
       "content_hash": "/11/c666af151b/2/content_hash.txt",
       "prompt": "/11/c666af151b/2/prompt.txt"
+    },
+    {
+      "metadata": "/11/c666af151b/3/metadata.json",
+      "transcript": "/11/c666af151b/3/full.jsonl",
+      "content_hash": "/11/c666af151b/3/content_hash.txt",
+      "prompt": "/11/c666af151b/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 171,
-    "cache_creation_tokens": 572779,
-    "cache_read_tokens": 14435722,
-    "output_tokens": 113735,
-    "api_call_count": 100
+    "input_tokens": 286,
+    "cache_creation_tokens": 805365,
+    "cache_read_tokens": 16441280,
+    "output_tokens": 172506,
+    "api_call_count": 130
   }
 }

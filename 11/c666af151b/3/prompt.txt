@@ -1,0 +1,428 @@
+give me sumamry of this
+
+---
+
+arbio is a ai-native property management platform for short-term rentals, managing over 1500+ properties across europe, we are building the future of hospitality operations where AI and human collaborate seamlessley. - this is their taglline,  i want you to review their webssite too and also check internet for recent events related to context and such like tldr news and tell me how i can improve this project
+
+---
+
+https://claude.ai/share/88c43d00-bd90-4489-8831-6130f300f663 can u access this
+
+---
+
+# Memory Layer for SMBs — Design Notes & Handoff
+
+> Working notes from a design conversation. Intended as a brief for Claude Code or any engineer picking this up. Captures decisions, open questions, and rationale — not finished spec.
+
+---
+
+## 1. What we're building
+
+An **open-source memory layer for SMBs** that lets any business become "agent-native" without rebuilding their software.
+
+The thesis: AI agents don't fail at reasoning, they fail because the right context isn't structured, fresh, or trustable. Most SMBs have their context scattered across email, payments, SaaS tools, PDFs, and someone's head. A standardized memory layer fixes the upstream problem.
+
+**Inspiration:** Buena's "Context Engine" for property management (one living wiki per building). We're generalizing the primitive beyond property to *any organization with entities that have scattered context*.
+
+**Starting vertical:** education micro-businesses (tutoring centers first, then music schools, after-school programs, coaching). Picked over property (Buena's territory), restaurants (bad economics), trades (entrenched competitors), clinics (compliance overhead).
+
+**Positioning:** open-source library + reference vertical implementation + hosted product on top. PostHog/Sentry/GitLab playbook. Library is permissive license; hosted polish + Hermes (the self-healing loop) is closed core.
+
+---
+
+## 2. Core concepts (the convention)
+
+### Two-level hierarchy
+
+```
+Org (the company)
+ └── Entities (students, members, customers, units, suppliers...)
+```
+
+The org has its own memory. Each entity has its own memory. Entities inherit from org; entity memory only stores deltas/exceptions.
+
+What counts as an "entity" is org-defined. A tutoring center's entities = students. A restaurant's entities = regulars + suppliers + shifts. The library doesn't pre-decide this.
+
+### The four artifacts (per entity, also per org)
+
+```
+sources/      # Original files (immutable). Emails, PDFs, payments, notes.
+wiki/         # Machine-maintained. Pointers to sources, not copies.
+OWNER.md      # Human-written. Preferences, judgment, soft knowledge.
+MEMORY.md     # System-learned patterns (was previously called INFER.md).
+```
+
+**Three writers, zero overlap:**
+- Humans write `OWNER.md` only
+- The system mechanically maintains `wiki/` (pointer index)
+- The system writes learned observations to `MEMORY.md`
+- `sources/` is append-only; nothing edits originals
+
+This separation eliminates merge conflicts and makes the trust model obvious.
+
+### Facts live at their source, not in the wiki
+
+Critical design decision: **the wiki is an index, not storage.** A fact like "rent = €1,200" doesn't live in the wiki — it lives in `lease.pdf#p3`. The wiki just says `rent: €1,200 → lease.pdf#p3`.
+
+Implications:
+- Provenance is the architecture, not a feature
+- No drift between extracted-fact and human-edit (because there's no extracted copy)
+- "Self-healing" means re-routing pointers when sources change, not regenerating extracted text
+- Audit is trivial — every fact *is* its source
+
+### Bitemporal pointers
+
+Every pointer carries two times:
+- **Valid time** — when the fact was true in the world
+- **Transaction time** — when the system learned about it
+
+This separation matters because backdated truth is normal (move-out email arrives May 30 saying "I moved out May 15"). Single-clock systems lie about one or the other.
+
+Pointer also carries a **status**:
+- `active` — currently true
+- `pending` — open question, awaiting resolution
+- `resolved` — settled, kept for history
+- `superseded` — newer source replaced this
+
+Agents default to reading `active + pending`. The "what's open?" query is just `WHERE status = 'pending'`.
+
+### Convention lineage: AGENTS.md / CLAUDE.md
+
+What we're describing is the same convention as `AGENTS.md` in coding tools, generalized beyond code. Coding agents got there first because devs already had repos. The pattern works for any persistent context an agent needs in a specific scope.
+
+Our contribution beyond AGENTS.md: separating human-declared rules (`OWNER.md`) from machine-observed patterns (`MEMORY.md`) as different artifacts with different trust levels.
+
+### Hermes (the self-healing loop)
+
+Async background process. Not in the hot path. Jobs:
+1. Watch sources → update wiki pointers when files change
+2. Watch patterns across sources/wiki → propose entries for `MEMORY.md`
+3. Watch `MEMORY.md` vs `OWNER.md` → suggest promoting confirmed patterns
+4. Watch agent failures → suggest schema or vocabulary improvements
+
+Discipline: every `MEMORY.md` entry needs evidence count + confidence. Without that it becomes vibes. With it, agents can decide whether to act or surface to a human.
+
+Hermes is the moat. Closed-core in the hosted version.
+
+---
+
+## 3. Architecture
+
+### The pipeline
+
+```
+CONNECTORS (Gmail, Stripe, TutorBird, etc.)
+   ↓ raw webhooks/pulls
+INGESTION         → normalizes to CloudEvents
+   ↓ CloudEvent
+CLASSIFIER        → which org? which entity? new/update/resolution?
+   ↓ ClassifiedEvent
+EXTRACTOR         → pull facts (LLM/rule-based, per-vertical)
+   ↓ Fact[]
+PATCHER           → update wiki pointers, MEMORY.md, status
+   ↓ events
+STORE             → append-only event log + projected markdown
+   ↓
+HERMES (async, watches all of above)
+MCP SERVER        → exposes memory to any agent
+```
+
+### Storage decision: NOT git
+
+Considered git. Decided against it for SMB use case (SMB owners don't `git clone`). Going with **append-only event log + materialized markdown projection**.
+
+- **Audit substrate:** SQLite append-only events table with hash-chained integrity. One file per org. Portable, embeddable, single-file backup.
+- **State projection:** wiki, `OWNER.md`, `MEMORY.md` are *derived* from replaying the log. They're caches, not truth. Regenerable.
+- **Bitemporal:** columns on each event (`valid_time`, `transaction_time`).
+- **Tamper evidence:** hash of previous event chained into each new event (Merkle-ish).
+- **Time travel:** replay log up to date X. Checkpoint for performance.
+- **v2 if scale demands:** swap SQLite for Postgres or EventStore. Contract doesn't change.
+
+This pattern matches how Linear/Figma/Notion actually work under the hood. Markdown stays human-readable but is never the source of truth — so no merge conflict pain.
+
+`OWNER.md` writes are also events (so even human edits go through the log).
+
+### The five contracts (the actual product surface)
+
+Anyone implementing these can plug into the library:
+
+```
+1. Connector  : (source) → CloudEvent stream
+2. Classifier : CloudEvent → { org, entity?, kind, intent }
+3. Extractor  : ClassifiedEvent → Fact[]
+4. Patcher    : Fact[] → log events
+5. MCP query  : (scope, question) → context bundle
+```
+
+### What's opinionated (don't make configurable)
+
+- **CloudEvents** for the input envelope (CNCF standard, vendor-neutral)
+- **Append-only log** as the audit substrate
+- **MCP** for the read side (agents already speak it)
+- **OWNER.md / MEMORY.md / sources/ / wiki/** folder convention
+- **Bitemporal pointers** with status
+
+### What's flexible
+
+- Which connectors (Nango, custom, mix)
+- Which extractor (LLM, rules, hybrid, per-vertical)
+- Which classifier model
+- Which storage backend implementation (SQLite default, Postgres later)
+- Which agent consumes the memory
+- Schema per org
+
+### Vertical-agnostic core, vertical-specific plugins
+
+The vertical lives in three places:
+- **Schema definition** — what an entity looks like, what sections
+- **Extractor** — how to pull facts from this vertical's typical sources
+- **Connectors** — which sources matter for this vertical
+
+Swap those three, you have a different vertical. Education first → property/music/coaching/etc. by swapping plugins.
+
+---
+
+## 4. Ingestion: how it actually works
+
+### MCP is for queries (pull). Ingestion needs push.
+
+Different protocol, different problem. MCP doesn't apply here.
+
+### Patterns in the wild (April/May 2026)
+
+- **CloudEvents** (CNCF, graduated 2024) — vendor-neutral envelope spec. Adopted by Azure, GCP, SAP, Adobe, Knative. **This is our input contract.**
+- **Webhooks** — universal SMB-tool transport (Stripe, Calendly, Toast, QuickBooks, Twilio, etc.)
+- **Webhook gateways** (Hookdeck, Svix) — handle retries, signature verification, dedup, replay
+- **Gmail-style Pub/Sub + history-diff** — Gmail and Microsoft Graph push notify-then-pull (notification is "something changed", app fetches the diff with a cursor)
+- **Direct polling** — fallback for sources without webhooks
+
+### Per-source plumbing is the actual hard work
+
+Each source has its own auth, delivery model, renewal semantics, payload format. Examples:
+
+| Source | Pattern |
+|---|---|
+| Gmail | Pub/Sub notification + `history.list` pull, watch renewed every 6 days |
+| Microsoft Graph | Webhook subscriptions, renewable, change notifications |
+| Stripe | Direct webhooks with payload |
+| Calendly | Direct webhooks |
+| Slack | Events API + socket mode |
+| QuickBooks | Webhooks + IDS for data fetch |
+| Custom Postgres | Logical replication / Debezium |
+
+**Recommendation:** use **Nango** (open source) or Paragon/Merge.dev for the per-source connector plumbing. They've already built 100+ integrations with OAuth + token refresh + watch renewal handled. Our library receives normalized webhooks from them.
+
+The integration platform is commodity. The memory layer on top is the moat.
+
+### The auth pattern
+
+OAuth for connect-time. Per-source webhook config. Token refresh handled by the connector platform. The library receives normalized events and trusts that auth was already verified upstream.
+
+---
+
+## 5. UI shape (for the eventual product, not the library)
+
+The library is invisible. The hosted product hides every spec word from users.
+
+### Two surfaces
+
+**Chat (primary, 80% of usage):**
+One input box. Owner asks natural questions:
+- "Who hasn't paid for March?"
+- "What did Alex's mom email about last week?"
+- "Draft a reminder to all parents whose kids are behind."
+
+Answers cite sources inline (click → opens the original).
+
+**Entity page (e.g., student page):**
+
+```
+ALEX CHEN                                 [📞] [✉️] [+ note]
+
+What's open
+  • Mom asked about summer schedule (3 days ago)
+  • Payment overdue: March invoice
+  • Mentioned struggling with fractions last session
+
+Recent
+  • Session Tuesday — went well, did chapter 4
+  • Email from mom Monday re: pickup change
+
+Patterns we've noticed         (← MEMORY.md, soft language)
+  • Usually cancels Friday sessions
+  • Mom prefers WhatsApp over email
+  • Best engagement in afternoon slots
+
+Your notes                     (← OWNER.md, just "your notes")
+  [editable text area]
+
+Everything else  ▾             (collapsed full history)
+```
+
+### Design principles
+
+- Hide the spec entirely. No "wiki" / "sources" / "pointers" in UI copy.
+- Lead with what's pending (temporal layer pays off here).
+- Provenance is one click, never zero, never two.
+- `OWNER.md` is just "your notes."
+- `MEMORY.md` is "patterns we've noticed" with confirm/dismiss.
+- One global search. Cmd-K.
+- Mobile-first for SMB owners on the move.
+- Aesthetic: Linear-grade restraint. Notion softness. Not Salesforce.
+
+### Homepage = worklist, not dashboard
+
+```
+GOOD MORNING
+
+3 things need you today
+  • Reply to Sarah Chen — asked about summer
+  • Mia's payment overdue 5 days
+  • Tutor James reported issue with Daniel
+
+12 students have updates since yesterday  ▾
+
+[ ask anything... ]
+```
+
+### The killer demo moment
+
+Owner uploads a year of Gmail + their TutorBird CSV. Two minutes later asks "what did Mia's mom say about her birthday last year?" — gets the answer with the email opened in a side panel. That's the entire pitch.
+
+---
+
+## 6. Open questions / decisions to make
+
+### Strategy
+- Library or standard? (Decided: library with conventions; let it spread like AGENTS.md did.)
+- Sub-vertical to ship first within education? (Leaning tutoring centers — cleanest entity model, lowest compliance overhead.)
+- Open core boundary: what stays closed-source? (Hermes, hosted UX. Maybe not the schema or the storage — those should be open.)
+
+### Product
+- Confirmed: education micro-businesses, tutoring first
+- v1 must NOT include: scheduling, payments, parent portal. Pure memory layer.
+- v1 MUST include: Gmail + at least one tutoring tool integration, chat interface, student page, OWNER.md editing, MEMORY.md surfacing, source citations.
+
+### Architecture
+- v1 storage: SQLite event log + materialized markdown. Confirmed.
+- Connector strategy: Nango under the hood for v1 unless we hit limits. Likely confirmed.
+- Tech stack: Rust core for performance? (gitoxide-style argument applies even without git — append-only logs at SMB scale are fast in any language; Rust matters more if/when this scales to thousands of orgs.) Likely Rust core with thin language bindings later.
+- Indexing layer for cross-entity queries: SQLite/DuckDB sidecar built from the event log.
+
+### Spec
+- Need to write a formal spec for the convention (`OWNER.md`, `MEMORY.md`, pointer format, bitemporal status, event log schema). This is what makes it adoptable beyond our own product.
+- CloudEvents profile: what extension attributes do we add? (Probably `org`, `entity`, `kind`, `confidence` as extensions.)
+
+### Validation
+- 5 tutoring center owner conversations before any more building. Listening for: how many tools they juggle, what they re-type, what they forget, what parents complain about. If pain isn't visceral, pick a different vertical.
+- Benchmark: agent task accuracy with this memory layer vs. raw RAG over the same documents. Karpathy's "compact wiki beats RAG gymnastics" needs an actual number.
+
+---
+
+## 7. What to build first (suggested sequence)
+
+1. **The event log + materialized markdown projection** (storage layer). SQLite, hash-chained, bitemporal columns. Single file per org. This is the foundation.
+2. **The patcher** (writes events, projects markdown). Stupid version: every event becomes an `active` pointer. No supersession yet.
+3. **A Gmail connector** via Nango. Webhooks → CloudEvents → patcher.
+4. **A stub classifier** (rule-based, vertical-specific). For tutoring: detect parent emails by domain, map to known student.
+5. **A stub extractor** (LLM, simple prompt per source type). Pull "what's this about" + entity reference.
+6. **MCP server** exposing the memory. Test with Claude as the agent.
+7. **Minimal UI**: chat + student page. No fancy features.
+8. **Hermes v0**: pattern detection across emails ("this parent only replies to WhatsApp"). Surfacing only, not auto-promoting.
+
+Each step gives you a working system that does *something* useful. Iterate intelligence later.
+
+---
+
+## 8. Anti-goals (worth being explicit)
+
+- **Don't build a full ERP.** Memory layer, not platform.
+- **Don't compete with TutorBird/Mindbody/Toast on workflow features.** Be the layer underneath.
+- **Don't go horizontal on day one.** "AI memory for any SMB" dies in month six. Tutoring center → adjacent education → only then horizontal.
+- **Don't force users to think about the spec.** The convention is for developers and integrators. Owners see "your notes" and "patterns we noticed."
+- **Don't build 50 OAuth flows in-house.** Nango is a feature, not a competitor.
+- **Don't ship Hermes as auto-magical.** Surface patterns, let humans confirm. Trust comes from being right and visible, not autonomous.
+
+---
+
+## 9. References / prior art worth reading
+
+- **CloudEvents** spec — input envelope standard
+- **MCP** (Model Context Protocol) — output/query standard
+- **AGENTS.md / CLAUDE.md** convention — same lineage as `OWNER.md`
+- **Buena Context Engine** (`property-context.lovable.app`) — the inspiration; property-vertical version
+- **Karpathy's `llm-wiki`** — the "compact maintained wiki beats RAG" thesis
+- **Datomic / XTDB** — bitemporal database design
+- **Nango** — open-source connector platform
+- **Hookdeck / Svix** — webhook gateways
+- **PostHog / Sentry / GitLab** — open-core business model precedents
+- **Linear / Figma** — event-log-with-projection architecture in product practice
+
+---
+
+*End of handoff. Next action: 5 tutoring center owner conversations, then build step 1 (storage layer).*
+
+---
+
+ok so that md had our different product vertical, but for this we stay in property. and focused on arbio now, not buena, but more or less same. bcz same vertical. so lets focus here. and make the system flexible so that it can support any ingestion format. 1. different project planning, skip here focus on arbio, 2. only oss for now as the engine not the full product, and focus on property vertical as example vertical. 3. not a product so skip thinking on it. 4. skip rust, 5. skip. so based on this, make a prper plan, that shouldn't break anything but can be better product that before and demo -able with better ingest and write some queryable tests or things u mentioned so that connecting with mcp server works perfectly. also remove any outdated samples, also i think git is not needed for diff?
+
+---
+
+0- ok,1- ok, 2 - no- backward compability, its a greenfield, so i can just remove old things and start fresh data. 3- good. 4. ok. 5. yes. lets write down the plan for implementation, 
+
+open qus: apache, keep workoss hardcoded for now. 
+let's go with one by one for 
+- Confirm: dual-write fact backend OK, or rip-and-replace wiki_chunks?
+- Confirm: LIE-001 stays as canonical fixture for tests?
+- Confirm: data/ stays read-only, all writes go to output/?
+
+---
+
+yes, review first for that
+
+---
+
+this should be dynamic name, based on the prop company
+
+---
+
+OK → Q3: data/ read-only, all writes to output/, explain a bit more?
+
+---
+
+so we need to separate demo from actual engine
+
+---
+
+is this the best folder structure?
+
+---
+
+core engine should be named generic, not prop...
+
+---
+
+contextkit
+
+---
+
+i feel like this is over engineering, i don't want to make it as a library for python. just anyone should fork it and run as a standalone layer to work on top
+
+---
+
+this might be better suitable to focus as operatonal -> The AI Operating System for Companies#
+By Diana Hu
+
+The best AI-native companies we're seeing have figured out something most haven't: they've made their entire company queryable. Every meeting recorded, every ticket tracked, every customer interaction captured, all legible to an intelligence layer that learns from it.
+
+This turns a company from an open loop into a closed loop. In an open loop, you make a decision and maybe check the results weeks later. In a closed loop, the system monitors what's happening, compares it to what should be happening, and adjusts. I've seen teams that do this cut sprint time in half and ship twice as much.
+
+The problem is building this today requires brutal integration work, stitching together Slack, Linear, GitHub, Notion, call recordings, and a dozen other tools with custom glue code. There's no product that connects all this context into a single intelligence layer that can reason across it, flag when engineering is building the wrong thing, or generate specs agents can execute on.
+
+We think there's a big opportunity to build the connective layer that makes a company legible to AI by default. Not another dashboard. The system that turns a company's own artifacts into a self-improving loop.
+
+If you're building this, we'd love to talk.
+
+---
+
+B

@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Annotated, Protocol
+from typing import Annotated, Any, Protocol
 
 import structlog
 from anthropic import AsyncAnthropic
@@ -12,6 +12,21 @@ from fastapi import Depends
 from app.core.config import REPO_ROOT, Settings, get_settings
 
 log = structlog.get_logger(__name__)
+
+
+@dataclass(slots=True)
+class ToolCall:
+    id: str
+    name: str
+    input: dict[str, Any]
+
+
+@dataclass(slots=True)
+class AgentResponse:
+    stop_reason: str
+    text: str
+    tool_calls: list[ToolCall]
+    content_blocks: list[dict[str, Any]]
 
 
 @dataclass(slots=True)
@@ -113,6 +128,66 @@ class AnthropicClient:
                 )
             )
         return "".join(block.text for block in response.content if block.type == "text")
+
+    async def complete_agent(
+        self,
+        *,
+        model: str,
+        system: str,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]],
+        usage: UsageRecorder | None = None,
+    ) -> AgentResponse:
+        response = await self._client.messages.create(
+            model=model,
+            max_tokens=self._MAX_TOKENS,
+            system=[
+                {
+                    "type": "text",
+                    "text": system,
+                    "cache_control": {"type": "ephemeral"},
+                }
+            ],
+            tools=tools,
+            messages=messages,
+        )
+        u = response.usage
+        cache_read = getattr(u, "cache_read_input_tokens", 0) or 0
+        cache_create = getattr(u, "cache_creation_input_tokens", 0) or 0
+        if usage is not None:
+            usage.calls.append(
+                LLMUsage(
+                    input_tokens=u.input_tokens,
+                    output_tokens=u.output_tokens,
+                    cache_read_input_tokens=cache_read,
+                    cache_creation_input_tokens=cache_create,
+                )
+            )
+        text = ""
+        tool_calls: list[ToolCall] = []
+        content_blocks: list[dict[str, Any]] = []
+        for block in response.content:
+            if block.type == "text":
+                text += block.text
+                content_blocks.append({"type": "text", "text": block.text})
+            elif block.type == "tool_use":
+                tool_calls.append(
+                    ToolCall(id=block.id, name=block.name, input=dict(block.input))
+                )
+                content_blocks.append(
+                    {
+                        "type": "tool_use",
+                        "id": block.id,
+                        "name": block.name,
+                        "input": block.input,
+                    }
+                )
+        return AgentResponse(
+            stop_reason=response.stop_reason or "",
+            text=text,
+            tool_calls=tool_calls,
+            content_blocks=content_blocks,
+        )
 
 
 class FakeLLMClient:

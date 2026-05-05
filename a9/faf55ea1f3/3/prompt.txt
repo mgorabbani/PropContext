@@ -1,0 +1,13 @@
+can you make the base font to 16 in frontend? now its 14
+
+---
+
+[Image #2] here left rigth and topbar all can be 16px
+
+---
+
+[Image #3] [Image #4] these too, also [Image #5] this font feels like bold, maybe chagne it or chagne wieght
+
+---
+
+[Image #7] this should be small too

@@ -1,0 +1,100 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "a9faf55ea1f3",
+  "session_id": "e6cc5cfa-50cb-442b-8c99-3d8931a97c0d",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T10:46:54.999037Z",
+  "branch": "claude/add-hermes-self-healing-yzZEY",
+  "checkpoints_count": 4,
+  "files_touched": [
+    "app/schemas/hermes.py",
+    "app/services/hermes/dashboard.py",
+    "app/services/hermes/proposals.py",
+    "ui/src/api.ts",
+    "ui/src/components/Query.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/components/Tree.tsx",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/main.tsx",
+    "ui/src/pages/Ingest.tsx",
+    "ui/src/styles.css"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "9d970d08632f",
+  "token_usage": {
+    "input_tokens": 147,
+    "cache_creation_tokens": 85953,
+    "cache_read_tokens": 4518958,
+    "output_tokens": 19219,
+    "api_call_count": 62
+  },
+  "session_metrics": {
+    "turn_count": 4
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T10:46:54.933916Z",
+    "agent_lines": 77,
+    "agent_removed": 39,
+    "human_added": 119,
+    "human_modified": 2,
+    "human_removed": 0,
+    "total_committed": 198,
+    "total_lines_changed": 262,
+    "agent_percentage": 44.274809160305345,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 858,
+      "user_lines_removed": 2,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37,
+        "ui/src/api.ts": 61,
+        "ui/src/components/JsonlViewer.tsx": 251,
+        "ui/src/components/TopBar.tsx": 17,
+        "ui/src/components/Viewer.tsx": 5,
+        "ui/src/main.tsx": 3,
+        "ui/src/pages/Hermes.tsx": 484
+      },
+      "user_removed_per_file": {
+        "ui/src/components/TopBar.tsx": 1,
+        "ui/src/components/Viewer.tsx": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 857,
+      "agent_lines_removed": 5,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 867,
+      "agent_lines_removed": 15,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 40,
+      "user_lines_removed": 0,
+      "agent_lines_added": 880,
+      "agent_lines_removed": 28,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37,
+        "app/schemas/hermes.py": 3
+      }
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "checkpoint_id": "a9faf55ea1f3",
   "strategy": "manual-commit",
   "branch": "claude/add-hermes-self-healing-yzZEY",
-  "checkpoints_count": 11,
+  "checkpoints_count": 15,
   "files_touched": [
     "app/schemas/hermes.py",
     "app/services/hermes/dashboard.py",
@@ -38,13 +38,19 @@
       "transcript": "/a9/faf55ea1f3/2/full.jsonl",
       "content_hash": "/a9/faf55ea1f3/2/content_hash.txt",
       "prompt": "/a9/faf55ea1f3/2/prompt.txt"
+    },
+    {
+      "metadata": "/a9/faf55ea1f3/3/metadata.json",
+      "transcript": "/a9/faf55ea1f3/3/full.jsonl",
+      "content_hash": "/a9/faf55ea1f3/3/content_hash.txt",
+      "prompt": "/a9/faf55ea1f3/3/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 136,
-    "cache_creation_tokens": 171178,
-    "cache_read_tokens": 7999231,
-    "output_tokens": 43525,
-    "api_call_count": 81
+    "input_tokens": 283,
+    "cache_creation_tokens": 257131,
+    "cache_read_tokens": 12518189,
+    "output_tokens": 62744,
+    "api_call_count": 143
   }
 }

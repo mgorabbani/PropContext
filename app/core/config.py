@@ -30,14 +30,13 @@ class Settings(BaseSettings):
     normalize_dir: Path = Field(default=REPO_ROOT / "normalize")
 
     anthropic_api_key: str | None = Field(default=None)
-    gemini_api_key: str | None = Field(default=None)
     tavily_api_key: str | None = Field(default=None)
     webhook_hmac_secret: str | None = Field(default=None)
 
     enrich_urls: bool = Field(default=True)
     enrich_max_urls: int = Field(default=5, ge=0, le=20)
 
-    llm_provider: Literal["anthropic", "gemini", "fake"] = "gemini"
+    llm_provider: Literal["anthropic", "fake"] = "anthropic"
 
     mcp_enabled: bool = Field(default=True)
     mcp_base_url: str = Field(default="http://localhost:8000")
@@ -53,8 +52,7 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _resolve_model_defaults(self) -> Settings:
         defaults = {
-            "anthropic": ("claude-haiku-4-5-20251001", "claude-sonnet-4-6"),
-            "gemini": ("gemini-2.5-flash-lite", "gemini-2.5-pro"),
+            "anthropic": ("claude-haiku-4-5", "claude-sonnet-4-6"),
             "fake": ("fake-fast", "fake-smart"),
         }[self.llm_provider]
         if not self.fast_model:

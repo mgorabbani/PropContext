@@ -11,7 +11,7 @@ const MCP_URL = `${window.location.origin}/mcp`;
 const CLAUDE_DESKTOP_CONFIG = JSON.stringify(
   {
     mcpServers: {
-      "buena-context": {
+      "propcontext": {
         type: "http",
         url: MCP_URL,
       },
@@ -24,7 +24,7 @@ const CLAUDE_DESKTOP_CONFIG = JSON.stringify(
 const CURSOR_CONFIG = JSON.stringify(
   {
     mcpServers: {
-      "buena-context": {
+      "propcontext": {
         url: MCP_URL,
       },
     },

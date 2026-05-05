@@ -25,17 +25,13 @@ def require_org_id() -> str:
 def assert_property_access(property_id: str) -> None:
     org_id = current_org_id()
     if org_id is None:
-        return  # no auth configured — open access
+        raise ToolError("authenticated token missing org_id claim")
     if not org_can_access(org_id, property_id):
         raise ToolError(f"org {org_id!r} has no access to property {property_id!r}")
-
-
-_OPEN_ACCESS: frozenset[str] = frozenset({"*"})
 
 
 def allowed_properties() -> frozenset[str]:
     org_id = current_org_id()
     if org_id is None:
-        # No auth configured — open access (dev / no-WorkOS mode)
-        return _OPEN_ACCESS
+        return frozenset()
     return properties_for_org(org_id)

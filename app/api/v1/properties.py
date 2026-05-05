@@ -47,3 +47,8 @@ async def get_building_md(
             f"building {building_id!r} not found in property {property_id!r}",
         )
     return PlainTextResponse(content=md, media_type="text/markdown; charset=utf-8")
+
+
+@router.api_route("/{unmatched:path}", methods=["GET"], include_in_schema=False)
+async def _reject_unmatched(unmatched: str) -> None:
+    raise HTTPException(status.HTTP_404_NOT_FOUND, "not found")

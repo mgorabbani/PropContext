@@ -56,10 +56,7 @@ export function TopBar({
             <Building2 className="h-3.5 w-3.5" strokeWidth={2.5} />
           </div>
           <span className="font-display text-[15px] font-medium tracking-tight text-[var(--color-ink-50)]">
-            Buena
-          </span>
-          <span className="hidden text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)] sm:inline">
-            Context
+            PropContext
           </span>
         </div>
       </div>

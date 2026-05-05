@@ -122,7 +122,7 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     p.add_argument("--payload-json", help="extra JSON merged into event.payload")
     p.add_argument("--wiki-dir", help="wiki dir (default: fresh tmp dir per run)")
     p.add_argument("--data-dir", help="data dir (default: repo data/)")
-    p.add_argument("--provider", choices=["gemini", "anthropic", "fake"],
+    p.add_argument("--provider", choices=["anthropic", "fake"],
                    help="override APP_LLM_PROVIDER")
     return p.parse_args(argv)
 

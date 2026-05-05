@@ -248,7 +248,7 @@ export function IngestPage() {
           href="/"
           className="font-display text-[12px] font-medium text-[var(--color-ink-50)] hover:text-[var(--color-accent)]"
         >
-          ← Buena Wiki
+          ← PropContext Wiki
         </a>
         <span className="text-[12.5px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
           Simulate ingest
@@ -273,13 +273,13 @@ export function IngestPage() {
                 ))}
               </select>
             </Field>
-            <div className="mt-2 flex gap-1">
+            <div className="mt-2 -mx-1 flex gap-1 overflow-x-auto px-1 pb-1">
               {(Object.keys(KIND_LABELS) as Kind[]).map((k) => (
                 <button
                   key={k}
                   onClick={() => setKind(k)}
                   className={cn(
-                    "flex-1 rounded-md border px-2 py-1 font-mono text-[12.5px] uppercase tracking-wide transition-colors",
+                    "shrink-0 whitespace-nowrap rounded-md border px-2 py-1 font-mono text-[12.5px] uppercase tracking-wide transition-colors",
                     kind === k
                       ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
                       : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
@@ -344,7 +344,7 @@ export function IngestPage() {
               </div>
               <p className="mt-1 text-[12px] text-[var(--color-fg-muted)]">
                 {mode === "isolated"
-                  ? "Fresh tmp wiki per run. Real Gemini, no live mutation."
+                  ? "Fresh tmp wiki per run. Real Anthropic, no live mutation."
                   : "Writes to wiki/LIE-001 + commits."}
               </p>
             </Field>
@@ -372,7 +372,7 @@ export function IngestPage() {
           )}
           {!result && !running && !error && (
             <div className="grid flex-1 place-items-center text-[14.5px] text-[var(--color-fg-muted)]">
-              Pick a day + item, then run. Uses real Gemini ({"gemini-2.5-flash-lite"} → {"gemini-2.5-pro"}).
+              Pick a day + item, then run. Uses real Anthropic ({"claude-haiku-4-5"} → {"claude-sonnet-4-6"}).
             </div>
           )}
           {result && (

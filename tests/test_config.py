@@ -26,19 +26,19 @@ def test_settings_loads_app_prefixed_env_vars(monkeypatch: pytest.MonkeyPatch) -
     assert s.anthropic_api_key == "sk-test"
 
 
-def test_settings_defaults_for_gemini() -> None:
+def test_settings_defaults_for_anthropic() -> None:
     s = Settings(_env_file=None)
     assert s.app_name == "propcontext"
-    assert s.llm_provider == "gemini"
-    assert s.fast_model == "gemini-2.5-flash-lite"
-    assert s.smart_model == "gemini-2.5-pro"
+    assert s.llm_provider == "anthropic"
+    assert s.fast_model == "claude-haiku-4-5"
+    assert s.smart_model == "claude-sonnet-4-6"
     assert s.webhook_hmac_secret is None
 
 
-def test_settings_defaults_for_anthropic(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_settings_explicit_anthropic_provider(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APP_LLM_PROVIDER", "anthropic")
     s = Settings(_env_file=None)
-    assert s.fast_model == "claude-haiku-4-5-20251001"
+    assert s.fast_model == "claude-haiku-4-5"
     assert s.smart_model == "claude-sonnet-4-6"
 
 

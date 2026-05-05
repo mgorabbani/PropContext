@@ -13,6 +13,12 @@
       "transcript": "/fb/516409e0dd/0/full.jsonl",
       "content_hash": "/fb/516409e0dd/0/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/fb/516409e0dd/1/metadata.json",
+      "transcript": "/fb/516409e0dd/1/full.jsonl",
+      "content_hash": "/fb/516409e0dd/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {

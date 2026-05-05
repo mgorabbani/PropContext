@@ -52,8 +52,7 @@ def _serialize(result) -> AskResponse:  # type: ignore[no-untyped-def]
             else None
         ),
         steps=[
-            AskStepOut(label=s.label, detail=s.detail, paths=s.paths)
-            for s in (result.steps or [])
+            AskStepOut(label=s.label, detail=s.detail, paths=s.paths) for s in (result.steps or [])
         ],
     )
 
@@ -74,9 +73,7 @@ async def ask_stream(
     )
 
 
-async def _ask_event_stream(
-    payload: AskRequest, service: AskService
-) -> AsyncGenerator[str]:
+async def _ask_event_stream(payload: AskRequest, service: AskService) -> AsyncGenerator[str]:
     send, recv = anyio.create_memory_object_stream[tuple[str, dict]](64)
 
     async def emit_step(step: AskStep) -> None:
@@ -110,7 +107,5 @@ async def _ask_event_stream(
         tg.start_soon(runner)
         async with recv:
             async for name, data in recv:
-                msg = json.dumps(
-                    {"stage": name, "data": data}, separators=(",", ":"), default=str
-                )
+                msg = json.dumps({"stage": name, "data": data}, separators=(",", ":"), default=str)
                 yield f"event: stage\ndata: {msg}\n\n"

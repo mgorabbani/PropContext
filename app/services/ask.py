@@ -75,7 +75,7 @@ _MAX_DIGEST_CHARS = 120000
 _MAX_HISTORY_TURNS = 8
 _MAX_HISTORY_ANSWER_CHARS = 1200
 
-_MAX_AGENT_TURNS = 12
+_MAX_AGENT_TURNS = 6
 _TOOL_FILE_CHAR_CAP = 12000
 _TOOL_LIST_CAP = 200
 _TOOL_GREP_MATCH_CAP = 60
@@ -371,28 +371,21 @@ class AskService:
         history_block = _render_history(history)
         prompt_text = f"{history_block}=== Question ===\n{question}\n"
         system_prompt = (
-            "You answer questions about a property's markdown wiki by "
-            "navigating it with tools.\n\n"
-            f"Property root: {prop_root}\n"
-            "All paths in your final response must be RELATIVE to the "
-            "property root (e.g. '07_timeline.md', "
-            "'04_dienstleister/DL-001.md').\n\n"
-            "Strategy:\n"
-            "  - Use Grep / Glob first to locate relevant files.\n"
-            "  - Read with offset/limit to avoid pulling whole files when "
-            "you only need part of them.\n"
-            "  - For listing or counting questions, Glob or Grep frontmatter "
-            "lines instead of reading every file in a directory.\n"
-            "  - Stop calling tools as soon as you can answer.\n\n"
-            "When done, respond with a SINGLE JSON object and no prose "
-            'outside it: {"answer": string|null, "path": string|null}. '
-            "Match the user's language. Use prior turns to resolve "
-            "references like 'before' or 'that one'."
+            "Answer questions about a property's markdown wiki via Read/Glob/Grep.\n"
+            f"Root: {prop_root}. Cited paths in your reply MUST be relative "
+            "(e.g. '07_timeline.md', '04_dienstleister/DL-001.md').\n\n"
+            "Rules:\n"
+            "- Issue independent Glob/Grep calls in PARALLEL in a single turn.\n"
+            "- Listing/counting: Glob frontmatter, do NOT Read each file.\n"
+            "- Read only when exact wording is required; use offset/limit.\n"
+            "- Stop tools the moment you can answer.\n\n"
+            'Final reply: ONE JSON object, no prose: {"answer": str|null, "path": str|null}.\n'
+            "Match user language. Resolve 'that one'/'before' from prior turns."
         )
         options = ClaudeAgentOptions(
             system_prompt=system_prompt,
             allowed_tools=["Read", "Glob", "Grep"],
-            permission_mode="acceptEdits",
+            permission_mode="default",
             cwd=str(prop_root),
             max_turns=_MAX_AGENT_TURNS,
             model=self._model,

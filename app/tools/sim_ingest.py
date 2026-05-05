@@ -71,7 +71,9 @@ async def _run(args: argparse.Namespace) -> int:
 
     print(f"workspace: {workspace}")
     print(f"wiki_dir:  {settings.wiki_dir}")
-    print(f"provider:  {settings.llm_provider} (fast={settings.fast_model}, smart={settings.smart_model})")
+    print(
+        f"provider:  {settings.llm_provider} (fast={settings.fast_model}, smart={settings.smart_model})"
+    )
     print(f"event:     {event.event_id} type={event.event_type} property={event.property_id}\n")
 
     t0 = time.time()
@@ -82,9 +84,13 @@ async def _run(args: argparse.Namespace) -> int:
     print(f"status={result.status}")
     if result.classification:
         c = result.classification
-        print(f"classify: signal={c.signal} category={c.category} priority={c.priority} confidence={c.confidence}")
+        print(
+            f"classify: signal={c.signal} category={c.category} priority={c.priority} confidence={c.confidence}"
+        )
     if result.patch:
-        print(f"applied_ops={result.patch.applied_ops} commit={result.patch.commit_sha} idempotent={result.patch.idempotent}")
+        print(
+            f"applied_ops={result.patch.applied_ops} commit={result.patch.commit_sha} idempotent={result.patch.idempotent}"
+        )
         print(f"touched: {list(result.patch.touched)}")
 
     root = settings.wiki_dir / event.property_id
@@ -114,16 +120,18 @@ async def _run(args: argparse.Namespace) -> int:
 def _parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Simulate one ingest event end-to-end.")
     p.add_argument("--event-id", required=True)
-    p.add_argument("--event-type", default="manual",
-                   help="manual|email|invoice|bank|letter|document|chat|... (default: manual)")
+    p.add_argument(
+        "--event-type",
+        default="manual",
+        help="manual|email|invoice|bank|letter|document|chat|... (default: manual)",
+    )
     p.add_argument("--property-id", default="LIE-001")
     p.add_argument("--text", help="free-text payload (used by manual/chat handlers)")
     p.add_argument("--source-path", help="repo-relative path to source file (.eml, .pdf, ...)")
     p.add_argument("--payload-json", help="extra JSON merged into event.payload")
     p.add_argument("--wiki-dir", help="wiki dir (default: fresh tmp dir per run)")
     p.add_argument("--data-dir", help="data dir (default: repo data/)")
-    p.add_argument("--provider", choices=["anthropic", "fake"],
-                   help="override APP_LLM_PROVIDER")
+    p.add_argument("--provider", choices=["anthropic", "fake"], help="override APP_LLM_PROVIDER")
     return p.parse_args(argv)
 
 

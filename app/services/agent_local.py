@@ -122,11 +122,7 @@ class LocalAgentService:
         if not prop_dir.is_dir():
             raise ToolError(f"property {property_id!r} not found")
 
-        kickoff = (
-            f"WIKI ROOT: {prop_dir}\n"
-            f"Property ID: {property_id}\n\n"
-            f"Question:\n{prompt}"
-        )
+        kickoff = f"WIKI ROOT: {prop_dir}\nProperty ID: {property_id}\n\nQuestion:\n{prompt}"
         messages: list[dict[str, Any]] = [{"role": "user", "content": kickoff}]
         tool_calls = 0
         usage_in = 0
@@ -195,9 +191,7 @@ class LocalAgentService:
             usage_tokens={"input": usage_in, "output": usage_out},
         )
 
-    async def _run_tool(
-        self, name: str, args: dict[str, Any], *, cwd: Path
-    ) -> tuple[str, bool]:
+    async def _run_tool(self, name: str, args: dict[str, Any], *, cwd: Path) -> tuple[str, bool]:
         try:
             if name == "bash":
                 return await _exec_bash(args.get("command", ""), cwd=cwd)

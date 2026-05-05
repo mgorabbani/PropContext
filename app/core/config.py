@@ -42,6 +42,14 @@ class Settings(BaseSettings):
     mcp_base_url: str = Field(default="http://localhost:8000")
     mcp_required_scopes: list[str] = Field(default_factory=lambda: ["openid", "email"])
     workos_authkit_domain: str | None = Field(default=None)
+    mcp_org_properties: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description=(
+            "Extra org_id -> property_ids allowlist merged on top of the hardcoded defaults. "
+            "Use the wildcard org key '*' to grant the listed properties to any authenticated "
+            'org. Set via APP_MCP_ORG_PROPERTIES as JSON, e.g. \'{"*":["LIE-001"]}\'.'
+        ),
+    )
 
     fast_model: str = ""
     smart_model: str = ""

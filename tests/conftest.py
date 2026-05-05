@@ -8,6 +8,12 @@ from httpx import ASGITransport, AsyncClient
 
 from app.core.config import Settings, get_settings
 from app.main import app
+from app.mcp.orgs import configure_orgs
+
+
+@pytest.fixture(autouse=True)
+def _reset_org_allowlist() -> None:
+    configure_orgs(None)
 
 
 @pytest.fixture

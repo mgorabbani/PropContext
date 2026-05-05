@@ -40,8 +40,7 @@ def parse_json_object(text: str) -> dict[str, Any]:
                     raw_preview=cleaned[:1000],
                 )
                 raise ValueError(
-                    f"json_repair returned {type(repaired).__name__}, "
-                    f"raw head: {cleaned[:200]!r}"
+                    f"json_repair returned {type(repaired).__name__}, raw head: {cleaned[:200]!r}"
                 ) from exc
     if not isinstance(value, dict):
         raise ValueError("expected JSON object")

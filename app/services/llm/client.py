@@ -171,9 +171,7 @@ class AnthropicClient:
                 text += block.text
                 content_blocks.append({"type": "text", "text": block.text})
             elif block.type == "tool_use":
-                tool_calls.append(
-                    ToolCall(id=block.id, name=block.name, input=dict(block.input))
-                )
+                tool_calls.append(ToolCall(id=block.id, name=block.name, input=dict(block.input)))
                 content_blocks.append(
                     {
                         "type": "tool_use",

@@ -5,6 +5,7 @@ from fastmcp import FastMCP
 
 from app.core.config import Settings
 from app.mcp.auth import build_auth_provider
+from app.mcp.orgs import configure_orgs
 from app.mcp.prompts import register_prompts
 from app.mcp.resources import register_resources
 from app.mcp.tools import register_tools
@@ -17,6 +18,7 @@ log = structlog.get_logger(__name__)
 
 
 def build_mcp(settings: Settings) -> FastMCP:
+    configure_orgs(settings.mcp_org_properties)
     auth = build_auth_provider(settings)
     mcp = FastMCP(
         name="PropContext",

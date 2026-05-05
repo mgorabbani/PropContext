@@ -296,14 +296,14 @@ function LiveTrace({
   onPickPath: (path: string) => void;
 }) {
   return (
-    <ol className="space-y-1 rounded-md border border-[var(--color-border-2)]/60 bg-[var(--color-surface)]/30 px-3 py-2 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
+    <ol className="space-y-1 overflow-x-auto rounded-md border border-[var(--color-border-2)]/60 bg-[var(--color-surface)]/30 px-3 py-2 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
       {steps.map((s, i) => {
         const isLast = i === steps.length - 1;
         return (
           <li key={i} className="space-y-0.5">
             <div
               className={cn(
-                "flex items-baseline gap-1.5",
+                "flex items-baseline gap-1.5 whitespace-nowrap",
                 isLast ? "text-[var(--color-accent)]" : "text-[var(--color-fg)]",
               )}
             >
@@ -316,7 +316,7 @@ function LiveTrace({
             {s.paths && s.paths.length > 0 && (
               <ul className="ml-4 space-y-0.5">
                 {s.paths.map((p) => (
-                  <li key={p}>
+                  <li key={p} className="whitespace-nowrap">
                     <button
                       onClick={() => onPickPath(p)}
                       className="text-left text-[var(--color-accent-dim)] hover:text-[var(--color-accent)] hover:underline"
@@ -359,10 +359,10 @@ function ThinkingTrace({
         <span>Thinking · {summary}</span>
       </button>
       {open && (
-        <ol className="space-y-1.5 border-t border-[var(--color-border-2)]/60 px-3 py-2 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
+        <ol className="space-y-1.5 overflow-x-auto border-t border-[var(--color-border-2)]/60 px-3 py-2 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
           {steps.map((s, i) => (
             <li key={i} className="space-y-1">
-              <div className="flex items-baseline gap-1.5 text-[var(--color-fg)]">
+              <div className="flex items-baseline gap-1.5 whitespace-nowrap text-[var(--color-fg)]">
                 <span className="text-[var(--color-fg-dim)]">{i + 1}.</span>
                 <span>{s.label}</span>
                 {s.detail && (
@@ -372,7 +372,7 @@ function ThinkingTrace({
               {s.paths && s.paths.length > 0 && (
                 <ul className="ml-4 space-y-0.5">
                   {s.paths.map((p) => (
-                    <li key={p}>
+                    <li key={p} className="whitespace-nowrap">
                       <button
                         onClick={() => onPickPath(p)}
                         className="text-left text-[var(--color-accent-dim)] hover:text-[var(--color-accent)] hover:underline"

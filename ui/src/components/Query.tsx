@@ -140,61 +140,40 @@ export function Query({ lie, onResolved }: Props) {
           />
         )}
         {hasEntries && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {entries.map((e) => (
-              <div key={e.id} className="space-y-2 fade-up">
-                <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/60 px-3 py-2">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
-                    You
-                  </div>
-                  <div className="mt-1 text-[13.5px] leading-relaxed text-[var(--color-fg)]">
+              <div key={e.id} className="space-y-4 fade-up">
+                <div className="flex justify-end">
+                  <div className="max-w-[85%] rounded-2xl border border-[var(--color-border-2)] bg-[var(--color-surface)]/70 px-3.5 py-2 text-[13.5px] leading-relaxed text-[var(--color-fg)]">
                     {e.question}
                   </div>
                 </div>
                 <div
                   className={cn(
-                    "rounded-md border px-3 py-2",
-                    e.status === "ok" &&
-                      "border-[var(--color-accent-dim)]/40 bg-[var(--color-surface)]/40",
-                    e.status === "empty" &&
-                      "border-[var(--color-border-2)] bg-[var(--color-surface)]/30",
-                    e.status === "error" &&
-                      "border-red-500/30 bg-red-500/5",
+                    "whitespace-pre-wrap text-[13.5px] leading-relaxed",
+                    e.status === "ok" && "text-[var(--color-fg)]",
+                    e.status === "empty" && "text-[var(--color-fg-muted)]",
+                    e.status === "error" && "text-red-500",
                   )}
                 >
-                  <div
-                    className={cn(
-                      "font-mono text-[10px] uppercase tracking-[0.2em]",
-                      e.status === "ok" && "text-[var(--color-accent-dim)]",
-                      e.status === "empty" && "text-[var(--color-fg-dim)]",
-                      e.status === "error" && "text-red-500",
-                    )}
-                  >
-                    {e.status === "error" ? "Error" : "Wiki"}
-                  </div>
-                  <div className="mt-1 whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--color-fg)]">
-                    {e.answer}
-                  </div>
+                  {e.answer}
                   {e.path && (
-                    <button
-                      onClick={() => onResolved(e.path!)}
-                      className="mt-2 font-mono text-[11px] text-[var(--color-accent)] hover:underline"
-                    >
-                      → {e.path}
-                    </button>
+                    <div className="mt-2">
+                      <button
+                        onClick={() => onResolved(e.path!)}
+                        className="font-mono text-[11px] text-[var(--color-accent)] hover:underline"
+                      >
+                        → {e.path}
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
             ))}
             {busy && (
-              <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/30 px-3 py-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
-                  Wiki
-                </div>
-                <div className="mt-1 flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
-                  thinking...
-                </div>
+              <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
+                thinking...
               </div>
             )}
           </div>

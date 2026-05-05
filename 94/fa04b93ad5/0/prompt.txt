@@ -1,0 +1,21 @@
+use prop-context mcp and find me give me summary of this transaction tx-01638
+
+---
+
+❯ use prop-context mcp and find me give me summary of this transaction tx-01638
+
+⏺
+
+Need property_id. Load list tool.
+
+⏺
+
+⏺ prop-context - list_properties (MCP)
+{
+  "result": []
+}
+
+No properties accessible to org. list_properties returned []. Cannot query wiki without property_id.
+
+Need property ID (e.g. LIE-001) where tx-01638 lives. Also org may lack access — check MCP auth / app/mcp/orgs.py allowlist.
+ ok now check codebase and fix this isseue

@@ -13,6 +13,12 @@
       "transcript": "/fa/73d8f4e236/0/full.jsonl",
       "content_hash": "/fa/73d8f4e236/0/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/fa/73d8f4e236/1/metadata.json",
+      "transcript": "/fa/73d8f4e236/1/full.jsonl",
+      "content_hash": "/fa/73d8f4e236/1/content_hash.txt",
+      "prompt": ""
     }
   ],
   "token_usage": {

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from app.services.hermes.branch import commit_proposals_to_branch
+from app.services.hermes.dashboard import build_dashboard
 from app.services.hermes.feedback import (
     FeedbackRecord,
     append_feedback,
@@ -25,6 +26,7 @@ __all__ = [
     "SkillCandidate",
     "SkillRegistry",
     "append_feedback",
+    "build_dashboard",
     "commit_proposals_to_branch",
     "feedback_path",
     "format_briefing",

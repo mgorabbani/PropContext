@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
-from app.api.v1 import ask, events, health, lint, properties, sim, webhook, wiki
+from app.api.v1 import ask, events, health, hermes, lint, properties, sim, webhook, wiki
 
 api_router = APIRouter()
 api_router.include_router(health.router, tags=["health"])
+api_router.include_router(hermes.router, prefix="/properties", tags=["hermes"])
 api_router.include_router(properties.router, prefix="/properties", tags=["properties"])
 api_router.include_router(webhook.router, prefix="/webhook", tags=["webhook"])
 api_router.include_router(events.router, tags=["events"])

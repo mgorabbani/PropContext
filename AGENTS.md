@@ -108,6 +108,18 @@ Pin a sane lower bound (`>=X.Y`). Never pin exact (`==`) except for security CVE
 5. Auth provider lives in `app/mcp/auth.py`. WorkOS AuthKit is the only supported AS today; swapping providers means changing this file alone (FastMCP `RemoteAuthProvider` contract).
 6. Never read the bearer token directly. Use `app.mcp.context.current_org_id()` / `assert_property_access()` so per-call auth state is sourced from FastMCP's request context.
 
+### Token efficiency (surgical retrieval)
+
+LLM calls are the budget bottleneck. Every payload destined for an LLM must be the smallest shape that still answers the question. Pattern is grep-before-read, not dump-everything.
+
+1. **Never ship a whole markdown body when keyed lines suffice.** `app/services/locate.slice_section_body` keeps headings, keyed bullets (`- 🔴 **EH-014:** …`), table rows, and footnote definitions; everything else collapses to `<!-- … N elided … -->`. Prose-only sections fall back to head + tail.
+2. **Never ship "every page" when entity-matched pages would do.** Filter `existing_pages` by frontmatter description matching resolved entity IDs.
+3. **Summarise fetched URLs with the fast model before the smart model sees them.** Spending Haiku tokens to save Sonnet tokens is net-positive at the current price ratio.
+4. **Compress accumulated history into structural summaries.** The Hermes skill briefing (`app/services/hermes/registry.format_briefing`) is the canonical pattern: N past events → ~300 tokens of op-shape + path-template summary, never the raw rows.
+5. **Measure or it will rot.** Log `extract.input_tokens` per event into `_hermes_feedback.jsonl` and watch the dashboard. Anything that grows linearly with property age is a leak.
+
+Counter-pattern: building richer "context dumps" to compensate for LLM uncertainty. The fix is more grep, not more text.
+
 ## Commands
 
 ```bash

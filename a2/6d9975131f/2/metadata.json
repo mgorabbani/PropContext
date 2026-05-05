@@ -1,0 +1,55 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "a26d9975131f",
+  "session_id": "fbcf4e0c-1e2c-412a-be87-44638e0e9e0b",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T01:27:56.51186Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/static/assets/index-CC-5ujmZ.css",
+    "app/static/assets/index-CN1kf80u.js",
+    "app/static/assets/index-DbI6b_pM.css",
+    "app/static/assets/index-_2YZDqN_.js",
+    "app/static/index.html",
+    "ui/src/App.tsx",
+    "ui/src/components/Query.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "83d7ee8d7899",
+  "token_usage": {
+    "input_tokens": 49,
+    "cache_creation_tokens": 87144,
+    "cache_read_tokens": 2607971,
+    "output_tokens": 11082,
+    "api_call_count": 39
+  },
+  "session_metrics": {
+    "turn_count": 1
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T01:27:56.499832Z",
+    "agent_lines": 151,
+    "agent_removed": 107,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 151,
+    "total_lines_changed": 258,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

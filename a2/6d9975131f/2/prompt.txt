@@ -1,0 +1,5 @@
+let's commit
+
+---
+
+now enable chat back and make sure it works, also add some sample query to trigger for demo with one click like suggstions in the middle of chat window

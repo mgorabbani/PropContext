@@ -13,6 +13,7 @@ from app.schemas.patch_plan import (
     PrependLogOp,
     UpsertSectionOp,
 )
+from app.services.hermes.feedback import append_feedback
 from app.services.patcher.atomic import atomic_write_text
 from app.services.patcher.git import commit_all, head_sha
 from app.services.patcher.ops import (
@@ -58,8 +59,18 @@ def apply_patch_plan(plan: PatchPlan, *, wiki_dir: Path) -> PatchApplyResult:
             unique_touched.append(path)
 
     summary = plan.summary.strip() or plan.event_type
-    commit_sha = commit_all(wiki_dir, message=f"ingest({plan.event_id}): {summary}".strip())
     rels = tuple(_relative_posix(p, property_root) for p in unique_touched)
+    append_feedback(
+        property_root,
+        event_id=plan.event_id,
+        event_type=plan.event_type,
+        property_id=plan.property_id,
+        summary=summary,
+        applied_ops=len(touched),
+        deferred_ops=0,
+        touched=rels,
+    )
+    commit_sha = commit_all(wiki_dir, message=f"ingest({plan.event_id}): {summary}".strip())
     return PatchApplyResult(
         event_id=plan.event_id,
         applied_ops=len(touched),

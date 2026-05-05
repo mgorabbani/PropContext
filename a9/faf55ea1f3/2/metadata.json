@@ -1,0 +1,114 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "a9faf55ea1f3",
+  "session_id": "4a7280b6-1eb8-4f5b-8b27-695e7decf21c",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T10:46:54.782535Z",
+  "branch": "claude/add-hermes-self-healing-yzZEY",
+  "checkpoints_count": 3,
+  "files_touched": [
+    "app/schemas/hermes.py",
+    "app/services/hermes/dashboard.py",
+    "app/services/hermes/proposals.py",
+    "app/services/hermes/skills.py",
+    "ui/src/api.ts",
+    "ui/src/components/Query.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/components/Tree.tsx",
+    "ui/src/components/Viewer.tsx",
+    "ui/src/main.tsx",
+    "ui/src/pages/Ingest.tsx",
+    "ui/src/styles.css"
+  ],
+  "agent": "Claude Code",
+  "model": "",
+  "turn_id": "9e5174595e24",
+  "token_usage": {
+    "input_tokens": 31,
+    "cache_creation_tokens": 43943,
+    "cache_read_tokens": 447802,
+    "output_tokens": 3076,
+    "api_call_count": 11
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T10:46:54.766307Z",
+    "agent_lines": 0,
+    "agent_removed": 13,
+    "human_added": 0,
+    "human_modified": 44,
+    "human_removed": 9,
+    "total_committed": 7,
+    "total_lines_changed": 66,
+    "agent_percentage": 19.696969696969695,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 998,
+      "user_lines_removed": 53,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37,
+        "app/schemas/hermes.py": 5,
+        "app/services/hermes/dashboard.py": 22,
+        "app/services/hermes/proposals.py": 11,
+        "app/services/hermes/skills.py": 50,
+        "ui/src/api.ts": 65,
+        "ui/src/components/JsonlViewer.tsx": 251,
+        "ui/src/components/Query.tsx": 6,
+        "ui/src/components/TopBar.tsx": 19,
+        "ui/src/components/Tree.tsx": 2,
+        "ui/src/components/Viewer.tsx": 5,
+        "ui/src/main.tsx": 3,
+        "ui/src/pages/Hermes.tsx": 508,
+        "ui/src/pages/Ingest.tsx": 12,
+        "ui/src/styles.css": 2
+      },
+      "user_removed_per_file": {
+        "app/services/hermes/dashboard.py": 3,
+        "app/services/hermes/skills.py": 25,
+        "ui/src/components/Query.tsx": 6,
+        "ui/src/components/TopBar.tsx": 3,
+        "ui/src/components/Tree.tsx": 2,
+        "ui/src/components/Viewer.tsx": 1,
+        "ui/src/pages/Ingest.tsx": 12,
+        "ui/src/styles.css": 1
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1021,
+      "agent_lines_removed": 66,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1021,
+      "agent_lines_removed": 66,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 4,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 1021,
+      "agent_lines_removed": 66,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

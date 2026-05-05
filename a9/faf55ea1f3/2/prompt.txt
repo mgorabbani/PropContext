@@ -1,0 +1,9 @@
+are we using duckdb or sqlite or anything for db
+
+---
+
+u mean to parse csv mainly?
+
+---
+
+[Image #10] then how does it differ from this file system md files and json

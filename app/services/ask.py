@@ -83,16 +83,24 @@ _AGENT_SYSTEM_PROMPT = (
     "You answer questions about a property's markdown wiki by navigating it "
     "with tools.\n\n"
     "Tools available:\n"
-    "  - list_dir(path): list .md files under a directory (path relative to "
-    "the property root, '' for root). Use to discover what exists.\n"
-    "  - read_file(path): read a markdown file (path relative to the property "
-    "root). Use after list_dir or grep narrows things down.\n"
-    "  - grep(pattern): regex search across all .md files in the property. "
-    "Returns matching lines with file paths. Use to find which files mention "
-    "a name, ID, Branche, etc.\n\n"
-    "Strategy: start by reading 'index.md' or grepping for the question's "
-    "key term. Open only the files you actually need — every read costs "
-    "tokens. Stop calling tools as soon as you can answer.\n\n"
+    "  - list_dir(path): list .md files under a directory ('' for root).\n"
+    "  - summary(path): for every .md file under the directory, return its "
+    "frontmatter `name | description`. Cheap triage — prefer this to opening "
+    "each file when the question is a list/count or you need to filter by "
+    "category (Branche, type, status). One summary() of a 16-file directory "
+    "costs ~1k tokens; reading all 16 files costs ~5k.\n"
+    "  - read_file(path): full file content (12k char cap). Only after "
+    "summary or grep narrows things down.\n"
+    "  - grep(pattern): regex over all .md files; returns 'path:line: match'. "
+    "Use to locate which files mention a keyword.\n\n"
+    "Strategy:\n"
+    "  1. Start with grep, list_dir, or summary — never blanket-read a "
+    "directory.\n"
+    "  2. For collection / filter questions ('list all X', 'how many Y', "
+    "'which DL handles Z'), summary alone usually answers it; only read "
+    "files when you need data the description doesn't cover (amounts, "
+    "dates, contract terms, contact details).\n"
+    "  3. Stop calling tools as soon as you can answer.\n\n"
     "When done, respond with a single JSON object and no prose outside it: "
     '{"answer": string|null, "path": string|null}. Set `path` to the file '
     "(relative to the property root) that best grounds the answer, or null. "
@@ -114,6 +122,26 @@ AGENT_TOOLS: list[dict] = [
                 "path": {
                     "type": "string",
                     "description": "Relative directory path, e.g. '04_dienstleister' or ''.",
+                }
+            },
+            "required": ["path"],
+        },
+    },
+    {
+        "name": "summary",
+        "description": (
+            "For every .md file under a directory, return its frontmatter "
+            "name and description as 'path | name | description'. Cheap "
+            "triage for list / count / filter questions — far less expensive "
+            "than reading each file. Path is relative to the property root; "
+            "'' for the whole property."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "Relative directory path, e.g. '04_dienstleister'.",
                 }
             },
             "required": ["path"],
@@ -426,6 +454,9 @@ class AskService:
         if name == "list_dir":
             rel = str(args.get("path", "") or "").strip().lstrip("/")
             return self._tool_list_dir(property_id=property_id, rel=rel)
+        if name == "summary":
+            rel = str(args.get("path", "") or "").strip().lstrip("/")
+            return self._tool_summary(property_id=property_id, rel=rel)
         if name == "read_file":
             rel = str(args.get("path", "") or "").strip().lstrip("/")
             return await self._tool_read_file(property_id=property_id, rel=rel)
@@ -456,6 +487,38 @@ class AskService:
                 break
         body = "\n".join(rows) if rows else "(empty)"
         return (body, f"{len(rows)} entries under {rel or '.'}", None)
+
+    def _tool_summary(
+        self, *, property_id: str, rel: str
+    ) -> tuple[str, str, str | None]:
+        root = self._wiki._wiki_dir / property_id
+        target = (root / rel).resolve() if rel else root.resolve()
+        try:
+            target.relative_to(root.resolve())
+        except ValueError:
+            return ("error: path escapes property root", "rejected: out-of-tree", None)
+        if not target.is_dir():
+            return (f"error: not a directory: {rel}", f"missing: {rel or '.'}", None)
+        rows: list[str] = []
+        for path in sorted(target.rglob("*.md")):
+            relp = path.relative_to(root)
+            if any(part.startswith("_") for part in relp.parts):
+                continue
+            if relp.name in {"index.md", "log.md", "lint_report.md"}:
+                continue
+            try:
+                content = path.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            name, desc = _extract_frontmatter_pair(content, fallback_name=relp.stem)
+            if len(desc) > _MAX_DIGEST_DESC_CHARS:
+                desc = desc[:_MAX_DIGEST_DESC_CHARS] + "…"
+            rows.append(f"{relp.as_posix()} | {name} | {desc}")
+            if len(rows) >= _TOOL_LIST_CAP:
+                rows.append(f"…[truncated at {_TOOL_LIST_CAP}]")
+                break
+        body = "\n".join(rows) if rows else "(no .md files)"
+        return (body, f"{len(rows)} files summarised under {rel or '.'}", None)
 
     async def _tool_read_file(
         self, *, property_id: str, rel: str

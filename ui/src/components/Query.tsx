@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { ask } from "../api";
 import { cn } from "../lib/cn";
@@ -8,7 +8,13 @@ type Props = {
   onResolved: (path: string) => void;
 };
 
-type Entry = { question: string; answer: string };
+type Entry = {
+  id: number;
+  question: string;
+  answer: string;
+  path?: string;
+  status: "ok" | "empty" | "error";
+};
 
 const SUGGESTIONS = [
   "Wer ist der aktuelle Hausmeister?",
@@ -21,36 +27,75 @@ const SUGGESTIONS = [
 export function Query({ lie, onResolved }: Props) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
-  const [entry, setEntry] = useState<Entry | null>(null);
-  const [msg, setMsg] = useState<string | null>(null);
+  const [entries, setEntries] = useState<Entry[]>([]);
   const [unavailable, setUnavailable] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const idRef = useRef(0);
+
+  useEffect(() => {
+    setEntries([]);
+  }, [lie]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [entries, busy]);
 
   async function run(question: string) {
     if (!question || busy) return;
+    setQ("");
     setBusy(true);
-    setMsg(null);
     const res = await ask(question, lie);
     setBusy(false);
+    const id = ++idRef.current;
     if (!res.ok) {
       if (res.status === 404) {
         setUnavailable(true);
-        setMsg("ask endpoint coming soon");
+        setEntries((e) => [
+          ...e,
+          {
+            id,
+            question,
+            answer: "Ask endpoint not available on this server.",
+            status: "error",
+          },
+        ]);
       } else {
-        setMsg(`ask failed (${res.status})`);
+        setEntries((e) => [
+          ...e,
+          {
+            id,
+            question,
+            answer: `Request failed (${res.status}).`,
+            status: "error",
+          },
+        ]);
       }
       return;
     }
-    if (res.data.path) {
-      onResolved(res.data.path);
-      setEntry({ question, answer: `Opened ${res.data.path}` });
-      setQ("");
-      setMsg(null);
-    } else if (res.data.answer) {
-      setEntry({ question, answer: res.data.answer });
-      setQ("");
-      setMsg(null);
+    const { answer, path } = res.data;
+    if (path) onResolved(path);
+    if (answer) {
+      setEntries((e) => [
+        ...e,
+        { id, question, answer, path: path ?? undefined, status: "ok" },
+      ]);
+    } else if (path) {
+      setEntries((e) => [
+        ...e,
+        { id, question, answer: `Opened ${path}`, path, status: "ok" },
+      ]);
     } else {
-      setMsg("no result");
+      setEntries((e) => [
+        ...e,
+        {
+          id,
+          question,
+          answer:
+            "The model didn't find an answer in this property's wiki. Try rephrasing or asking about a specific page.",
+          status: "empty",
+        },
+      ]);
     }
   }
 
@@ -59,9 +104,10 @@ export function Query({ lie, onResolved }: Props) {
   }
 
   async function pickSuggestion(s: string) {
-    setQ(s);
     await run(s);
   }
+
+  const hasEntries = entries.length > 0;
 
   return (
     <aside className="flex h-full min-w-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-bg)]/40">
@@ -72,43 +118,85 @@ export function Query({ lie, onResolved }: Props) {
             Ask the wiki
           </span>
         </div>
-        {unavailable && (
+        {unavailable ? (
           <span className="rounded border border-[var(--color-border)] px-1.5 py-px font-mono text-[9.5px] uppercase tracking-wider text-[var(--color-fg-dim)]">
             soon
           </span>
-        )}
+        ) : hasEntries ? (
+          <button
+            onClick={() => setEntries([])}
+            className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-dim)] hover:text-[var(--color-fg)]"
+          >
+            Clear
+          </button>
+        ) : null}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-4 py-5">
-        {!entry && !msg && (
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-auto px-4 py-5">
+        {!hasEntries && !busy && (
           <EmptyAsk
             onPick={(s) => void pickSuggestion(s)}
             disabled={busy || unavailable}
           />
         )}
-        {entry && (
-          <div className="space-y-3 fade-up">
-            <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/60 px-3 py-2">
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
-                You
+        {hasEntries && (
+          <div className="space-y-4">
+            {entries.map((e) => (
+              <div key={e.id} className="space-y-2 fade-up">
+                <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/60 px-3 py-2">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+                    You
+                  </div>
+                  <div className="mt-1 text-[13.5px] leading-relaxed text-[var(--color-fg)]">
+                    {e.question}
+                  </div>
+                </div>
+                <div
+                  className={cn(
+                    "rounded-md border px-3 py-2",
+                    e.status === "ok" &&
+                      "border-[var(--color-accent-dim)]/40 bg-[var(--color-surface)]/40",
+                    e.status === "empty" &&
+                      "border-[var(--color-border-2)] bg-[var(--color-surface)]/30",
+                    e.status === "error" &&
+                      "border-red-500/30 bg-red-500/5",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "font-mono text-[10px] uppercase tracking-[0.2em]",
+                      e.status === "ok" && "text-[var(--color-accent-dim)]",
+                      e.status === "empty" && "text-[var(--color-fg-dim)]",
+                      e.status === "error" && "text-red-500",
+                    )}
+                  >
+                    {e.status === "error" ? "Error" : "Wiki"}
+                  </div>
+                  <div className="mt-1 whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--color-fg)]">
+                    {e.answer}
+                  </div>
+                  {e.path && (
+                    <button
+                      onClick={() => onResolved(e.path!)}
+                      className="mt-2 font-mono text-[11px] text-[var(--color-accent)] hover:underline"
+                    >
+                      → {e.path}
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className="mt-1 text-[13.5px] leading-relaxed text-[var(--color-fg)]">
-                {entry.question}
+            ))}
+            {busy && (
+              <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/30 px-3 py-2">
+                <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+                  Wiki
+                </div>
+                <div className="mt-1 flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
+                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
+                  thinking...
+                </div>
               </div>
-            </div>
-            <div className="rounded-md border border-[var(--color-accent-dim)]/40 bg-[var(--color-surface)]/40 px-3 py-2">
-              <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent-dim)]">
-                Wiki
-              </div>
-              <div className="mt-1 whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--color-fg)]">
-                {entry.answer}
-              </div>
-            </div>
-          </div>
-        )}
-        {msg && (
-          <div className="mt-3 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
-            {msg}
+            )}
           </div>
         )}
       </div>
@@ -127,7 +215,7 @@ export function Query({ lie, onResolved }: Props) {
             placeholder={
               unavailable
                 ? "Ask endpoint coming soon..."
-                : "What is the contact for MIE-006?"
+                : "Ask about this property..."
             }
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {

@@ -10,6 +10,7 @@ class SubstrateStats(BaseModel):
     applied_events: int = 0
     miss_events: int = 0
     conflict_events: int = 0
+    error_events: int = 0
     last_event_id: str | None = None
     last_ts: str | None = None
 
@@ -28,7 +29,11 @@ class SkillsBlock(BaseModel):
     model_config = ConfigDict(extra="forbid")
     promoted_count: int = 0
     candidates: list[SkillItem] = Field(default_factory=list)
+    buckets: list[SkillItem] = Field(default_factory=list)
     registry_event_types: list[str] = Field(default_factory=list)
+    registry_briefings: dict[str, int] = Field(default_factory=dict)
+    promotion_threshold: int = 5
+    registry_threshold: int = 3
 
 
 class ProposalItem(BaseModel):

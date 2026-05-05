@@ -6,6 +6,7 @@ import { FileQuestion, FileWarning } from "lucide-react";
 import { Breadcrumb } from "./Breadcrumb";
 import { FrontmatterCard } from "./FrontmatterCard";
 import { HumanNotesEditor } from "./HumanNotesEditor";
+import { JsonlViewer } from "./JsonlViewer";
 import { parseMarkdown, resolveRelativePath, splitAtHumanNotes } from "../lib/markdown";
 import { rehypeStripComments } from "../lib/rehypeStripComments";
 
@@ -57,7 +58,10 @@ export function Viewer({ path, content, loading, error, onNavigate }: Props) {
           {loading && <ViewerSkeleton />}
           {error && !loading && <ViewerError message={error} />}
           {!loading && !error && !path && <EmptyState />}
-          {!loading && !error && path && content && (
+          {!loading && !error && path && content && path.endsWith(".jsonl") && (
+            <JsonlViewer content={content} />
+          )}
+          {!loading && !error && path && content && !path.endsWith(".jsonl") && (
             <article>
               <FrontmatterCard data={parsed.data} />
               <div className="prose-wiki">

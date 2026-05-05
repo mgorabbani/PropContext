@@ -246,11 +246,11 @@ export function IngestPage() {
       <header className="glass flex h-12 shrink-0 items-center gap-3 border-b border-[var(--color-border)] px-4">
         <a
           href="/"
-          className="font-display text-[12px] font-medium text-[var(--color-ink-50)] hover:text-[var(--color-accent)]"
+          className="font-display text-[14px] font-medium text-[var(--color-ink-50)] hover:text-[var(--color-accent)]"
         >
           ← PropContext Wiki
         </a>
-        <span className="text-[12.5px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+        <span className="text-[13px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
           Simulate ingest
         </span>
       </header>
@@ -263,7 +263,7 @@ export function IngestPage() {
                 value={day ?? ""}
                 onChange={(e) => setDay(Number(e.target.value))}
                 disabled={!days || days.length === 0}
-                className="h-7 w-full appearance-none rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)] px-2 font-mono text-[13.5px] text-[var(--color-fg)]"
+                className="h-7 w-full appearance-none rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)] px-2 font-mono text-[14px] text-[var(--color-fg)]"
               >
                 {(days ?? []).map((d) => (
                   <option key={d.day} value={d.day}>
@@ -279,7 +279,7 @@ export function IngestPage() {
                   key={k}
                   onClick={() => setKind(k)}
                   className={cn(
-                    "shrink-0 whitespace-nowrap rounded-md border px-2 py-1 font-mono text-[12.5px] uppercase tracking-wide transition-colors",
+                    "shrink-0 whitespace-nowrap rounded-md border px-2 py-1 font-mono text-[13px] uppercase tracking-wide transition-colors",
                     kind === k
                       ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
                       : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
@@ -293,7 +293,7 @@ export function IngestPage() {
 
           <div className="min-h-0 flex-1 overflow-auto px-1.5 py-2">
             {items.length === 0 ? (
-              <p className="px-3 py-6 text-center text-[13.5px] text-[var(--color-fg-muted)]">
+              <p className="px-3 py-6 text-center text-[14px] text-[var(--color-fg-muted)]">
                 No items.
               </p>
             ) : (
@@ -313,7 +313,7 @@ export function IngestPage() {
                       {it.id}
                     </span>
                   </div>
-                  <div className="mt-0.5 line-clamp-1 text-[14.5px] font-medium text-[var(--color-fg)]">
+                  <div className="mt-0.5 line-clamp-1 text-[14px] font-medium text-[var(--color-fg)]">
                     {it.label}
                   </div>
                   <div className="mt-0.5 line-clamp-2 text-[12.5px] text-[var(--color-fg-muted)]">
@@ -332,7 +332,7 @@ export function IngestPage() {
                     key={m}
                     onClick={() => setMode(m)}
                     className={cn(
-                      "flex-1 rounded-md border px-2 py-1 font-mono text-[12.5px] transition-colors",
+                      "flex-1 rounded-md border px-2 py-1 font-mono text-[14px] transition-colors",
                       mode === m
                         ? "border-[var(--color-accent-dim)] bg-[var(--color-surface)] text-[var(--color-accent)]"
                         : "border-[var(--color-border-2)] bg-[var(--color-bg)] text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]",
@@ -342,7 +342,7 @@ export function IngestPage() {
                   </button>
                 ))}
               </div>
-              <p className="mt-1 text-[12px] text-[var(--color-fg-muted)]">
+              <p className="mt-1 text-[13px] text-[var(--color-fg-muted)]">
                 {mode === "isolated"
                   ? "Fresh tmp wiki per run. Real Anthropic, no live mutation."
                   : "Writes to wiki/LIE-001 + commits."}
@@ -352,7 +352,7 @@ export function IngestPage() {
               onClick={handleRun}
               disabled={!itemId || running}
               className={cn(
-                "mt-3 w-full rounded-md border px-3 py-2 font-mono text-[13.5px] font-medium transition-colors",
+                "mt-3 w-full rounded-md border px-3 py-2 font-mono text-[14px] font-medium transition-colors",
                 running
                   ? "border-[var(--color-border-2)] bg-[var(--color-surface)] text-[var(--color-fg-muted)]"
                   : "border-[var(--color-accent)] bg-[var(--color-accent)] text-[#0b0b0a] hover:opacity-90",
@@ -366,12 +366,12 @@ export function IngestPage() {
 
         <main className="flex min-w-0 flex-1 flex-col">
           {error && (
-            <div className="border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-[13.5px] text-red-400">
+            <div className="border-b border-red-500/40 bg-red-500/10 px-4 py-2 text-[14px] text-red-400">
               {error}
             </div>
           )}
           {!result && !running && !error && (
-            <div className="grid flex-1 place-items-center text-[14.5px] text-[var(--color-fg-muted)]">
+            <div className="grid flex-1 place-items-center text-[16px] text-[var(--color-fg-muted)]">
               Pick a day + item, then run. Uses real Anthropic ({"claude-haiku-4-5"} → {"claude-sonnet-4-6"}).
             </div>
           )}
@@ -569,7 +569,7 @@ function ResultView({
           </div>
           <div className="min-h-0 flex-1 overflow-auto">
             {!active ? (
-              <p className="px-6 py-4 text-[13.5px] text-[var(--color-fg-muted)]">
+              <p className="px-6 py-4 text-[14px] text-[var(--color-fg-muted)]">
                 No files touched.
               </p>
             ) : view === "diff" ? (

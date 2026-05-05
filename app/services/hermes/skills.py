@@ -31,6 +31,34 @@ class SkillCandidate:
         return (self.event_type, self.path_templates)
 
 
+def _bucket_records(
+    property_root: Path,
+) -> dict[tuple[str, tuple[str, ...]], list[FeedbackRecord]]:
+    groups: dict[tuple[str, tuple[str, ...]], list[FeedbackRecord]] = defaultdict(list)
+    for record in iter_feedback(property_root):
+        if record.kind != "ingest" or record.applied_ops <= 0:
+            continue
+        sig = (record.event_type, _path_template_set(record.touched))
+        groups[sig].append(record)
+    return groups
+
+
+def _build_candidate(
+    event_type: str, templates: tuple[str, ...], rows: list[FeedbackRecord]
+) -> SkillCandidate:
+    rows_sorted = sorted(rows, key=lambda r: r.ts)
+    last = rows_sorted[-1]
+    samples = tuple(r.summary for r in rows_sorted[-3:] if r.summary)
+    return SkillCandidate(
+        slug=_slug(event_type, templates),
+        event_type=event_type,
+        path_templates=templates,
+        occurrences=len(rows),
+        last_event_id=last.event_id,
+        sample_summaries=samples,
+    )
+
+
 def propose_skills(
     property_root: Path,
     *,
@@ -39,34 +67,31 @@ def propose_skills(
     """Group feedback rows by `(event_type, path_template_set)` and return groups
     that have hit the promotion threshold.
     """
-    groups: dict[tuple[str, tuple[str, ...]], list[FeedbackRecord]] = defaultdict(list)
-    for record in iter_feedback(property_root):
-        if record.kind != "ingest" or record.applied_ops <= 0:
-            continue
-        sig = (record.event_type, _path_template_set(record.touched))
-        groups[sig].append(record)
-
-    candidates: list[SkillCandidate] = []
-    for (event_type, templates), rows in groups.items():
-        if len(rows) < threshold:
-            continue
-        rows_sorted = sorted(rows, key=lambda r: r.ts)
-        last = rows_sorted[-1]
-        samples = tuple(r.summary for r in rows_sorted[-3:] if r.summary)
-        slug = _slug(event_type, templates)
-        candidates.append(
-            SkillCandidate(
-                slug=slug,
-                event_type=event_type,
-                path_templates=templates,
-                occurrences=len(rows),
-                last_event_id=last.event_id,
-                sample_summaries=samples,
-            )
-        )
-
+    groups = _bucket_records(property_root)
+    candidates = [
+        _build_candidate(event_type, templates, rows)
+        for (event_type, templates), rows in groups.items()
+        if len(rows) >= threshold
+    ]
     candidates.sort(key=lambda c: (-c.occurrences, c.slug))
     return candidates
+
+
+def enumerate_buckets(
+    property_root: Path, *, min_occurrences: int = 1
+) -> list[SkillCandidate]:
+    """All bucketed groups (regardless of threshold), sorted by count desc.
+
+    Useful for surfacing how close the substrate is to producing a candidate.
+    """
+    groups = _bucket_records(property_root)
+    buckets = [
+        _build_candidate(event_type, templates, rows)
+        for (event_type, templates), rows in groups.items()
+        if len(rows) >= min_occurrences
+    ]
+    buckets.sort(key=lambda c: (-c.occurrences, c.slug))
+    return buckets
 
 
 def render_skills_markdown(candidates: Iterable[SkillCandidate]) -> str:

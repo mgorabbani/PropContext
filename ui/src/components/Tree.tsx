@@ -29,7 +29,7 @@ export function Tree({ node, selectedPath, onSelect, depth = 0, isRoot }: Props)
         onClick={() => onSelect(node.path)}
         className={cn(
           "group relative flex w-full items-center gap-2 rounded-md py-[3px] pr-2 text-left transition-colors",
-          "font-mono text-[12.5px]",
+          "font-mono text-[14px]",
           active
             ? "bg-[var(--color-surface-2)] text-[var(--color-accent)]"
             : "text-[var(--color-fg-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-fg)]",
@@ -60,7 +60,7 @@ export function Tree({ node, selectedPath, onSelect, depth = 0, isRoot }: Props)
         onClick={() => setOpen((o) => !o)}
         className={cn(
           "group flex w-full items-center gap-1.5 rounded-md py-[3px] pr-2 text-left transition-colors",
-          "font-mono text-[12.5px] text-[var(--color-ink-100)]",
+          "font-mono text-[14px] text-[var(--color-ink-100)]",
           "hover:bg-[var(--color-surface)]",
         )}
         style={{ paddingLeft: 8 + depth * 14 }}

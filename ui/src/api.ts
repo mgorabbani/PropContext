@@ -257,6 +257,72 @@ export async function runSimIngestStream(
   }
 }
 
+export type HermesSubstrateStats = {
+  exists: boolean;
+  total_events: number;
+  applied_events: number;
+  miss_events: number;
+  conflict_events: number;
+  error_events: number;
+  last_event_id: string | null;
+  last_ts: string | null;
+};
+
+export type HermesSkillItem = {
+  slug: string;
+  event_type: string;
+  occurrences: number;
+  last_event_id: string;
+  path_templates: string[];
+  sample_summaries: string[];
+};
+
+export type HermesSkillsBlock = {
+  promoted_count: number;
+  candidates: HermesSkillItem[];
+  buckets: HermesSkillItem[];
+  registry_event_types: string[];
+  registry_briefings: Record<string, number>;
+  promotion_threshold: number;
+  registry_threshold: number;
+};
+
+export type HermesProposalItem = {
+  kind: string;
+  target: string;
+  rationale: string;
+  evidence_count: number;
+  evidence_event_ids: string[];
+};
+
+export type HermesProposalsBlock = {
+  total: number;
+  by_kind: Record<string, number>;
+  items: HermesProposalItem[];
+};
+
+export type HermesArtifacts = {
+  skills_md: string | null;
+  proposals_md: string | null;
+  feedback_jsonl: string | null;
+};
+
+export type HermesDashboard = {
+  property_id: string;
+  substrate: HermesSubstrateStats;
+  skills: HermesSkillsBlock;
+  proposals: HermesProposalsBlock;
+  artifacts: HermesArtifacts;
+};
+
+export async function fetchHermesDashboard(
+  lie: string,
+): Promise<HermesDashboard> {
+  const r = await fetch(`${base}/properties/${encodeURIComponent(lie)}/hermes`);
+  if (!r.ok) throw new Error(`hermes ${r.status}`);
+  return r.json();
+}
+
 export type HumanNotes = { path: string; body: string };
 
 export async function fetchHumanNotes(path: string): Promise<HumanNotes> {

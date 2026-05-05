@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./styles.css";
 import App from "./App";
 import { IngestPage } from "./pages/Ingest";
+import { HermesPage } from "./pages/Hermes";
 
 (() => {
   const stored = window.localStorage.getItem("theme");
@@ -22,6 +23,8 @@ createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/ingest" element={<IngestPage />} />
+        <Route path="/p/:lie/hermes" element={<HermesPage />} />
+        <Route path="/hermes" element={<HermesPage />} />
         <Route path="/p/:lie/*" element={<App />} />
         <Route path="/p/:lie" element={<App />} />
         <Route path="/" element={<App />} />

@@ -194,7 +194,7 @@ export function Query({ lie, onResolved }: Props) {
             {entries.map((e) => (
               <div key={e.id} className="space-y-4 fade-up">
                 <div className="flex justify-end">
-                  <div className="max-w-[85%] rounded-2xl border border-[var(--color-border-2)] bg-[var(--color-surface)]/70 px-3.5 py-2 text-[13.5px] leading-relaxed text-[var(--color-fg)]">
+                  <div className="max-w-[85%] rounded-2xl border border-[var(--color-border-2)] bg-[var(--color-surface)]/70 px-3.5 py-2 text-[16px] leading-relaxed text-[var(--color-fg)]">
                     {e.question}
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export function Query({ lie, onResolved }: Props) {
                         onPickPath={(p) => onResolved(`${lie}/${p}`)}
                       />
                     )}
-                    <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
+                    <div className="flex items-center gap-1.5 text-[16px] text-[var(--color-fg-muted)]">
                       <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
                       thinking...
                     </div>
@@ -221,7 +221,7 @@ export function Query({ lie, onResolved }: Props) {
                     )}
                     <div
                       className={cn(
-                        "whitespace-pre-wrap text-[13.5px] leading-relaxed",
+                        "whitespace-pre-wrap text-[16px] leading-relaxed",
                         e.status === "ok" && "text-[var(--color-fg)]",
                         e.status === "empty" && "text-[var(--color-fg-muted)]",
                         e.status === "error" && "text-red-500",
@@ -257,7 +257,7 @@ export function Query({ lie, onResolved }: Props) {
           )}
         >
           <input
-            className="flex-1 bg-transparent px-2 py-1 text-[13.5px] text-[var(--color-fg)] placeholder:text-[var(--color-fg-dim)] outline-none"
+            className="flex-1 bg-transparent px-2 py-1 text-[14px] text-[var(--color-fg)] placeholder:text-[var(--color-fg-dim)] outline-none"
             value={q}
             placeholder={
               unavailable
@@ -465,7 +465,7 @@ function EmptyAsk({
         <div className="mx-auto mb-3 grid h-9 w-9 place-items-center rounded-md border border-[var(--color-border-2)] bg-[var(--color-bg)]">
           <Sparkles className="h-4 w-4 text-[var(--color-accent)]" />
         </div>
-        <p className="text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
+        <p className="text-[14px] leading-relaxed text-[var(--color-fg-muted)]">
           Ask anything about this property. Pin answers as topics.
         </p>
       </div>
@@ -480,7 +480,7 @@ function EmptyAsk({
               onClick={() => onPick(s)}
               disabled={disabled}
               className={cn(
-                "group rounded-md border border-[var(--color-border-2)] bg-[var(--color-bg)] px-3 py-2 text-left text-[12.5px] leading-snug text-[var(--color-fg)] transition-colors",
+                "group rounded-md border border-[var(--color-border-2)] bg-[var(--color-bg)] px-3 py-2 text-left text-[14px] leading-snug text-[var(--color-fg)] transition-colors",
                 "hover:border-[var(--color-accent-dim)] hover:bg-[var(--color-surface)] hover:text-[var(--color-accent)]",
                 "disabled:cursor-not-allowed disabled:opacity-40",
               )}

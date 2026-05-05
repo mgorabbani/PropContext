@@ -1,5 +1,6 @@
-import { Building2, Command, MessageSquare, Moon, PanelLeft, Play, Settings, Sun, Sparkles } from "lucide-react";
+import { Activity, Building2, Command, MessageSquare, Moon, PanelLeft, Play, Settings, Sun, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { cn } from "../lib/cn";
 
 type Props = {
@@ -21,6 +22,8 @@ export function TopBar({
   treeActive,
   onToggleTree,
 }: Props) {
+  const params = useParams();
+  const lie = params.lie ?? "";
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     if (typeof window === "undefined") return "dark";
     const stored = window.localStorage.getItem("theme");
@@ -55,7 +58,7 @@ export function TopBar({
           <div className="grid h-6 w-6 place-items-center rounded-md bg-[var(--color-accent)] text-[#0b0b0a]">
             <Building2 className="h-3.5 w-3.5" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-[15px] font-medium tracking-tight text-[var(--color-ink-50)]">
+          <span className="font-display text-[16px] font-medium tracking-tight text-[var(--color-ink-50)]">
             PropContext
           </span>
         </div>
@@ -66,7 +69,7 @@ export function TopBar({
           onClick={onOpenPalette}
           className={cn(
             "group flex h-7 shrink-0 items-center gap-2 whitespace-nowrap rounded-md border border-[var(--color-border-2)]",
-            "bg-[var(--color-surface)] px-2.5 text-[12px] text-[var(--color-fg-muted)]",
+            "bg-[var(--color-surface)] px-2.5 text-[14px] text-[var(--color-fg-muted)]",
             "transition-colors hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
           )}
         >
@@ -104,6 +107,19 @@ export function TopBar({
           )}
         >
           <Play className="h-3.5 w-3.5" />
+        </a>
+
+        <a
+          href={lie ? `/p/${lie}/hermes` : "/hermes"}
+          aria-label="Hermes dashboard"
+          title="Hermes — self-improvement loop"
+          className={cn(
+            "grid h-7 w-7 place-items-center rounded-md border border-[var(--color-border-2)]",
+            "bg-[var(--color-surface)] text-[var(--color-fg-muted)]",
+            "transition-colors hover:border-[var(--color-accent-dim)] hover:text-[var(--color-fg)]",
+          )}
+        >
+          <Activity className="h-3.5 w-3.5" />
         </a>
 
         <button

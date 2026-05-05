@@ -54,6 +54,8 @@ def propose_schema_amendments(property_root: Path) -> ProposalReport:
     for record in iter_feedback(property_root):
         if record.kind != "ingest":
             continue
+        if _had_upstream_error(record):
+            continue
         total += 1
 
         if record.applied_ops == 0:
@@ -159,6 +161,15 @@ def write_proposals_markdown(property_root: Path, report: ProposalReport) -> Pat
 
 def _looks_resolved(touched: Iterable[str], token: str) -> bool:
     return any(token in path for path in touched)
+
+
+def _had_upstream_error(record: object) -> bool:
+    extra = getattr(record, "extra", {}) or {}
+    if extra.get("retrieval_success") is False:
+        return True
+    if extra.get("error"):
+        return True
+    return False
 
 
 def _render_one(prop: SchemaProposal) -> str:

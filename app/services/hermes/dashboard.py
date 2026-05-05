@@ -18,6 +18,7 @@ from app.services.hermes.registry import DEFAULT_MIN_OCCURRENCES, load_skill_reg
 from app.services.hermes.skills import (
     DEFAULT_PROMOTION_THRESHOLD,
     SKILLS_FILENAME,
+    enumerate_buckets,
     propose_skills,
 )
 
@@ -56,29 +57,43 @@ def _substrate_stats(property_root: Path) -> SubstrateStats:
     applied = 0
     misses = 0
     conflicts = 0
+    errors = 0
     last_event_id: str | None = None
     last_ts: str | None = None
     for r in iter_feedback(property_root):
         if r.kind != "ingest":
             continue
         total += 1
+        last_event_id = r.event_id or last_event_id
+        last_ts = r.ts or last_ts
+        if _had_upstream_error(r):
+            errors += 1
+            continue
         if r.applied_ops > 0:
             applied += 1
-        if r.applied_ops == 0:
+        else:
             misses += 1
         if r.deferred_ops > 0:
             conflicts += 1
-        last_event_id = r.event_id or last_event_id
-        last_ts = r.ts or last_ts
     return SubstrateStats(
         exists=True,
         total_events=total,
         applied_events=applied,
         miss_events=misses,
         conflict_events=conflicts,
+        error_events=errors,
         last_event_id=last_event_id,
         last_ts=last_ts,
     )
+
+
+def _had_upstream_error(record: object) -> bool:
+    extra = getattr(record, "extra", {}) or {}
+    if extra.get("retrieval_success") is False:
+        return True
+    if extra.get("error"):
+        return True
+    return False
 
 
 def _skills_block(
@@ -86,23 +101,29 @@ def _skills_block(
     skill_threshold: int,
     registry_threshold: int,
 ) -> SkillsBlock:
-    candidates = propose_skills(property_root, threshold=skill_threshold)
-    items = [
-        SkillItem(
-            slug=c.slug,
-            event_type=c.event_type,
-            occurrences=c.occurrences,
-            last_event_id=c.last_event_id,
-            path_templates=list(c.path_templates),
-            sample_summaries=list(c.sample_summaries),
+    def to_item(c: object) -> SkillItem:
+        return SkillItem(
+            slug=getattr(c, "slug"),
+            event_type=getattr(c, "event_type"),
+            occurrences=getattr(c, "occurrences"),
+            last_event_id=getattr(c, "last_event_id"),
+            path_templates=list(getattr(c, "path_templates")),
+            sample_summaries=list(getattr(c, "sample_summaries")),
         )
-        for c in candidates
-    ]
+
+    candidates = propose_skills(property_root, threshold=skill_threshold)
+    buckets = enumerate_buckets(property_root, min_occurrences=1)
     registry = load_skill_registry(property_root, min_occurrences=registry_threshold)
     return SkillsBlock(
-        promoted_count=len(items),
-        candidates=items,
+        promoted_count=len(candidates),
+        candidates=[to_item(c) for c in candidates],
+        buckets=[to_item(b) for b in buckets],
         registry_event_types=sorted(registry.briefings.keys()),
+        registry_briefings={
+            et: b.occurrences for et, b in registry.briefings.items()
+        },
+        promotion_threshold=skill_threshold,
+        registry_threshold=registry_threshold,
     )
 
 

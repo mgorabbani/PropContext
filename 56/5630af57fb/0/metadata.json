@@ -1,0 +1,71 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "565630af57fb",
+  "session_id": "1b4ae546-d557-44bd-81d0-263d4ee8f3a0",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T10:10:33.482498Z",
+  "branch": "claude/add-hermes-self-healing-yzZEY",
+  "checkpoints_count": 2,
+  "files_touched": [
+    "app/schemas/patch_plan.py",
+    "app/services/extract.py",
+    "tests/llm/test_extract.py"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "e1b982c25212",
+  "token_usage": {
+    "input_tokens": 42,
+    "cache_creation_tokens": 58914,
+    "cache_read_tokens": 1127467,
+    "output_tokens": 7542,
+    "api_call_count": 22
+  },
+  "session_metrics": {
+    "turn_count": 3
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T10:10:33.460385Z",
+    "agent_lines": 47,
+    "agent_removed": 6,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 47,
+    "total_lines_changed": 53,
+    "agent_percentage": 100,
+    "metric_version": 2
+  },
+  "prompt_attributions": [
+    {
+      "checkpoint_number": 1,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 0,
+      "agent_lines_removed": 0,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 2,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 47,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    },
+    {
+      "checkpoint_number": 3,
+      "user_lines_added": 37,
+      "user_lines_removed": 0,
+      "agent_lines_added": 47,
+      "agent_lines_removed": 6,
+      "user_added_per_file": {
+        ".claude/settings.local.json": 37
+      }
+    }
+  ]
+}

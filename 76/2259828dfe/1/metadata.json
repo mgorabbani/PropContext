@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "762259828dfe",
+  "session_id": "909ff7b8-67fb-471d-a0b0-12f37c152c6e",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T01:38:15.854581Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 1,
+  "files_touched": [],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "2c3327395860",
+  "token_usage": {
+    "input_tokens": 153,
+    "cache_creation_tokens": 449052,
+    "cache_read_tokens": 20163952,
+    "output_tokens": 68036,
+    "api_call_count": 95
+  },
+  "session_metrics": {
+    "turn_count": 7
+  }
+}

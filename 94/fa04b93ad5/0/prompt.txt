@@ -19,3 +19,7 @@ No properties accessible to org. list_properties returned []. Cannot query wiki 
 
 Need property ID (e.g. LIE-001) where tx-01638 lives. Also org may lack access — check MCP auth / app/mcp/orgs.py allowlist.
  ok now check codebase and fix this isseue
+
+---
+
+ok try again calling same mcp

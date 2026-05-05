@@ -90,7 +90,7 @@ def test_canonicalize_overrides_runtime_managed_fields() -> None:
 
 
 def test_canonicalize_rejects_unknown_op() -> None:
-    with pytest.raises(Exception, match=r"literal_error|extra_forbidden|missing"):
+    with pytest.raises(Exception, match=r"literal_error|extra_forbidden|missing|union_tag_invalid"):
         canonicalize_patch_plan(
             {"ops": [{"op": "upsert_bullet", "file": "x.md", "key": "k", "content": "v"}]},
             event_id="EVT-4",

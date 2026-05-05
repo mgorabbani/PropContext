@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -35,7 +35,10 @@ class PrependLogOp(BaseModel):
     line: str
 
 
-PatchOp = CreatePageOp | UpsertSectionOp | AppendSectionOp | PrependLogOp
+PatchOp = Annotated[
+    CreatePageOp | UpsertSectionOp | AppendSectionOp | PrependLogOp,
+    Field(discriminator="op"),
+]
 
 
 class PatchPlan(BaseModel):

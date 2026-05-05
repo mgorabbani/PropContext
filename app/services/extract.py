@@ -52,6 +52,15 @@ def extract_prompt(
         f"{briefing_block}"
         "Produce ONE PatchPlan JSON object that integrates this source into the wiki. "
         "Follow the system contract. Return JSON only — no markdown, no commentary.\n\n"
+        "Shape (STRICT):\n"
+        '{"summary": str, "ops": [Op, Op, ...]}\n'
+        "Each Op is ONE of (no extra keys, no nesting, no wrapping a PatchPlan inside an op):\n"
+        '  {"op": "create_page", "path": str, "frontmatter": object|null, "body": str}\n'
+        '  {"op": "upsert_section", "path": str, "heading": str, "body": str}\n'
+        '  {"op": "append_section", "path": str, "heading": str, "line": str}\n'
+        '  {"op": "prepend_log", "line": str}\n'
+        "`ops` is a FLAT list. Never put `ops`, `summary`, `event_id`, `property_id`, "
+        "or `name` inside an op object.\n\n"
         f"{json.dumps(payload, ensure_ascii=False, default=str)}"
     )
 
@@ -108,17 +117,46 @@ def canonicalize_patch_plan(
     if source_ids and not data.get("source_ids"):
         data["source_ids"] = source_ids
     raw_ops = data.get("ops") or []
-    data["ops"] = [_canonical_op(op) for op in raw_ops if isinstance(op, dict)]
+    flat: list[dict[str, Any]] = []
+    for op in raw_ops:
+        if isinstance(op, dict):
+            _flatten_ops(op, flat)
+    data["ops"] = [_canonical_op(op) for op in flat]
     return PatchPlan.model_validate(data)
+
+
+_OP_FIELDS: dict[str, set[str]] = {
+    "create_page": {"op", "path", "frontmatter", "body"},
+    "upsert_section": {"op", "path", "heading", "body"},
+    "append_section": {"op", "path", "heading", "line"},
+    "prepend_log": {"op", "line"},
+}
+
+
+def _flatten_ops(raw: dict[str, Any], out: list[dict[str, Any]]) -> None:
+    nested = raw.get("ops")
+    if isinstance(nested, list) and "op" not in raw:
+        for child in nested:
+            if isinstance(child, dict):
+                _flatten_ops(child, out)
+        return
+    out.append(raw)
+    if isinstance(nested, list):
+        for child in nested:
+            if isinstance(child, dict):
+                _flatten_ops(child, out)
 
 
 def _canonical_op(raw: dict[str, Any]) -> dict[str, Any]:
     op = dict(raw)
     name = str(op.get("op", ""))
-    if name == "create_page" and "frontmatter" in op and not isinstance(op["frontmatter"], dict):
-        op["frontmatter"] = None
     if name in {"upsert_section", "append_section"} and "section" in op and "heading" not in op:
         op["heading"] = op.pop("section")
+    if name == "create_page" and "frontmatter" in op and not isinstance(op["frontmatter"], dict):
+        op["frontmatter"] = None
+    allowed = _OP_FIELDS.get(name)
+    if allowed is not None:
+        op = {k: v for k, v in op.items() if k in allowed}
     return op
 
 

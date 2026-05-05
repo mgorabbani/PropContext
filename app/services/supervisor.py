@@ -17,6 +17,7 @@ from app.services.handlers import get_event_handler
 from app.services.hermes.registry import load_skill_registry
 from app.services.llm.client import LLMClient, get_llm_client
 from app.services.locate import locate_sections
+from app.services.pages_filter import filter_relevant_pages
 from app.services.patcher.apply import PatchApplyResult, apply_patch_plan
 from app.services.patcher.git import commit_all, head_sha
 from app.services.reindex import reindex_files, reindex_property
@@ -73,6 +74,7 @@ class Supervisor:
         enrichment = await enrich_with_web_sources(
             normalized_text=normalized.normalized_text,
             settings=self._settings,
+            llm=self._llm,
             on_tool_call=emit,
         )
         enriched_text = enrichment.enriched_text
@@ -147,7 +149,15 @@ class Supervisor:
             {"sections": [getattr(s, "path", str(s)) for s in sections][:10]},
         )
 
-        existing_pages = _list_existing_pages(property_root)
+        existing_pages = filter_relevant_pages(
+            property_root,
+            entity_ids=resolution.entity_ids,
+            source_ids=resolution.source_ids,
+        )
+        await emit(
+            "pages_filter.done",
+            {"selected": len(existing_pages)},
+        )
 
         registry = load_skill_registry(property_root)
         briefing = registry.find_for(event.event_type)
@@ -254,18 +264,6 @@ class Supervisor:
     def _wiki_chunks_db_path(self) -> Path:
         self._settings.output_dir.mkdir(parents=True, exist_ok=True)
         return self._settings.output_dir / "wiki_chunks.duckdb"
-
-
-def _list_existing_pages(property_root: Path) -> list[str]:
-    if not property_root.is_dir():
-        return []
-    pages: list[str] = []
-    for path in sorted(property_root.rglob("*.md")):
-        rel = path.relative_to(property_root)
-        if any(part.startswith("_") for part in rel.parts):
-            continue
-        pages.append(rel.as_posix())
-    return pages
 
 
 def get_supervisor(

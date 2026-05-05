@@ -12,6 +12,7 @@ from app.services.enrich import (
     enrich_with_web_sources,
     extract_urls,
 )
+from app.services.llm.client import FakeLLMClient
 from app.services.tavily import ExtractedPage
 
 
@@ -146,9 +147,9 @@ async def test_enrich_emits_tool_call_events(tavily_settings: Settings) -> None:
             normalized_text=text, settings=tavily_settings, on_tool_call=emit
         )
 
-    assert all(name == "enrich.tool" for name, _ in events)
-    starts = [d for name, d in events if d["status"] == "start"]
-    finals = [d for name, d in events if d["status"] in {"ok", "fail"}]
+    tool_events = [d for name, d in events if name == "enrich.tool"]
+    starts = [d for d in tool_events if d["status"] == "start"]
+    finals = [d for d in tool_events if d["status"] in {"ok", "fail"}]
     assert len(starts) == 2
     assert len(finals) == 2
     ok = next(d for d in finals if d["status"] == "ok")
@@ -158,3 +159,92 @@ async def test_enrich_emits_tool_call_events(tavily_settings: Settings) -> None:
     assert ok["chars"] == 4
     assert fail["url"] == "https://broken.example.com/x"
     assert fail["chars"] == 0
+
+
+async def test_enrich_summarises_long_pages_when_llm_provided(
+    tavily_settings: Settings,
+) -> None:
+
+    text = "See https://vendor.example.com/quote/123"
+    long_body = "Lorem ipsum boilerplate. " * 200  # ~5KB
+
+    async def fake_extract(
+        url: str, *, settings: Settings, extract_depth: str = "basic"
+    ) -> ExtractedPage | None:
+        return ExtractedPage(url=url, raw_content=long_body)
+
+    fake_llm = FakeLLMClient(responses={"*": "- key fact 1\n- key fact 2"})
+
+    with patch.object(enrich, "extract_url", side_effect=fake_extract):
+        result = await enrich_with_web_sources(
+            normalized_text=text,
+            settings=tavily_settings,
+            llm=fake_llm,
+        )
+
+    assert len(result.pages) == 1
+    assert result.pages[0].raw_content == "- key fact 1\n- key fact 2"
+    assert "key fact 1" in result.enriched_text
+    assert "Lorem ipsum boilerplate" not in result.enriched_text
+    assert any(c["model"] == tavily_settings.fast_model for c in fake_llm.calls)
+
+
+async def test_enrich_skips_summary_for_short_pages(tavily_settings: Settings) -> None:
+
+    text = "See https://vendor.example.com/quote/123"
+
+    async def fake_extract(
+        url: str, *, settings: Settings, extract_depth: str = "basic"
+    ) -> ExtractedPage | None:
+        return ExtractedPage(url=url, raw_content="short body")
+
+    fake_llm = FakeLLMClient(responses={"*": "summary"})
+
+    with patch.object(enrich, "extract_url", side_effect=fake_extract):
+        result = await enrich_with_web_sources(
+            normalized_text=text, settings=tavily_settings, llm=fake_llm
+        )
+
+    assert result.pages[0].raw_content == "short body"
+    assert fake_llm.calls == []  # never called: body under threshold
+
+
+async def test_enrich_passes_through_when_llm_not_provided(
+    tavily_settings: Settings,
+) -> None:
+    text = "See https://vendor.example.com/quote/123"
+    long_body = "Lorem ipsum boilerplate. " * 200
+
+    async def fake_extract(
+        url: str, *, settings: Settings, extract_depth: str = "basic"
+    ) -> ExtractedPage | None:
+        return ExtractedPage(url=url, raw_content=long_body)
+
+    with patch.object(enrich, "extract_url", side_effect=fake_extract):
+        result = await enrich_with_web_sources(normalized_text=text, settings=tavily_settings)
+
+    # No summariser → falls back to existing 4000-char truncation.
+    assert "Lorem ipsum boilerplate" in result.enriched_text
+
+
+async def test_enrich_recovers_when_summariser_raises(tavily_settings: Settings) -> None:
+
+    class BoomLLM(FakeLLMClient):
+        async def complete(self, **_: object) -> str:  # type: ignore[override]
+            raise RuntimeError("boom")
+
+    text = "See https://vendor.example.com/quote/123"
+    long_body = "Lorem ipsum boilerplate. " * 200
+
+    async def fake_extract(
+        url: str, *, settings: Settings, extract_depth: str = "basic"
+    ) -> ExtractedPage | None:
+        return ExtractedPage(url=url, raw_content=long_body)
+
+    with patch.object(enrich, "extract_url", side_effect=fake_extract):
+        result = await enrich_with_web_sources(
+            normalized_text=text, settings=tavily_settings, llm=BoomLLM()
+        )
+
+    # Falls back to the raw page on summariser failure.
+    assert "Lorem ipsum boilerplate" in result.enriched_text

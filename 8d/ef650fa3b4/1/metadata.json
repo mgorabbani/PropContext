@@ -1,0 +1,40 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "8def650fa3b4",
+  "session_id": "909ff7b8-67fb-471d-a0b0-12f37c152c6e",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T02:05:19.894121Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/services/ask.py",
+    "app/services/llm/client.py"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "2c3327395860",
+  "checkpoint_transcript_start": 569,
+  "transcript_lines_at_start": 569,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "session_metrics": {
+    "turn_count": 7
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T02:05:19.845105Z",
+    "agent_lines": 376,
+    "agent_removed": 2,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 376,
+    "total_lines_changed": 378,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

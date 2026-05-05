@@ -1,0 +1,49 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "4a3ad2c050c2",
+  "session_id": "0b5d410a-78c3-471c-b051-19ca66fb1bfc",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T01:54:35.103711Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/api/v1/ask.py",
+    "app/schemas/ask.py",
+    "app/services/ask.py",
+    "app/services/llm/client.py",
+    "app/static/assets/index-B8qVG-Az.js",
+    "app/static/assets/index-BE2oVrNf.css",
+    "app/static/assets/index-BHf6l4_w.js",
+    "app/static/assets/index-CiyKz_kS.css",
+    "app/static/index.html",
+    "ui/src/api.ts",
+    "ui/src/components/Query.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-opus-4-7[1m]",
+  "turn_id": "69e272106e95",
+  "checkpoint_transcript_start": 1036,
+  "transcript_lines_at_start": 1036,
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  },
+  "session_metrics": {
+    "turn_count": 9
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T01:54:35.058211Z",
+    "agent_lines": 512,
+    "agent_removed": 159,
+    "human_added": 0,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 512,
+    "total_lines_changed": 671,
+    "agent_percentage": 100,
+    "metric_version": 2
+  }
+}

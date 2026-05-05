@@ -1,0 +1,2 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+DE02 1001 0010 0123 4567 89;19.01.2026;19.01.2026;Ueberweisung;Rechnung INV-2026-0208 TUEV-Pruefung Aufzug;;;TX-01635;;;;Aufzug Schindler & Co. GmbH;DE13370400449368998094;DEUTDEBB101;-452,20;EUR;Saldo: 911000,00

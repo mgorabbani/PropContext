@@ -1,0 +1,6 @@
+id,datetime,thread_id,direction,from_email,to_email,subject,category,sprache,error_types,filename,month_dir
+EMAIL-06587,2026-01-11T08:12:00,THR-I11-0001,outgoing,t.kreuzer@huber-partner-verwaltung.de,sven.krause@gmx.de,1. Mahnung Hausgeld 12/2025,eigentuemer/mahnung,de,,20260111_081200_EMAIL-06587.eml,2026-01
+EMAIL-06588,2026-01-11T11:47:00,THR-I11-0001,incoming,sven.krause@gmx.de,info@huber-partner-verwaltung.de,Re: 1. Mahnung Hausgeld 12/2025,eigentuemer/mahnung,de,,20260111_114700_EMAIL-06588.eml,2026-01
+EMAIL-06589,2026-01-11T14:22:00,THR-I11-0002,incoming,helene.weber@gmx.de,info@huber-partner-verwaltung.de,Frage zu Nebenkostenvorauszahlung,mieter/nebenkosten,de,,20260111_142200_EMAIL-06589.eml,2026-01
+EMAIL-06590,2026-01-11T16:05:00,THR-I11-0003,outgoing,a.berger@huber-partner-verwaltung.de,kontakt@hausmeister-mueller.de,Auftrag: Streumittel nachfuellen,dienstleister/auftrag,de,,20260111_160500_EMAIL-06590.eml,2026-01
+EMAIL-06591,2026-01-12T09:18:00,THR-I11-0001,outgoing,t.kreuzer@huber-partner-verwaltung.de,sven.krause@gmx.de,Re: 1. Mahnung Hausgeld 12/2025,eigentuemer/mahnung,de,,20260112_091800_EMAIL-06591.eml,2026-01

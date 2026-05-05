@@ -1,0 +1,3 @@
+id,datum,typ,betrag,kategorie,gegen_name,verwendungszweck,referenz_id,error_types
+TX-01633,2026-01-16,DEBIT,285.60,dienstleister,Dachdecker Richter,Rechnung INV-2026-0207 Dachdecker Richter Begehung,INV-00207,
+TX-01634,2026-01-16,CREDIT,412.00,hausgeld,Andreas Hoffmann,Hausgeld 01/2026 EH-031,,

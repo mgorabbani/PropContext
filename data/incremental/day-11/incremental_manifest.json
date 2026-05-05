@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "day_index": 11,
+  "content_date": "2026-01-11",
+  "seed": 142,
+  "difficulty": "medium",
+  "emails_written": 5,
+  "invoices_written": 1,
+  "bank_transactions_written": 2,
+  "stammdaten_relative": "../stammdaten/stammdaten.json",
+  "note": "Mahnung-Eskalation: Hausgeld-Rueckzahlung, 1. Mahnung, manuelle Korrektur."
+}

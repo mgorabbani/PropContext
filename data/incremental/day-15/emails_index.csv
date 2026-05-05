@@ -1,0 +1,7 @@
+id,datetime,thread_id,direction,from_email,to_email,subject,category,sprache,error_types,filename,month_dir
+EMAIL-06608,2026-01-15T08:47:00,THR-I15-0001,outgoing,t.kreuzer@huber-partner-verwaltung.de,kontakt@hausmeister-mueller.de,Kuendigung Hausmeistervertrag LIE-001 zum 31.03.2026,dienstleister/kuendigung,de,,20260115_084700_EMAIL-06608.eml,2026-01
+EMAIL-06609,2026-01-15T10:12:00,THR-I15-0001,incoming,kontakt@hausmeister-mueller.de,info@huber-partner-verwaltung.de,Re: Kuendigung Hausmeistervertrag LIE-001 zum 31.03.2026,dienstleister/kuendigung,de,,20260115_101200_EMAIL-06609.eml,2026-01
+EMAIL-06610,2026-01-15T11:30:00,THR-I15-0002,incoming,angebot@propclean-berlin.de,info@huber-partner-verwaltung.de,Angebot Hausmeisterservice LIE-001 ab 01.04.2026,dienstleister/angebot,de,,20260115_113000_EMAIL-06610.eml,2026-01
+EMAIL-06611,2026-01-15T14:22:00,THR-I15-0003,incoming,christine.wagner@web.de,info@huber-partner-verwaltung.de,Reinigung Treppenhaus mangelhaft,mieter/reklamation,de,,20260115_142200_EMAIL-06611.eml,2026-01
+EMAIL-06612,2026-01-15T17:00:00,THR-I15-0004,outgoing,t.kreuzer@huber-partner-verwaltung.de,beirat@huber-partner-verwaltung.de,Vergleich Hausmeisterangebote zur Beiratspruefung,eigentuemer/beirat,de,,20260115_170000_EMAIL-06612.eml,2026-01
+EMAIL-06613,2026-01-15T18:38:00,THR-I15-0005,incoming,marion.becker@gmx.de,info@huber-partner-verwaltung.de,Schornsteinfeger Termin - Bestaetigung,mieter/info,de,,20260115_183800_EMAIL-06613.eml,2026-01

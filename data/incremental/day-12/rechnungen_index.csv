@@ -1,0 +1,2 @@
+id,rechnungsnr,datum,dienstleister_id,dienstleister_firma,empfaenger,netto,mwst,brutto,iban,error_types,filename,month_dir
+INV-00206,INV-2026-0206,2026-01-12,DL-003,Heiztechnik Berlin GmbH,Huber & Partner Immobilienverwaltung GmbH,410.00,77.90,487.90,DE37370400440229612018,,20260112_DL-003_INV-00206.pdf,2026-01

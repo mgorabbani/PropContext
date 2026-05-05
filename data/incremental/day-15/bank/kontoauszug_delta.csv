@@ -1,0 +1,4 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+DE02 1001 0010 0123 4567 89;19.01.2026;19.01.2026;Ueberweisung;Rechnung INV-2026-0209 Hausmeister Mueller GmbH;;;TX-01636;;;;Hausmeister Mueller GmbH;DE94100701240494519832;DEUTDEBB101;-1088,85;EUR;Saldo: 909500,00
+DE02 1001 0010 0123 4567 89;20.01.2026;20.01.2026;Ueberweisung;Rechnung INV-2026-0210 Schornsteinfegermeister Bauer;;;TX-01637;;;;Schornsteinfegermeister Bauer;DE32100500004324451076;DEUTDEBB101;-168,98;EUR;Saldo: 909500,00
+DE02 1001 0010 0123 4567 89;20.01.2026;20.01.2026;Gutschrift;Hausgeld 01/2026 EH-014;;;TX-01638;;;;Anneliese Bauer;;;412,00;EUR;Saldo: 909500,00

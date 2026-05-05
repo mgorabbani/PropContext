@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "day_index": 12,
+  "content_date": "2026-01-12",
+  "seed": 143,
+  "difficulty": "medium",
+  "emails_written": 5,
+  "invoices_written": 1,
+  "bank_transactions_written": 1,
+  "stammdaten_relative": "../stammdaten/stammdaten.json",
+  "note": "Heizungsstoerung: Mieter meldet Ausfall, Notdienst, Rechnung, Bezahlung."
+}

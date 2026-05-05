@@ -1,0 +1,6 @@
+id,datetime,thread_id,direction,from_email,to_email,subject,category,sprache,error_types,filename,month_dir
+EMAIL-06592,2026-01-12T07:04:00,THR-I12-0001,incoming,brigitte.schmidt@gmx.de,info@huber-partner-verwaltung.de,Heizung ausgefallen - dringend,mieter/stoerung,de,,20260112_070400_EMAIL-06592.eml,2026-01
+EMAIL-06593,2026-01-12T08:30:00,THR-I12-0001,outgoing,a.berger@huber-partner-verwaltung.de,brigitte.schmidt@gmx.de,Re: Heizung ausgefallen - dringend,mieter/stoerung,de,,20260112_083000_EMAIL-06593.eml,2026-01
+EMAIL-06594,2026-01-12T08:35:00,THR-I12-0002,outgoing,a.berger@huber-partner-verwaltung.de,service@heiztechnik-berlin.de,Notdienstauftrag Heizungsausfall LIE-001 EH-022,dienstleister/auftrag,de,,20260112_083500_EMAIL-06594.eml,2026-01
+EMAIL-06595,2026-01-12T17:22:00,THR-I12-0001,incoming,brigitte.schmidt@gmx.de,info@huber-partner-verwaltung.de,Re: Heizung ausgefallen - dringend,mieter/stoerung,de,,20260112_172200_EMAIL-06595.eml,2026-01
+EMAIL-06596,2026-01-12T19:08:00,THR-I12-0002,incoming,olga.holsten@heiztechnik-berlin.de,info@huber-partner-verwaltung.de,Rechnung INV-2026-0206 - Notdienst LIE-001 EH-022,dienstleister/rechnung,de,,20260112_190800_EMAIL-06596.eml,2026-01

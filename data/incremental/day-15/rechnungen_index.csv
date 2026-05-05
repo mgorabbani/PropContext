@@ -1,0 +1,3 @@
+id,rechnungsnr,datum,dienstleister_id,dienstleister_firma,empfaenger,netto,mwst,brutto,iban,error_types,filename,month_dir
+INV-00209,INV-2026-0209,2026-01-15,DL-001,Hausmeister Mueller GmbH,Huber & Partner Immobilienverwaltung GmbH,915.00,173.85,1088.85,DE94100701240494519832,,20260115_DL-001_INV-00209.pdf,2026-01
+INV-00210,INV-2026-0210,2026-01-15,DL-006,Schornsteinfegermeister Bauer,Huber & Partner Immobilienverwaltung GmbH,142.00,26.98,168.98,DE32100500004324451076,dup_warn,20260115_DL-006_INV-00210.pdf,2026-01

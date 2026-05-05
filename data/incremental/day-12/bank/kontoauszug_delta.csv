@@ -1,0 +1,2 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+DE02 1001 0010 0123 4567 89;15.01.2026;15.01.2026;Ueberweisung;Rechnung INV-2026-0206 Heiztechnik Berlin GmbH;;;TX-01632;;;;Heiztechnik Berlin GmbH;DE37370400440229612018;DEUTDEBB101;-487,90;EUR;Saldo: 914000,00

@@ -1,0 +1,2 @@
+id,rechnungsnr,datum,dienstleister_id,dienstleister_firma,empfaenger,netto,mwst,brutto,iban,error_types,filename,month_dir
+INV-00207,INV-2026-0207,2026-01-13,DL-014,Dachdecker Richter,Huber & Partner Immobilienverwaltung GmbH,240.00,45.60,285.60,DE46120300006590515186,,20260113_DL-014_INV-00207.pdf,2026-01

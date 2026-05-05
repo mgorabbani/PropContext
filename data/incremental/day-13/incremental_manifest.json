@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "day_index": 13,
+  "content_date": "2026-01-13",
+  "seed": 144,
+  "difficulty": "medium",
+  "emails_written": 6,
+  "invoices_written": 1,
+  "bank_transactions_written": 2,
+  "stammdaten_relative": "../stammdaten/stammdaten.json",
+  "note": "Sonderumlage Dachsanierung: ETV-Einladung, Eigentuemerfragen, Beiratsempfehlung."
+}

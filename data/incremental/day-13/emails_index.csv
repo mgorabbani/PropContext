@@ -1,0 +1,7 @@
+id,datetime,thread_id,direction,from_email,to_email,subject,category,sprache,error_types,filename,month_dir
+EMAIL-06597,2026-01-13T09:15:00,THR-I13-0001,outgoing,t.kreuzer@huber-partner-verwaltung.de,eigentuemer@huber-partner-verwaltung.de,Einladung zur ausserordentlichen Eigentuemerversammlung 12.02.2026,eigentuemer/etv,de,,20260113_091500_EMAIL-06597.eml,2026-01
+EMAIL-06598,2026-01-13T11:32:00,THR-I13-0002,incoming,anneliese.bauer@web.de,info@huber-partner-verwaltung.de,Frage zur geplanten Sonderumlage,eigentuemer/sonderumlage,de,,20260113_113200_EMAIL-06598.eml,2026-01
+EMAIL-06599,2026-01-13T13:04:00,THR-I13-0003,incoming,karl.heinz.lehmann@t-online.de,info@huber-partner-verwaltung.de,Vollmacht ETV 12.02.2026,eigentuemer/etv,de,,20260113_130400_EMAIL-06599.eml,2026-01
+EMAIL-06600,2026-01-13T15:41:00,THR-I13-0002,outgoing,t.kreuzer@huber-partner-verwaltung.de,anneliese.bauer@web.de,Re: Frage zur geplanten Sonderumlage,eigentuemer/sonderumlage,de,,20260113_154100_EMAIL-06600.eml,2026-01
+EMAIL-06601,2026-01-13T18:22:00,THR-I13-0004,incoming,andreas.hoffmann@gmx.de,info@huber-partner-verwaltung.de,Beirat: Pruefung Angebote Dachsanierung,eigentuemer/beirat,de,,20260113_182200_EMAIL-06601.eml,2026-01
+EMAIL-06602,2026-01-13T20:05:00,THR-I13-0005,incoming,petra.lange@yahoo.de,info@huber-partner-verwaltung.de,Sonderumlage: Ratenzahlung moeglich?,eigentuemer/sonderumlage,de,,20260113_200500_EMAIL-06602.eml,2026-01

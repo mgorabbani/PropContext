@@ -1,0 +1,2 @@
+id,rechnungsnr,datum,dienstleister_id,dienstleister_firma,empfaenger,netto,mwst,brutto,iban,error_types,filename,month_dir
+INV-00208,INV-2026-0208,2026-01-14,DL-002,Aufzug Schindler & Co. GmbH,Huber & Partner Immobilienverwaltung GmbH,380.00,72.20,452.20,DE13370400449368990000,wrong_iban,20260114_DL-002_INV-00208.pdf,2026-01

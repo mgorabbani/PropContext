@@ -1,0 +1,3 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+DE02 1001 0010 0123 4567 89;11.01.2026;11.01.2026;Ueberweisung;RUECKLASTSCHRIFT Hausgeld 12/2025 EH-019;;;TX-01630;;;;Sven Krause;;;-412,00;EUR;Saldo: 915500,00
+DE02 1001 0010 0123 4567 89;12.01.2026;12.01.2026;Gutschrift;Hausgeld 12/2025 manuelle Ueberweisung EH-019;;;TX-01631;;;;Sven Krause;;;412,00;EUR;Saldo: 915500,00

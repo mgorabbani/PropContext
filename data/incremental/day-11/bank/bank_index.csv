@@ -1,0 +1,3 @@
+id,datum,typ,betrag,kategorie,gegen_name,verwendungszweck,referenz_id,error_types
+TX-01630,2026-01-11,DEBIT,412.00,ruecklastschrift,Sven Krause,RUECKLASTSCHRIFT Hausgeld 12/2025 EH-019,,missing_ref
+TX-01631,2026-01-12,CREDIT,412.00,hausgeld,Sven Krause,Hausgeld 12/2025 manuelle Ueberweisung EH-019,,

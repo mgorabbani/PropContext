@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "day_index": 15,
+  "content_date": "2026-01-15",
+  "seed": 146,
+  "difficulty": "medium",
+  "emails_written": 6,
+  "invoices_written": 2,
+  "bank_transactions_written": 3,
+  "stammdaten_relative": "../stammdaten/stammdaten.json",
+  "note": "Dienstleisterwechsel Hausmeister: Kuendigung, Bestaetigung, Vergleichsangebot, parallele Themen."
+}

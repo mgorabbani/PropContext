@@ -1,0 +1,6 @@
+id,datetime,thread_id,direction,from_email,to_email,subject,category,sprache,error_types,filename,month_dir
+EMAIL-06603,2026-01-14T08:01:00,THR-I14-0001,incoming,service@schindler-aufzug.de,info@huber-partner-verwaltung.de,Avis: TUEV-Pruefung Aufzug LIE-001 am 22.01.2026,dienstleister/avis,de,,20260114_080100_EMAIL-06603.eml,2026-01
+EMAIL-06604,2026-01-14T10:24:00,THR-I14-0002,outgoing,a.berger@huber-partner-verwaltung.de,bewohner@huber-partner-verwaltung.de,Information: Aufzug-Sperrung 22.01.2026 09-12 Uhr,info/aushang,de,,20260114_102400_EMAIL-06604.eml,2026-01
+EMAIL-06605,2026-01-14T14:11:00,THR-I14-0003,incoming,hans.juergen.koch@web.de,info@huber-partner-verwaltung.de,Aufzug Sperrung - Termin,mieter/info,de,,20260114_141100_EMAIL-06605.eml,2026-01
+EMAIL-06606,2026-01-14T16:38:00,THR-I14-0003,outgoing,a.berger@huber-partner-verwaltung.de,hans.juergen.koch@web.de,Re: Aufzug Sperrung - Termin,mieter/info,de,,20260114_163800_EMAIL-06606.eml,2026-01
+EMAIL-06607,2026-01-14T19:02:00,THR-I14-0004,incoming,sabine.vogel@gmx.de,info@huber-partner-verwaltung.de,Wasserschaden Bad EH-007,mieter/stoerung,de,,20260114_190200_EMAIL-06607.eml,2026-01

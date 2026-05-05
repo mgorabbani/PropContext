@@ -1,0 +1,3 @@
+Auftragskonto;Buchungstag;Valutadatum;Buchungstext;Verwendungszweck;Glaeubiger-ID;Mandatsreferenz;Kundenreferenz (End-to-End);Sammlerreferenz;Lastschrift Ursprungsbetrag;Auslagenersatz Ruecklastschrift;Beguenstigter/Zahlungspflichtiger;Kontonummer/IBAN;BIC (SWIFT-Code);Betrag;Waehrung;Info
+DE02 1001 0010 0123 4567 89;16.01.2026;16.01.2026;Ueberweisung;Rechnung INV-2026-0207 Dachdecker Richter Begehung;;;TX-01633;;;;Dachdecker Richter;DE46120300006590515186;DEUTDEBB101;-285,60;EUR;Saldo: 912500,00
+DE02 1001 0010 0123 4567 89;16.01.2026;16.01.2026;Gutschrift;Hausgeld 01/2026 EH-031;;;TX-01634;;;;Andreas Hoffmann;;;412,00;EUR;Saldo: 912500,00

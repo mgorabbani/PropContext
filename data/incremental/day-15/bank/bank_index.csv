@@ -1,0 +1,4 @@
+id,datum,typ,betrag,kategorie,gegen_name,verwendungszweck,referenz_id,error_types
+TX-01636,2026-01-19,DEBIT,1088.85,dienstleister,Hausmeister Mueller GmbH,Rechnung INV-2026-0209 Hausmeister Mueller GmbH,INV-00209,
+TX-01637,2026-01-20,DEBIT,168.98,dienstleister,Schornsteinfegermeister Bauer,Rechnung INV-2026-0210 Schornsteinfegermeister Bauer,INV-00210,
+TX-01638,2026-01-20,CREDIT,412.00,hausgeld,Anneliese Bauer,Hausgeld 01/2026 EH-014,,

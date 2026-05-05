@@ -1,0 +1,1 @@
+[Image #1] this is how ui looks like, shouldn't be like this, after sending message, message should show in the chat ui, not stay in input field, that should be cleared. also no result doesn't make sense, seems like hardcoded value not from ai response

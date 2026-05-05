@@ -10,6 +10,14 @@ type Props = {
 
 type Entry = { question: string; answer: string };
 
+const SUGGESTIONS = [
+  "Wer ist der aktuelle Hausmeister?",
+  "Welche offenen Rechnungen gibt es?",
+  "List all Dienstleister with active contracts",
+  "Show the last 5 events on the timeline",
+  "Any pending Mahnungen or overdue payments?",
+];
+
 export function Query({ lie, onResolved }: Props) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
@@ -17,8 +25,7 @@ export function Query({ lie, onResolved }: Props) {
   const [msg, setMsg] = useState<string | null>(null);
   const [unavailable, setUnavailable] = useState(false);
 
-  async function submit() {
-    const question = q.trim();
+  async function run(question: string) {
     if (!question || busy) return;
     setBusy(true);
     setMsg(null);
@@ -47,6 +54,15 @@ export function Query({ lie, onResolved }: Props) {
     }
   }
 
+  async function submit() {
+    await run(q.trim());
+  }
+
+  async function pickSuggestion(s: string) {
+    setQ(s);
+    await run(s);
+  }
+
   return (
     <aside className="flex h-full min-w-0 flex-col border-l border-[var(--color-border)] bg-[var(--color-bg)]/40">
       <div className="glass sticky top-0 z-10 flex h-11 items-center justify-between gap-2 border-b border-[var(--color-border)] px-4">
@@ -64,7 +80,12 @@ export function Query({ lie, onResolved }: Props) {
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto px-4 py-5">
-        {!entry && !msg && <EmptyAsk />}
+        {!entry && !msg && (
+          <EmptyAsk
+            onPick={(s) => void pickSuggestion(s)}
+            disabled={busy || unavailable}
+          />
+        )}
         {entry && (
           <div className="space-y-3 fade-up">
             <div className="rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)]/60 px-3 py-2">
@@ -132,20 +153,43 @@ export function Query({ lie, onResolved }: Props) {
   );
 }
 
-function EmptyAsk() {
+function EmptyAsk({
+  onPick,
+  disabled,
+}: {
+  onPick: (q: string) => void;
+  disabled: boolean;
+}) {
   return (
-    <div className="grid h-full place-items-center">
-      <div className="max-w-[260px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/40 px-4 py-5 text-center">
+    <div className="flex h-full flex-col items-center justify-center gap-4">
+      <div className="w-full max-w-[300px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/40 px-4 py-5 text-center">
         <div className="mx-auto mb-3 grid h-9 w-9 place-items-center rounded-md border border-[var(--color-border-2)] bg-[var(--color-bg)]">
           <Sparkles className="h-4 w-4 text-[var(--color-accent)]" />
         </div>
         <p className="text-[13px] leading-relaxed text-[var(--color-fg-muted)]">
-          Ask anything about this property — answers get filed back to{" "}
-          <code className="rounded border border-[var(--color-border)] bg-[var(--color-bg)] px-1 py-0.5 font-mono text-[11px] text-[var(--color-fg)]">
-            08_explorations/
-          </code>
-          .
+          Ask anything about this property. Pin answers as topics.
         </p>
+      </div>
+      <div className="w-full max-w-[300px] space-y-2">
+        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-fg-dim)]">
+          Try one
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {SUGGESTIONS.map((s) => (
+            <button
+              key={s}
+              onClick={() => onPick(s)}
+              disabled={disabled}
+              className={cn(
+                "group rounded-md border border-[var(--color-border-2)] bg-[var(--color-bg)] px-3 py-2 text-left text-[12.5px] leading-snug text-[var(--color-fg)] transition-colors",
+                "hover:border-[var(--color-accent-dim)] hover:bg-[var(--color-surface)] hover:text-[var(--color-accent)]",
+                "disabled:cursor-not-allowed disabled:opacity-40",
+              )}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { fetchFile, fetchProperties, fetchTree } from "./api";
 import type { TreeNode } from "./api";
 import { flattenTree } from "./lib/markdown";
 
-const ASK_ENABLED = false;
+const ASK_ENABLED = true;
 
 export default function App() {
   const [properties, setProperties] = useState<string[]>([]);

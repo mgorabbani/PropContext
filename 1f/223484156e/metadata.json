@@ -1,0 +1,43 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "1f223484156e",
+  "strategy": "manual-commit",
+  "branch": "arbio-focused",
+  "checkpoints_count": 5,
+  "files_touched": [
+    ".env.example",
+    "app/api/v1/properties.py",
+    "app/api/v1/sim.py",
+    "app/core/config.py",
+    "app/mcp/context.py",
+    "app/mcp/server.py",
+    "app/services/llm/client.py",
+    "app/static/assets/index-2dldW_pl.js",
+    "app/static/assets/index-CC-5ujmZ.css",
+    "app/static/assets/index-CN1kf80u.js",
+    "app/static/assets/index-rTspzvYV.css",
+    "app/static/index.html",
+    "app/tools/sim_ingest.py",
+    "scripts/_anthropic_smoke.py",
+    "tests/test_config.py",
+    "ui/index.html",
+    "ui/src/components/McpSettings.tsx",
+    "ui/src/components/TopBar.tsx",
+    "ui/src/pages/Ingest.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/1f/223484156e/0/metadata.json",
+      "transcript": "/1f/223484156e/0/full.jsonl",
+      "content_hash": "/1f/223484156e/0/content_hash.txt",
+      "prompt": "/1f/223484156e/0/prompt.txt"
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 153,
+    "cache_creation_tokens": 449052,
+    "cache_read_tokens": 20163952,
+    "output_tokens": 68036,
+    "api_call_count": 95
+  }
+}

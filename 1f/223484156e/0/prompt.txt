@@ -1,0 +1,29 @@
+the frontend is not sync with backend, please fix it, also demo or dummy data is not propery working now after refactor, please add or use those raw data to properly setup the demo ingest flow
+
+---
+
+continue
+
+---
+
+ok
+
+---
+
+i want old frontend, and i want backend to adjust with the old frontend
+
+---
+
+i feel like the new changes degrade teh whole architecture
+
+---
+
+go back to prev stage, then review the plan, but don't degrade just enhance. no need for isolation engine now. keep the ingestion/chat / mcp demo as it was, but better with better data
+
+---
+
+ok let's do it using sub agents, also lets' remove google gemini and replacew ith anthropic api
+
+---
+
+remove all Buena word and change to PropContext

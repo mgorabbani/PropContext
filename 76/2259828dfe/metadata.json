@@ -1,0 +1,29 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "762259828dfe",
+  "strategy": "manual-commit",
+  "branch": "arbio-focused",
+  "checkpoints_count": 0,
+  "files_touched": [
+    "app/services/ask.py",
+    "app/static/assets/index-DSB1N9zS.js",
+    "app/static/assets/index-XJS3aKlq.js",
+    "app/static/index.html",
+    "ui/src/components/Query.tsx"
+  ],
+  "sessions": [
+    {
+      "metadata": "/76/2259828dfe/0/metadata.json",
+      "transcript": "/76/2259828dfe/0/full.jsonl",
+      "content_hash": "/76/2259828dfe/0/content_hash.txt",
+      "prompt": ""
+    }
+  ],
+  "token_usage": {
+    "input_tokens": 0,
+    "cache_creation_tokens": 0,
+    "cache_read_tokens": 0,
+    "output_tokens": 0,
+    "api_call_count": 0
+  }
+}

@@ -3,7 +3,7 @@
   "checkpoint_id": "811125127967",
   "strategy": "manual-commit",
   "branch": "arbio-focused",
-  "checkpoints_count": 0,
+  "checkpoints_count": 1,
   "files_touched": [
     "app/static/assets/index-BE2oVrNf.css",
     "app/static/assets/index-BYalOk9U.js",
@@ -18,13 +18,19 @@
       "transcript": "/81/1125127967/0/full.jsonl",
       "content_hash": "/81/1125127967/0/content_hash.txt",
       "prompt": ""
+    },
+    {
+      "metadata": "/81/1125127967/1/metadata.json",
+      "transcript": "/81/1125127967/1/full.jsonl",
+      "content_hash": "/81/1125127967/1/content_hash.txt",
+      "prompt": "/81/1125127967/1/prompt.txt"
     }
   ],
   "token_usage": {
-    "input_tokens": 0,
-    "cache_creation_tokens": 0,
-    "cache_read_tokens": 0,
-    "output_tokens": 0,
-    "api_call_count": 0
+    "input_tokens": 153,
+    "cache_creation_tokens": 449052,
+    "cache_read_tokens": 20163952,
+    "output_tokens": 68036,
+    "api_call_count": 95
   }
 }

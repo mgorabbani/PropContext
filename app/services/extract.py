@@ -5,6 +5,7 @@ from typing import Any
 
 from app.core.config import REPO_ROOT, Settings
 from app.schemas.patch_plan import PatchPlan
+from app.services.hermes.registry import SkillBriefing, format_briefing
 from app.services.llm.client import LLMClient
 from app.services.llm.json import parse_json_object
 from app.services.locate import LocatedSection
@@ -20,6 +21,7 @@ def extract_prompt(
     resolution: ResolutionResult,
     sections: list[LocatedSection],
     existing_pages: list[str],
+    skill_briefing: SkillBriefing | None = None,
 ) -> str:
     payload = {
         "event_id": event_id,
@@ -43,7 +45,11 @@ def extract_prompt(
         ],
         "normalized_document": normalized_text,
     }
+    briefing_block = (
+        f"{format_briefing(skill_briefing)}\n\n---\n\n" if skill_briefing is not None else ""
+    )
     return (
+        f"{briefing_block}"
         "Produce ONE PatchPlan JSON object that integrates this source into the wiki. "
         "Follow the system contract. Return JSON only — no markdown, no commentary.\n\n"
         f"{json.dumps(payload, ensure_ascii=False, default=str)}"
@@ -61,6 +67,7 @@ async def extract_patch_plan(
     existing_pages: list[str],
     llm: LLMClient,
     settings: Settings,
+    skill_briefing: SkillBriefing | None = None,
 ) -> PatchPlan:
     response = await llm.complete(
         model=settings.smart_model,
@@ -73,6 +80,7 @@ async def extract_patch_plan(
             resolution=resolution,
             sections=sections,
             existing_pages=existing_pages,
+            skill_briefing=skill_briefing,
         ),
     )
     payload = parse_json_object(response)

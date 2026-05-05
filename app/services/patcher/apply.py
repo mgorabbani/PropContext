@@ -28,6 +28,7 @@ from app.services.patcher.paths import property_file_path
 
 _PROPERTY_ID_RE = re.compile(r"^[A-Z]+-\d+$")
 _LOG_PATH = "log.md"
+_ID_TOKEN_RE = re.compile(r"([A-Z]+)-\d+")
 
 
 @dataclass(frozen=True)
@@ -69,6 +70,7 @@ def apply_patch_plan(plan: PatchPlan, *, wiki_dir: Path) -> PatchApplyResult:
         applied_ops=len(touched),
         deferred_ops=0,
         touched=rels,
+        op_shapes=_op_shapes(plan.ops),
     )
     commit_sha = commit_all(wiki_dir, message=f"ingest({plan.event_id}): {summary}".strip())
     return PatchApplyResult(
@@ -159,3 +161,33 @@ def _relative_posix(path: Path, root: Path) -> str:
 
 def touched_for_reindex(touched: Sequence[str]) -> list[str]:
     return [t for t in touched if t.endswith(".md") and not t.startswith("_")]
+
+
+def _op_shapes(ops: Sequence[PatchOp]) -> list[dict[str, str]]:
+    shapes: list[dict[str, str]] = []
+    for op in ops:
+        if isinstance(op, CreatePageOp):
+            shapes.append({"op": "create_page", "path": _path_template(op.path)})
+        elif isinstance(op, UpsertSectionOp):
+            shapes.append(
+                {
+                    "op": "upsert_section",
+                    "path": _path_template(op.path),
+                    "heading": op.heading,
+                }
+            )
+        elif isinstance(op, AppendSectionOp):
+            shapes.append(
+                {
+                    "op": "append_section",
+                    "path": _path_template(op.path),
+                    "heading": op.heading,
+                }
+            )
+        elif isinstance(op, PrependLogOp):
+            shapes.append({"op": "prepend_log"})
+    return shapes
+
+
+def _path_template(path: str) -> str:
+    return _ID_TOKEN_RE.sub(r"\1-<id>", path)

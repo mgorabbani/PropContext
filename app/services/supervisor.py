@@ -14,6 +14,7 @@ from app.services.classify import Classification, classify_document
 from app.services.enrich import enrich_with_web_sources
 from app.services.extract import extract_patch_plan
 from app.services.handlers import get_event_handler
+from app.services.hermes.registry import load_skill_registry
 from app.services.llm.client import LLMClient, get_llm_client
 from app.services.locate import locate_sections
 from app.services.patcher.apply import PatchApplyResult, apply_patch_plan
@@ -148,6 +149,17 @@ class Supervisor:
 
         existing_pages = _list_existing_pages(property_root)
 
+        registry = load_skill_registry(property_root)
+        briefing = registry.find_for(event.event_type)
+        await emit(
+            "skill_lookup",
+            {
+                "event_type": event.event_type,
+                "matched": briefing is not None,
+                "occurrences": briefing.occurrences if briefing else 0,
+            },
+        )
+
         await emit("extract", {})
         plan = await extract_patch_plan(
             event_id=event.event_id,
@@ -159,6 +171,7 @@ class Supervisor:
             existing_pages=existing_pages,
             llm=self._llm,
             settings=self._settings,
+            skill_briefing=briefing,
         )
         await emit(
             "extract.done",
@@ -166,6 +179,7 @@ class Supervisor:
                 "ops": len(plan.ops),
                 "summary": plan.summary,
                 "op_kinds": [type(op).__name__ for op in plan.ops],
+                "skill_used": briefing is not None,
             },
         )
 

@@ -9,7 +9,9 @@ from app.schemas.patch_plan import (
     PrependLogOp,
     UpsertSectionOp,
 )
-from app.services.extract import canonicalize_patch_plan
+from app.services.extract import canonicalize_patch_plan, extract_prompt
+from app.services.hermes.registry import SkillBriefing
+from app.services.resolve import ResolutionResult
 
 
 def test_canonicalize_accepts_four_op_shape() -> None:
@@ -95,3 +97,57 @@ def test_canonicalize_rejects_unknown_op() -> None:
             property_id="LIE-001",
             event_type="email",
         )
+
+
+def _empty_resolution() -> ResolutionResult:
+    return ResolutionResult(
+        property_id="LIE-001",
+        entities=[],
+        mentioned_ids=[],
+        source_ids=["EMAIL-1"],
+        unresolved_ids=[],
+    )
+
+
+def test_extract_prompt_omits_briefing_when_none() -> None:
+    prompt = extract_prompt(
+        event_id="EMAIL-1",
+        event_type="email",
+        property_id="LIE-001",
+        normalized_text="hello",
+        resolution=_empty_resolution(),
+        sections=[],
+        existing_pages=[],
+    )
+    assert "Past patterns" not in prompt
+    assert "Produce ONE PatchPlan JSON" in prompt
+
+
+def test_extract_prompt_includes_briefing_when_present() -> None:
+    briefing = SkillBriefing(
+        event_type="email",
+        occurrences=5,
+        op_kinds=("create_page", "prepend_log"),
+        op_shapes=(
+            (("op", "create_page"), ("path", "sources/EMAIL-<id>.md")),
+            (("op", "prepend_log"),),
+        ),
+        touched_templates=("entities/EH-<id>.md",),
+        sample_summaries=("heating outage in EH-014",),
+    )
+    prompt = extract_prompt(
+        event_id="EMAIL-2",
+        event_type="email",
+        property_id="LIE-001",
+        normalized_text="hello",
+        resolution=_empty_resolution(),
+        sections=[],
+        existing_pages=[],
+        skill_briefing=briefing,
+    )
+    assert "Past patterns for `event_type = email`" in prompt
+    assert "5 prior events" in prompt
+    assert "sources/EMAIL-<id>.md" in prompt
+    assert "heating outage in EH-014" in prompt
+    # Briefing comes before the JSON payload.
+    assert prompt.index("Past patterns") < prompt.index("Produce ONE PatchPlan")

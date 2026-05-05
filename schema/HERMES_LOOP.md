@@ -33,13 +33,19 @@ The writer is idempotent on `event_id`: if a line with the same `event_id` is al
 
 The path begins with `_`, so it is runtime-managed: no patch op may target it. The patcher writes the line directly via `app/services/hermes/feedback.py`.
 
-## 2. Inner loop — skills (stubbed)
+## 2. Inner loop — skills (closed)
 
-Watches the substrate for repeated patch shapes (e.g. "the same five-op sequence shows up for every Heizung outage event"). Proposes a *skill* — a named, parameterised handler the supervisor can invoke instead of asking Sonnet to plan from scratch. Output: a markdown file under `wiki/<LIE-id>/06_skills.md` describing trigger, parameters, op template.
+Two layers:
 
-Promotion bar (planned): a skill is promoted only after N≥5 matching events with identical op kinds and stable file targets.
+**(a) Detector → `06_skills.md`.** Groups substrate rows by `(event_type, op-shape signature)` where op shapes carry op kind + path template + heading. Any group hitting `min_occurrences` (default 5 for promotion, 3 for prompt-feedback) gets written into `06_skills.md` as a skill candidate.
 
-## 3. Outer loop — schema (stubbed)
+**(b) Feedback into the extract prompt.** `app/services/hermes/registry.py` builds a `SkillRegistry` indexed by `event_type` from the substrate; the supervisor calls `registry.find_for(event.event_type)` and, when matched, injects a `format_briefing(...)` block into the user prompt before the JSON payload. The briefing names the modal op-shape sequence, the touched-path templates with `<id>` placeholders, and recent summaries.
+
+This is real closure: every applied event improves the next event's prompt. The LLM is not bypassed — body content still requires reasoning — but it now starts each call with a worked example of what the prior pattern looked like, which compounds consistency over time.
+
+Promotion bar: 5 matching events for the public skill page; 3 for prompt-feedback (cheaper signal).
+
+## 3. Outer loop — schema (closed)
 
 Watches the substrate for misses: events that produced few ops, that frequently land in `_pending_review.md`, that mention IDs no entity page resolves. Proposes amendments to:
 
@@ -47,7 +53,7 @@ Watches the substrate for misses: events that produced few ops, that frequently 
 - `schema/VOCABULARY.md` — new controlled values
 - `schema/LEGAL_MAP.md` — new obligations
 
-Outputs are append-only proposals committed on a `hermes/` branch, never auto-merged. A human reviews and merges.
+Output: `_hermes_proposals.md` inside the property tree (always), plus an optional `hermes/proposals-<date>-<property>` git branch when `run_hermes_loops(..., auto_branch=True)` is set or `python -m app.tools.hermes_run --auto-branch` is invoked. The branch carries the proposal markdown with `event_id` evidence in the commit body, ready for review. Branches are never auto-merged.
 
 ## 4. Schema proposal protocol
 
@@ -66,7 +72,7 @@ The substrate is cheap (one JSONL line per ingest) and survives every code chang
 
 | Layer | State |
 |---|---|
-| §1 Substrate | Implemented |
-| §2 Inner skill loop | Stubbed |
-| §3 Outer schema loop | Stubbed |
-| §4 Proposal protocol | Documented |
+| §1 Substrate | Implemented (with `op_shapes` per row) |
+| §2 Inner skill loop | Implemented (detector + prompt feedback wired into supervisor) |
+| §3 Outer schema loop | Implemented (proposal markdown + optional `hermes/` branch) |
+| §4 Proposal protocol | Implemented (auto-branch carries evidence in commit body) |

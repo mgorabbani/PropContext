@@ -22,6 +22,14 @@ def test_append_writes_jsonl_line(tmp_path: Path) -> None:
         applied_ops=4,
         deferred_ops=0,
         touched=["02_buildings/HAUS-12/index.md", "entities/EH-014.md"],
+        op_shapes=[
+            {"op": "create_page", "path": "sources/EMAIL-<id>.md"},
+            {
+                "op": "upsert_section",
+                "path": "02_buildings/HAUS-<id>/index.md",
+                "heading": "Open Issues",
+            },
+        ],
     )
     assert written is True
 
@@ -39,6 +47,8 @@ def test_append_writes_jsonl_line(tmp_path: Path) -> None:
     assert row["applied_ops"] == 4
     assert row["deferred_ops"] == 0
     assert row["touched"] == ["02_buildings/HAUS-12/index.md", "entities/EH-014.md"]
+    assert row["op_shapes"][0]["op"] == "create_page"
+    assert row["op_shapes"][1]["heading"] == "Open Issues"
     assert "T" in row["ts"]
 
 

@@ -28,6 +28,7 @@ def _run(args: argparse.Namespace) -> int:
         property_id=args.property_id,
         skill_threshold=args.skill_threshold,
         write=not args.dry_run,
+        auto_branch=args.auto_branch,
     )
 
     print(f"property: {report.property_id}")
@@ -47,6 +48,8 @@ def _run(args: argparse.Namespace) -> int:
     print(f"proposals: {len(report.proposals.proposals)}")
     for prop in report.proposals.proposals:
         print(f"  - [{prop.kind}] {prop.target}")
+    if report.proposals_branch:
+        print(f"proposals branch: {report.proposals_branch}")
 
     if not args.dry_run:
         if report.skills_path:
@@ -75,6 +78,11 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         help="minimum occurrences of a (event_type, path-template) signature to promote (default: 5)",
     )
     p.add_argument("--dry-run", action="store_true", help="print report; do not write markdown")
+    p.add_argument(
+        "--auto-branch",
+        action="store_true",
+        help="commit proposals onto a fresh hermes/proposals-<date> branch",
+    )
     return p.parse_args(argv)
 
 

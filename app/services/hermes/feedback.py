@@ -26,6 +26,7 @@ class FeedbackRecord:
     applied_ops: int
     deferred_ops: int
     touched: tuple[str, ...] = field(default_factory=tuple)
+    op_shapes: tuple[dict[str, str], ...] = field(default_factory=tuple)
     extra: dict[str, object] = field(default_factory=dict)
 
     @classmethod
@@ -40,12 +41,21 @@ class FeedbackRecord:
             "applied_ops",
             "deferred_ops",
             "touched",
+            "op_shapes",
         }
         extra = {k: v for k, v in row.items() if k not in known}
         touched_raw = row.get("touched") or ()
         touched = (
             tuple(str(t) for t in touched_raw) if isinstance(touched_raw, list | tuple) else ()
         )
+        shapes_raw = row.get("op_shapes") or ()
+        op_shapes: tuple[dict[str, str], ...] = ()
+        if isinstance(shapes_raw, list | tuple):
+            op_shapes = tuple(
+                {k: str(v) for k, v in s.items() if isinstance(k, str)}
+                for s in shapes_raw
+                if isinstance(s, dict)
+            )
         return cls(
             kind=str(row.get("kind", "ingest")),
             ts=str(row.get("ts", "")),
@@ -56,6 +66,7 @@ class FeedbackRecord:
             applied_ops=_coerce_int(row.get("applied_ops")),
             deferred_ops=_coerce_int(row.get("deferred_ops")),
             touched=touched,
+            op_shapes=op_shapes,
             extra=extra,
         )
 
@@ -74,6 +85,7 @@ def append_feedback(
     applied_ops: int,
     deferred_ops: int = 0,
     touched: Iterable[str] = (),
+    op_shapes: Iterable[dict[str, str]] = (),
     kind: str = "ingest",
 ) -> bool:
     """Append one JSONL line to `_hermes_feedback.jsonl`.
@@ -96,6 +108,7 @@ def append_feedback(
         "applied_ops": applied_ops,
         "deferred_ops": deferred_ops,
         "touched": list(touched),
+        "op_shapes": [dict(s) for s in op_shapes],
     }
     line = json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n"
 

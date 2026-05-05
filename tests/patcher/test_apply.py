@@ -80,6 +80,10 @@ def test_apply_creates_page_and_log(tmp_path: Path) -> None:
     assert row["event_type"] == "manual"
     assert row["applied_ops"] == 3
     assert row["summary"] == "manual leak"
+    op_kinds = [s["op"] for s in row["op_shapes"]]
+    assert op_kinds == ["create_page", "append_section", "prepend_log"]
+    assert row["op_shapes"][0]["path"] == "entities/EH-<id>.md"
+    assert row["op_shapes"][1]["heading"] == "Timeline"
 
 
 def test_apply_idempotent_feedback_on_replay(tmp_path: Path) -> None:

@@ -11,10 +11,16 @@ type Props = {
 type Entry = {
   id: number;
   question: string;
-  answer: string;
+  answer: string | null;
   path?: string;
-  status: "ok" | "empty" | "error";
+  status: "pending" | "ok" | "empty" | "error";
 };
+
+function isUsefulPath(path: string | undefined): path is string {
+  if (!path) return false;
+  const tail = path.split("/").pop() ?? path;
+  return tail !== "index.md";
+}
 
 const SUGGESTIONS = [
   "Wer ist der aktuelle Hausmeister?",
@@ -44,59 +50,49 @@ export function Query({ lie, onResolved }: Props) {
   async function run(question: string) {
     if (!question || busy) return;
     setQ("");
+    const id = ++idRef.current;
+    setEntries((e) => [...e, { id, question, answer: null, status: "pending" }]);
     setBusy(true);
     const res = await ask(question, lie);
     setBusy(false);
-    const id = ++idRef.current;
     if (!res.ok) {
-      if (res.status === 404) {
-        setUnavailable(true);
-        setEntries((e) => [
-          ...e,
-          {
-            id,
-            question,
-            answer: "Ask endpoint not available on this server.",
-            status: "error",
-          },
-        ]);
-      } else {
-        setEntries((e) => [
-          ...e,
-          {
-            id,
-            question,
-            answer: `Request failed (${res.status}).`,
-            status: "error",
-          },
-        ]);
-      }
+      const isMissing = res.status === 404;
+      if (isMissing) setUnavailable(true);
+      setEntries((e) =>
+        e.map((x) =>
+          x.id === id
+            ? {
+                ...x,
+                answer: isMissing
+                  ? "Ask endpoint not available on this server."
+                  : `Request failed (${res.status}).`,
+                status: "error",
+              }
+            : x,
+        ),
+      );
       return;
     }
     const { answer, path } = res.data;
-    if (path) onResolved(path);
-    if (answer) {
-      setEntries((e) => [
-        ...e,
-        { id, question, answer, path: path ?? undefined, status: "ok" },
-      ]);
-    } else if (path) {
-      setEntries((e) => [
-        ...e,
-        { id, question, answer: `Opened ${path}`, path, status: "ok" },
-      ]);
-    } else {
-      setEntries((e) => [
-        ...e,
-        {
-          id,
-          question,
+    const usefulPath = isUsefulPath(path) ? path : undefined;
+    if (usefulPath) onResolved(usefulPath);
+    setEntries((e) =>
+      e.map((x) => {
+        if (x.id !== id) return x;
+        if (answer) {
+          return { ...x, answer, path: usefulPath, status: "ok" };
+        }
+        if (usefulPath) {
+          return { ...x, answer: `Opened ${usefulPath}`, path: usefulPath, status: "ok" };
+        }
+        return {
+          ...x,
           answer:
             "The model didn't find an answer in this property's wiki. Try rephrasing or asking about a specific page.",
           status: "empty",
-        },
-      ]);
-    }
+        };
+      }),
+    );
   }
 
   async function submit() {
@@ -148,34 +144,35 @@ export function Query({ lie, onResolved }: Props) {
                     {e.question}
                   </div>
                 </div>
-                <div
-                  className={cn(
-                    "whitespace-pre-wrap text-[13.5px] leading-relaxed",
-                    e.status === "ok" && "text-[var(--color-fg)]",
-                    e.status === "empty" && "text-[var(--color-fg-muted)]",
-                    e.status === "error" && "text-red-500",
-                  )}
-                >
-                  {e.answer}
-                  {e.path && (
-                    <div className="mt-2">
-                      <button
-                        onClick={() => onResolved(e.path!)}
-                        className="font-mono text-[11px] text-[var(--color-accent)] hover:underline"
-                      >
-                        → {e.path}
-                      </button>
-                    </div>
-                  )}
-                </div>
+                {e.status === "pending" ? (
+                  <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
+                    thinking...
+                  </div>
+                ) : (
+                  <div
+                    className={cn(
+                      "whitespace-pre-wrap text-[13.5px] leading-relaxed",
+                      e.status === "ok" && "text-[var(--color-fg)]",
+                      e.status === "empty" && "text-[var(--color-fg-muted)]",
+                      e.status === "error" && "text-red-500",
+                    )}
+                  >
+                    {e.answer}
+                    {e.path && (
+                      <div className="mt-2">
+                        <button
+                          onClick={() => onResolved(e.path!)}
+                          className="font-mono text-[11px] text-[var(--color-accent)] hover:underline"
+                        >
+                          → {e.path}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
-            {busy && (
-              <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
-                thinking...
-              </div>
-            )}
           </div>
         )}
       </div>

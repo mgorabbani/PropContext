@@ -1,0 +1,1 @@
+[Image #6] looks good, but why i keep seeing index.md also thinking and message flow is not quite right, [Image #7] should be like this, as soon as user hit enter, message should move to the window and below ai response area should show loading icon

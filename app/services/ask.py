@@ -19,20 +19,34 @@ from app.services.wiki_index import regenerate_index
 
 log = structlog.get_logger(__name__)
 
-_SYSTEM_PROMPT = (
+_PICK_SYSTEM_PROMPT = (
+    "You route a question to the most relevant page(s) in a property's markdown "
+    "wiki. You receive the property's index.md catalog and file tree.\n\n"
+    "Pick up to 3 pages whose full content the answerer will need. Return paths "
+    "relative to the property root (e.g. '07_timeline.md', "
+    "'04_dienstleister/DL-001.md'). Do NOT return 'index.md' — the answerer "
+    "already has it. If the index alone is enough, return an empty list.\n\n"
+    'Respond with a single JSON object: {"paths": string[]}. No prose outside the JSON.'
+)
+
+_ANSWER_SYSTEM_PROMPT = (
     "You answer questions against a property's markdown wiki. You receive: the "
-    "property's index.md (catalog of all pages with one-line descriptions), the "
-    "file tree, and the question.\n\n"
-    "Answer using ONLY the provided wiki content. If the answer is grounded in "
-    "one specific page, return its path (relative to the property root) in "
-    "`path`. Always fill `answer` with a concise plain-text answer "
-    "(1-3 sentences). Cite headings or wikilinks when helpful. Answer in the "
-    "language of the question.\n\n"
+    "property's index.md (catalog), the file tree, the full content of pages "
+    "the router selected, and the question.\n\n"
+    "Answer using ONLY the provided wiki content. Be concrete: cite names, IDs, "
+    "dates, and amounts straight from the page. If the cited content does not "
+    "contain the answer, say so plainly — never claim you cannot access a "
+    "file (you have everything provided). If one specific page best grounds the "
+    "answer, return its path (relative to the property root) in `path`; "
+    "otherwise null. Always fill `answer` with a concise plain-text answer "
+    "(1-4 sentences). Answer in the language of the question.\n\n"
     'Respond with a single JSON object: {"answer": string|null, "path": string|null}. '
     "No prose outside the JSON."
 )
 
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
+_MAX_PICKED = 3
+_MAX_PAGE_CHARS = 8000
 
 
 @dataclass(frozen=True, slots=True)
@@ -60,15 +74,26 @@ class AskService:
             return AskResult(answer=f"property {property_id!r} not found", path=None)
         tree = self._wiki.walk_tree(property_id)
         tree_listing = _render_tree(tree) if tree is not None else ""
+
+        picked = await self._pick_pages(
+            property_id=property_id,
+            index=index,
+            tree_listing=tree_listing,
+            question=question,
+        )
+        page_blocks = await self._read_picked(property_id=property_id, paths=picked)
+        log.info("ask_routed", property_id=property_id, picked=picked)
+
         user_prompt = (
             f"Property: {property_id}\n\n"
             f"=== File tree ===\n{tree_listing}\n\n"
             f"=== {property_id}/index.md ===\n{index}\n\n"
+            f"{page_blocks}"
             f"=== Question ===\n{question}\n"
         )
         raw = await self._llm.complete(
             model=self._model,
-            system_prompt=_SYSTEM_PROMPT,
+            system_prompt=_ANSWER_SYSTEM_PROMPT,
             user_prompt=user_prompt,
         )
         result = _parse_result(raw)
@@ -81,6 +106,61 @@ class AskService:
             )
             return AskResult(answer=result.answer, path=result.path, pinned_path=pinned)
         return result
+
+    async def _pick_pages(
+        self,
+        *,
+        property_id: str,
+        index: str,
+        tree_listing: str,
+        question: str,
+    ) -> list[str]:
+        prompt = (
+            f"Property: {property_id}\n\n"
+            f"=== File tree ===\n{tree_listing}\n\n"
+            f"=== {property_id}/index.md ===\n{index}\n\n"
+            f"=== Question ===\n{question}\n"
+        )
+        raw = await self._llm.complete(
+            model=self._model,
+            system_prompt=_PICK_SYSTEM_PROMPT,
+            user_prompt=prompt,
+        )
+        try:
+            data = parse_json_object(raw)
+        except ValueError as exc:
+            log.warning("ask_router_parse_failed", error=str(exc))
+            return []
+        raw_paths = data.get("paths") or []
+        if not isinstance(raw_paths, list):
+            return []
+        out: list[str] = []
+        for p in raw_paths:
+            if not isinstance(p, str):
+                continue
+            cleaned = p.strip().lstrip("/")
+            if not cleaned or cleaned == "index.md" or ".." in cleaned.split("/"):
+                continue
+            if cleaned in out:
+                continue
+            out.append(cleaned)
+            if len(out) >= _MAX_PICKED:
+                break
+        return out
+
+    async def _read_picked(self, *, property_id: str, paths: list[str]) -> str:
+        if not paths:
+            return ""
+        chunks: list[str] = []
+        for rel in paths:
+            content = await self._wiki.read_file(f"{property_id}/{rel}")
+            if content is None:
+                log.warning("ask_picked_missing", property_id=property_id, rel=rel)
+                continue
+            if len(content) > _MAX_PAGE_CHARS:
+                content = content[:_MAX_PAGE_CHARS] + "\n…[truncated]"
+            chunks.append(f"=== {property_id}/{rel} ===\n{content}\n")
+        return "\n".join(chunks) + ("\n" if chunks else "")
 
     def _pin_answer(
         self,

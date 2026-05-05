@@ -75,15 +75,16 @@ export function Query({ lie, onResolved }: Props) {
     }
     const { answer, path } = res.data;
     const usefulPath = isUsefulPath(path) ? path : undefined;
-    if (usefulPath) onResolved(usefulPath);
+    const fullPath = usefulPath ? `${lie}/${usefulPath}` : undefined;
+    if (fullPath) onResolved(fullPath);
     setEntries((e) =>
       e.map((x) => {
         if (x.id !== id) return x;
         if (answer) {
-          return { ...x, answer, path: usefulPath, status: "ok" };
+          return { ...x, answer, path: fullPath, status: "ok" };
         }
-        if (usefulPath) {
-          return { ...x, answer: `Opened ${usefulPath}`, path: usefulPath, status: "ok" };
+        if (fullPath) {
+          return { ...x, answer: `Opened ${fullPath}`, path: fullPath, status: "ok" };
         }
         return {
           ...x,
@@ -165,7 +166,7 @@ export function Query({ lie, onResolved }: Props) {
                           onClick={() => onResolved(e.path!)}
                           className="font-mono text-[11px] text-[var(--color-accent)] hover:underline"
                         >
-                          → {e.path}
+                          → {e.path.split("/").slice(1).join("/") || e.path}
                         </button>
                       </div>
                     )}

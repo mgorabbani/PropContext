@@ -124,12 +124,14 @@ class AskService:
             )
         )
 
+        cached_context = _render_cached_context(
+            property_id=property_id, tree_listing=tree_listing, digest=digest
+        )
         history_block = _render_history(history)
         routing_question = _route_question(history, question)
         picked = await self._pick_pages(
             property_id=property_id,
-            digest=digest,
-            tree_listing=tree_listing,
+            cached_context=cached_context,
             question=routing_question,
             usage=usage_rec,
         )
@@ -157,16 +159,13 @@ class AskService:
         )
 
         user_prompt = (
-            f"Property: {property_id}\n\n"
-            f"=== File tree ===\n{tree_listing}\n\n"
-            f"=== Pages digest (path | name | description) ===\n{digest}\n\n"
             f"{page_blocks}"
             f"{history_block}"
             f"=== Question ===\n{question}\n"
         )
         raw = await self._llm.complete(
             model=self._model,
-            system_prompt=_ANSWER_SYSTEM_PROMPT,
+            system_prompt=_ANSWER_SYSTEM_PROMPT + "\n\n" + cached_context,
             user_prompt=user_prompt,
             usage=usage_rec,
         )
@@ -209,21 +208,14 @@ class AskService:
         self,
         *,
         property_id: str,
-        digest: str,
-        tree_listing: str,
+        cached_context: str,
         question: str,
         usage: UsageRecorder | None = None,
     ) -> list[str]:
-        prompt = (
-            f"Property: {property_id}\n\n"
-            f"=== File tree ===\n{tree_listing}\n\n"
-            f"=== Pages digest (path | name | description) ===\n{digest}\n\n"
-            f"=== Question ===\n{question}\n"
-        )
         raw = await self._llm.complete(
             model=self._model,
-            system_prompt=_PICK_SYSTEM_PROMPT,
-            user_prompt=prompt,
+            system_prompt=_PICK_SYSTEM_PROMPT + "\n\n" + cached_context,
+            user_prompt=f"=== Question ===\n{question}\n",
             usage=usage,
         )
         try:
@@ -366,6 +358,14 @@ def _extract_frontmatter_pair(content: str, *, fallback_name: str) -> tuple[str,
         elif key == "description" and value:
             description = value.strip("\"'")
     return name, description
+
+
+def _render_cached_context(*, property_id: str, tree_listing: str, digest: str) -> str:
+    return (
+        f"Property: {property_id}\n\n"
+        f"=== File tree ===\n{tree_listing}\n\n"
+        f"=== Pages digest (path | name | description) ===\n{digest}\n"
+    )
 
 
 def _render_history(history: list[tuple[str, str]]) -> str:

@@ -1,0 +1,5 @@
+http://localhost:5173/mcp let's connect this mcp
+
+---
+
+let's rename the mcp name from buena-context to prop-context

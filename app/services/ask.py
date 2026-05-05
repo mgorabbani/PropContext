@@ -9,7 +9,7 @@ import structlog
 from fastapi import Depends
 
 from app.core.config import Settings, get_settings
-from app.services.llm.client import LLMClient, get_llm_client
+from app.services.llm.client import LLMClient, UsageRecorder, get_llm_client
 from app.services.llm.json import parse_json_object
 from app.services.patcher.atomic import atomic_write_text
 from app.services.patcher.git import commit_all
@@ -39,18 +39,22 @@ _ANSWER_SYSTEM_PROMPT = (
     "the file tree, the full content of pages the router pre-fetched, the "
     "prior conversation, and the new question.\n\n"
     "The digest is COMPLETE and AUTHORITATIVE — it lists every file in the "
-    "property. For collection questions (\"how many X\", \"list all Y\", \"which "
-    "Z handles W\"), enumerate directly from the digest. Do NOT say \"details "
-    "for the rest are not provided\" when the digest descriptions answer the "
-    "question — that is wrong and unhelpful. Use the picked pages only when "
-    "the question asks about specific data (amounts, dates, names) that the "
-    "short digest description omits. Use prior turns to resolve references "
-    "like 'before', 'that one'. If neither the digest nor the picked pages "
-    "cover the question, say so plainly — never claim you cannot access a "
-    "file. If one specific page best grounds the answer, return its path "
-    "(relative to the property root) in `path`; otherwise null. Always fill "
-    "`answer` with a concise plain-text answer (1-6 sentences for lists, "
-    "1-3 otherwise). Answer in the language of the question.\n\n"
+    "property. RESPECT the user's question:\n"
+    "- If they ask for ALL of something (\"name all 35 owners\", \"liste alle "
+    "Dienstleister\"), enumerate every matching item from the digest. Do NOT "
+    "abbreviate with \"and N more\" or \"available in individual files\" — the "
+    "names are right there in the digest descriptions; pull them out.\n"
+    "- For counts (\"how many X\"), give the count plus the full list when the "
+    "set is ≤ 50 items.\n"
+    "- For lookups about specific data (amounts, dates), use the picked "
+    "pages.\n"
+    "- For follow-ups (\"that one\", \"before\"), use prior turns.\n\n"
+    "If neither the digest nor the picked pages cover the question, say so "
+    "plainly — never claim you cannot access a file. If one specific page "
+    "best grounds the answer, return its path (relative to the property "
+    "root) in `path`; otherwise null. Match the user's language. Length "
+    "should match the request: short for short questions, long for "
+    "enumerations.\n\n"
     'Respond with a single JSON object: {"answer": string|null, "path": string|null}. '
     "No prose outside the JSON."
 )
@@ -66,10 +70,28 @@ _MAX_HISTORY_ANSWER_CHARS = 1200
 
 
 @dataclass(frozen=True, slots=True)
+class AskUsage:
+    input_tokens: int
+    output_tokens: int
+    cache_read_input_tokens: int
+    cache_creation_input_tokens: int
+    sections: dict[str, int]
+
+
+@dataclass(frozen=True, slots=True)
+class AskStep:
+    label: str
+    detail: str | None = None
+    paths: list[str] | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class AskResult:
     answer: str | None
     path: str | None
     pinned_path: str | None = None
+    usage: AskUsage | None = None
+    steps: list[AskStep] | None = None
 
 
 class AskService:
@@ -87,12 +109,20 @@ class AskService:
         history: list[tuple[str, str]] | None = None,
     ) -> AskResult:
         history = history or []
+        steps: list[AskStep] = []
+        usage_rec = UsageRecorder()
         index = await self._wiki.read_property(property_id)
         if index is None:
             return AskResult(answer=f"property {property_id!r} not found", path=None)
         tree = self._wiki.walk_tree(property_id)
         tree_listing = _render_tree(tree) if tree is not None else ""
         digest = self._build_digest(property_id)
+        steps.append(
+            AskStep(
+                label="Built page digest",
+                detail=f"{digest.count(chr(10)) + 1 if digest else 0} pages indexed from frontmatter",
+            )
+        )
 
         history_block = _render_history(history)
         routing_question = _route_question(history, question)
@@ -101,7 +131,22 @@ class AskService:
             digest=digest,
             tree_listing=tree_listing,
             question=routing_question,
+            usage=usage_rec,
         )
+        if picked:
+            steps.append(
+                AskStep(
+                    label=f"Router pulled {len(picked)} page(s)",
+                    paths=list(picked),
+                )
+            )
+        else:
+            steps.append(
+                AskStep(
+                    label="Router used digest only",
+                    detail="no full page bodies needed",
+                )
+            )
         page_blocks = await self._read_picked(property_id=property_id, paths=picked)
         log.info(
             "ask_routed",
@@ -123,6 +168,23 @@ class AskService:
             model=self._model,
             system_prompt=_ANSWER_SYSTEM_PROMPT,
             user_prompt=user_prompt,
+            usage=usage_rec,
+        )
+        steps.append(AskStep(label="Composed answer"))
+        sections = {
+            "system": _approx_tokens(_ANSWER_SYSTEM_PROMPT),
+            "tree": _approx_tokens(tree_listing),
+            "digest": _approx_tokens(digest),
+            "picked": _approx_tokens(page_blocks),
+            "history": _approx_tokens(history_block),
+            "question": _approx_tokens(question),
+        }
+        usage = AskUsage(
+            input_tokens=usage_rec.input_tokens,
+            output_tokens=usage_rec.output_tokens,
+            cache_read_input_tokens=usage_rec.cache_read_input_tokens,
+            cache_creation_input_tokens=usage_rec.cache_creation_input_tokens,
+            sections=sections,
         )
         result = _parse_result(raw)
         if pin and result.answer:
@@ -132,8 +194,16 @@ class AskService:
                 answer=result.answer,
                 cited_path=result.path,
             )
-            return AskResult(answer=result.answer, path=result.path, pinned_path=pinned)
-        return result
+            return AskResult(
+                answer=result.answer,
+                path=result.path,
+                pinned_path=pinned,
+                usage=usage,
+                steps=steps,
+            )
+        return AskResult(
+            answer=result.answer, path=result.path, usage=usage, steps=steps
+        )
 
     async def _pick_pages(
         self,
@@ -142,6 +212,7 @@ class AskService:
         digest: str,
         tree_listing: str,
         question: str,
+        usage: UsageRecorder | None = None,
     ) -> list[str]:
         prompt = (
             f"Property: {property_id}\n\n"
@@ -153,6 +224,7 @@ class AskService:
             model=self._model,
             system_prompt=_PICK_SYSTEM_PROMPT,
             user_prompt=prompt,
+            usage=usage,
         )
         try:
             data = parse_json_object(raw)
@@ -260,6 +332,12 @@ class AskService:
 
 
 _FRONTMATTER_KEY_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*):\s?(.*)$")
+
+
+def _approx_tokens(text: str) -> int:
+    if not text:
+        return 0
+    return max(1, len(text) // 4)
 
 
 def _extract_frontmatter_pair(content: str, *, fallback_name: str) -> tuple[str, str]:

@@ -5,7 +5,7 @@ from typing import Annotated
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.schemas.ask import AskRequest, AskResponse
+from app.schemas.ask import AskRequest, AskResponse, AskStepOut, AskUsageOut
 from app.services.ask import AskService, get_ask_service
 
 log = structlog.get_logger(__name__)
@@ -28,4 +28,23 @@ async def ask(
     except Exception as exc:
         log.exception("ask_failed", lie=payload.lie)
         raise HTTPException(status.HTTP_502_BAD_GATEWAY, "ask failed") from exc
-    return AskResponse(answer=result.answer, path=result.path, pinned_path=result.pinned_path)
+    return AskResponse(
+        answer=result.answer,
+        path=result.path,
+        pinned_path=result.pinned_path,
+        usage=(
+            AskUsageOut(
+                input_tokens=result.usage.input_tokens,
+                output_tokens=result.usage.output_tokens,
+                cache_read_input_tokens=result.usage.cache_read_input_tokens,
+                cache_creation_input_tokens=result.usage.cache_creation_input_tokens,
+                sections=result.usage.sections,
+            )
+            if result.usage
+            else None
+        ),
+        steps=[
+            AskStepOut(label=s.label, detail=s.detail, paths=s.paths)
+            for s in (result.steps or [])
+        ],
+    )

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Mapping
+from dataclasses import dataclass, field
 from typing import Annotated, Protocol
 
 import structlog
@@ -13,9 +14,45 @@ from app.core.config import REPO_ROOT, Settings, get_settings
 log = structlog.get_logger(__name__)
 
 
+@dataclass(slots=True)
+class LLMUsage:
+    input_tokens: int = 0
+    output_tokens: int = 0
+    cache_read_input_tokens: int = 0
+    cache_creation_input_tokens: int = 0
+
+
+@dataclass(slots=True)
+class UsageRecorder:
+    calls: list[LLMUsage] = field(default_factory=list)
+
+    @property
+    def input_tokens(self) -> int:
+        return sum(c.input_tokens for c in self.calls)
+
+    @property
+    def output_tokens(self) -> int:
+        return sum(c.output_tokens for c in self.calls)
+
+    @property
+    def cache_read_input_tokens(self) -> int:
+        return sum(c.cache_read_input_tokens for c in self.calls)
+
+    @property
+    def cache_creation_input_tokens(self) -> int:
+        return sum(c.cache_creation_input_tokens for c in self.calls)
+
+
 class LLMClient(Protocol):
-    async def complete(self, *, model: str, system_prompt: str, user_prompt: str) -> str:
-        """Return raw model text for a single prompt."""
+    async def complete(
+        self,
+        *,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        usage: UsageRecorder | None = None,
+    ) -> str:
+        """Return raw model text for a single prompt; append usage if recorder given."""
 
 
 def prompt_hash(prompt: str) -> str:
@@ -35,7 +72,14 @@ class AnthropicClient:
     def __init__(self, *, api_key: str, timeout: float = 60.0) -> None:
         self._client = AsyncAnthropic(api_key=api_key, timeout=timeout)
 
-    async def complete(self, *, model: str, system_prompt: str, user_prompt: str) -> str:
+    async def complete(
+        self,
+        *,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        usage: UsageRecorder | None = None,
+    ) -> str:
         response = await self._client.messages.create(
             model=model,
             max_tokens=self._MAX_TOKENS,
@@ -48,15 +92,26 @@ class AnthropicClient:
             ],
             messages=[{"role": "user", "content": user_prompt}],
         )
-        usage = response.usage
+        u = response.usage
+        cache_read = getattr(u, "cache_read_input_tokens", 0) or 0
+        cache_create = getattr(u, "cache_creation_input_tokens", 0) or 0
         log.debug(
             "anthropic_complete",
             model=model,
-            input_tokens=usage.input_tokens,
-            output_tokens=usage.output_tokens,
-            cache_read_input_tokens=getattr(usage, "cache_read_input_tokens", 0) or 0,
-            cache_creation_input_tokens=getattr(usage, "cache_creation_input_tokens", 0) or 0,
+            input_tokens=u.input_tokens,
+            output_tokens=u.output_tokens,
+            cache_read_input_tokens=cache_read,
+            cache_creation_input_tokens=cache_create,
         )
+        if usage is not None:
+            usage.calls.append(
+                LLMUsage(
+                    input_tokens=u.input_tokens,
+                    output_tokens=u.output_tokens,
+                    cache_read_input_tokens=cache_read,
+                    cache_creation_input_tokens=cache_create,
+                )
+            )
         return "".join(block.text for block in response.content if block.type == "text")
 
 
@@ -70,7 +125,14 @@ class FakeLLMClient:
     def add_response(self, *, model: str, user_prompt: str, response: str) -> None:
         self.responses[(model, prompt_hash(user_prompt))] = response
 
-    async def complete(self, *, model: str, system_prompt: str, user_prompt: str) -> str:
+    async def complete(
+        self,
+        *,
+        model: str,
+        system_prompt: str,
+        user_prompt: str,
+        usage: UsageRecorder | None = None,
+    ) -> str:
         self.calls.append(
             {
                 "model": model,
@@ -79,6 +141,8 @@ class FakeLLMClient:
                 "user_prompt": user_prompt,
             }
         )
+        if usage is not None:
+            usage.calls.append(LLMUsage())
         keys = (
             (model, prompt_hash(user_prompt)),
             (model, user_prompt),

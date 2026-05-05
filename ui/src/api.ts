@@ -5,9 +5,25 @@ export type TreeNode = {
   children?: TreeNode[] | null;
 };
 
+export type AskUsage = {
+  input_tokens: number;
+  output_tokens: number;
+  cache_read_input_tokens: number;
+  cache_creation_input_tokens: number;
+  sections: Record<string, number>;
+};
+
+export type AskStep = {
+  label: string;
+  detail?: string;
+  paths?: string[];
+};
+
 export type AskResponse = {
   path?: string;
   answer?: string;
+  usage?: AskUsage;
+  steps?: AskStep[];
 };
 
 const base = "/api/v1";

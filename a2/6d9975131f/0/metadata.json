@@ -1,0 +1,37 @@
+{
+  "cli_version": "0.5.6",
+  "checkpoint_id": "a26d9975131f",
+  "session_id": "909ff7b8-67fb-471d-a0b0-12f37c152c6e",
+  "strategy": "manual-commit",
+  "created_at": "2026-05-05T01:27:50.187622Z",
+  "branch": "arbio-focused",
+  "checkpoints_count": 1,
+  "files_touched": [
+    "ui/src/App.tsx"
+  ],
+  "agent": "Claude Code",
+  "model": "claude-sonnet-4-6",
+  "turn_id": "2c3327395860",
+  "token_usage": {
+    "input_tokens": 153,
+    "cache_creation_tokens": 449052,
+    "cache_read_tokens": 20163952,
+    "output_tokens": 68036,
+    "api_call_count": 95
+  },
+  "session_metrics": {
+    "turn_count": 7
+  },
+  "initial_attribution": {
+    "calculated_at": "2026-05-05T01:27:50.137755Z",
+    "agent_lines": 1,
+    "agent_removed": 1,
+    "human_added": 150,
+    "human_modified": 0,
+    "human_removed": 0,
+    "total_committed": 151,
+    "total_lines_changed": 256,
+    "agent_percentage": 0.78125,
+    "metric_version": 2
+  }
+}

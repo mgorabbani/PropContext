@@ -20,7 +20,10 @@ async def ask(
 ) -> AskResponse:
     try:
         result = await service.answer(
-            property_id=payload.lie, question=payload.question, pin=payload.pin
+            property_id=payload.lie,
+            question=payload.question,
+            pin=payload.pin,
+            history=[(t.question, t.answer) for t in payload.history],
         )
     except Exception as exc:
         log.exception("ask_failed", lie=payload.lie)

@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./styles.css";
 import App from "./App";
 import { IngestPage } from "./pages/Ingest";
@@ -16,10 +17,16 @@ import { IngestPage } from "./pages/Ingest";
   document.documentElement.classList.toggle("light", initial === "light");
 })();
 
-const Root = window.location.pathname.startsWith("/ingest") ? IngestPage : App;
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Root />
+    <BrowserRouter>
+      <Routes>
+        <Route path="/ingest" element={<IngestPage />} />
+        <Route path="/p/:lie/*" element={<App />} />
+        <Route path="/p/:lie" element={<App />} />
+        <Route path="/" element={<App />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   </StrictMode>,
 );

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import type { PanelImperativeHandle } from "react-resizable-panels";
 import { Group, Panel, Separator } from "react-resizable-panels";
 import { TopBar } from "./components/TopBar";
@@ -15,10 +16,13 @@ import { flattenTree } from "./lib/markdown";
 const ASK_ENABLED = true;
 
 export default function App() {
+  const params = useParams();
+  const navigate = useNavigate();
+  const routeLie = params.lie ?? "";
+  const routeRel = params["*"] ?? "";
+
   const [properties, setProperties] = useState<string[]>([]);
-  const [lie, setLie] = useState<string>("");
   const [tree, setTree] = useState<TreeNode | null>(null);
-  const [path, setPath] = useState<string | null>(null);
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,25 +44,26 @@ export default function App() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  const lie = routeLie;
+  const path = routeLie ? `${routeLie}/${routeRel || "index.md"}` : null;
+
   useEffect(() => {
     fetchProperties()
       .then((ps) => {
         setProperties(ps);
-        if (ps.length > 0) setLie(ps[0]);
+        if (!routeLie && ps.length > 0) {
+          navigate(`/p/${ps[0]}`, { replace: true });
+        }
       })
       .catch((e) => setError(String(e)));
-  }, []);
+  }, [navigate, routeLie]);
 
   useEffect(() => {
     if (!lie) return;
     setTree(null);
-    setPath(null);
     setContent("");
     fetchTree(lie)
-      .then((t) => {
-        setTree(t);
-        setPath(`${lie}/index.md`);
-      })
+      .then((t) => setTree(t))
       .catch((e) => setError(String(e)));
   }, [lie]);
 
@@ -100,11 +105,20 @@ export default function App() {
   }
 
   function selectPath(p: string) {
-    setPath(p);
+    if (!p) return;
+    const trimmed = p.replace(/^\/+/, "");
+    const [propId, ...rest] = trimmed.split("/");
+    const rel = rest.join("/");
+    navigate(rel ? `/p/${propId}/${rel}` : `/p/${propId}`);
     if (isMobile) {
       setMobileTreeOpen(false);
       setMobileAskOpen(false);
     }
+  }
+
+  function selectLie(next: string) {
+    if (!next || next === lie) return;
+    navigate(`/p/${next}`);
   }
 
   const treeButtonActive = isMobile ? mobileTreeOpen : !treeCollapsed;
@@ -126,7 +140,7 @@ export default function App() {
         <div className="relative">
           <select
             value={lie}
-            onChange={(e) => setLie(e.target.value)}
+            onChange={(e) => selectLie(e.target.value)}
             disabled={properties.length === 0}
             className="h-7 w-full cursor-pointer appearance-none rounded-md border border-[var(--color-border-2)] bg-[var(--color-surface)] px-2.5 pr-7 font-mono text-[12px] font-medium text-[var(--color-fg)] outline-none transition-colors hover:border-[var(--color-accent-dim)] focus:border-[var(--color-accent)]"
           >

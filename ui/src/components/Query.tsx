@@ -50,10 +50,13 @@ export function Query({ lie, onResolved }: Props) {
   async function run(question: string) {
     if (!question || busy) return;
     setQ("");
+    const history = entries
+      .filter((x) => x.status === "ok" && x.answer)
+      .map((x) => ({ question: x.question, answer: x.answer as string }));
     const id = ++idRef.current;
     setEntries((e) => [...e, { id, question, answer: null, status: "pending" }]);
     setBusy(true);
-    const res = await ask(question, lie);
+    const res = await ask(question, lie, history);
     setBusy(false);
     if (!res.ok) {
       const isMissing = res.status === 404;

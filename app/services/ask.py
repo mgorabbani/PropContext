@@ -32,14 +32,15 @@ _PICK_SYSTEM_PROMPT = (
 _ANSWER_SYSTEM_PROMPT = (
     "You answer questions against a property's markdown wiki. You receive: the "
     "property's index.md (catalog), the file tree, the full content of pages "
-    "the router selected, and the question.\n\n"
-    "Answer using ONLY the provided wiki content. Be concrete: cite names, IDs, "
-    "dates, and amounts straight from the page. If the cited content does not "
-    "contain the answer, say so plainly — never claim you cannot access a "
-    "file (you have everything provided). If one specific page best grounds the "
-    "answer, return its path (relative to the property root) in `path`; "
-    "otherwise null. Always fill `answer` with a concise plain-text answer "
-    "(1-4 sentences). Answer in the language of the question.\n\n"
+    "the router selected, the prior conversation, and the new question.\n\n"
+    "Answer using ONLY the provided wiki content. Use prior turns to resolve "
+    "references like 'before', 'that one', 'my last question'. Be concrete: "
+    "cite names, IDs, dates, and amounts straight from the page. If the cited "
+    "content does not contain the answer, say so plainly — never claim you "
+    "cannot access a file (you have everything provided). If one specific page "
+    "best grounds the answer, return its path (relative to the property root) "
+    "in `path`; otherwise null. Always fill `answer` with a concise plain-text "
+    "answer (1-4 sentences). Answer in the language of the question.\n\n"
     'Respond with a single JSON object: {"answer": string|null, "path": string|null}. '
     "No prose outside the JSON."
 )
@@ -47,6 +48,8 @@ _ANSWER_SYSTEM_PROMPT = (
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 _MAX_PICKED = 3
 _MAX_PAGE_CHARS = 8000
+_MAX_HISTORY_TURNS = 8
+_MAX_HISTORY_ANSWER_CHARS = 1200
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,27 +71,32 @@ class AskService:
         property_id: str,
         question: str,
         pin: bool = False,
+        history: list[tuple[str, str]] | None = None,
     ) -> AskResult:
+        history = history or []
         index = await self._wiki.read_property(property_id)
         if index is None:
             return AskResult(answer=f"property {property_id!r} not found", path=None)
         tree = self._wiki.walk_tree(property_id)
         tree_listing = _render_tree(tree) if tree is not None else ""
 
+        history_block = _render_history(history)
+        routing_question = _route_question(history, question)
         picked = await self._pick_pages(
             property_id=property_id,
             index=index,
             tree_listing=tree_listing,
-            question=question,
+            question=routing_question,
         )
         page_blocks = await self._read_picked(property_id=property_id, paths=picked)
-        log.info("ask_routed", property_id=property_id, picked=picked)
+        log.info("ask_routed", property_id=property_id, picked=picked, turns=len(history))
 
         user_prompt = (
             f"Property: {property_id}\n\n"
             f"=== File tree ===\n{tree_listing}\n\n"
             f"=== {property_id}/index.md ===\n{index}\n\n"
             f"{page_blocks}"
+            f"{history_block}"
             f"=== Question ===\n{question}\n"
         )
         raw = await self._llm.complete(
@@ -195,6 +203,26 @@ class AskService:
         regenerate_index(property_root)
         commit_all(wiki_dir, message=f"ask({property_id}): pin {slug}")
         return rel
+
+
+def _render_history(history: list[tuple[str, str]]) -> str:
+    if not history:
+        return ""
+    turns = history[-_MAX_HISTORY_TURNS:]
+    lines = ["=== Prior conversation (oldest first) ==="]
+    for q, a in turns:
+        trimmed = a if len(a) <= _MAX_HISTORY_ANSWER_CHARS else a[:_MAX_HISTORY_ANSWER_CHARS] + "…"
+        lines.append(f"User: {q}")
+        lines.append(f"Assistant: {trimmed}")
+    return "\n".join(lines) + "\n\n"
+
+
+def _route_question(history: list[tuple[str, str]], question: str) -> str:
+    if not history:
+        return question
+    recent = history[-_MAX_HISTORY_TURNS:]
+    recap = " | ".join(q for q, _ in recent)
+    return f"Recent user questions: {recap}\nNew question: {question}"
 
 
 def _render_tree(node: TreeNode, depth: int = 0) -> str:

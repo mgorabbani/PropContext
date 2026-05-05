@@ -30,14 +30,17 @@ export async function fetchFile(path: string): Promise<string> {
   return r.text();
 }
 
+export type AskTurn = { question: string; answer: string };
+
 export async function ask(
   question: string,
   lie: string,
+  history: AskTurn[] = [],
 ): Promise<{ ok: true; data: AskResponse } | { ok: false; status: number }> {
   const r = await fetch(`${base}/ask`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ question, lie }),
+    body: JSON.stringify({ question, lie, history }),
   });
   if (!r.ok) return { ok: false, status: r.status };
   return { ok: true, data: await r.json() };

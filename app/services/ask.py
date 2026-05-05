@@ -4,6 +4,7 @@ import re
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Annotated
 
 import structlog
@@ -46,15 +47,15 @@ _ANSWER_SYSTEM_PROMPT = (
     "prior conversation, and the new question.\n\n"
     "The digest is COMPLETE and AUTHORITATIVE — it lists every file in the "
     "property. RESPECT the user's question:\n"
-    "- If they ask for ALL of something (\"name all 35 owners\", \"liste alle "
-    "Dienstleister\"), enumerate every matching item from the digest. Do NOT "
-    "abbreviate with \"and N more\" or \"available in individual files\" — the "
+    '- If they ask for ALL of something ("name all 35 owners", "liste alle '
+    'Dienstleister"), enumerate every matching item from the digest. Do NOT '
+    'abbreviate with "and N more" or "available in individual files" — the '
     "names are right there in the digest descriptions; pull them out.\n"
-    "- For counts (\"how many X\"), give the count plus the full list when the "
+    '- For counts ("how many X"), give the count plus the full list when the '
     "set is ≤ 50 items.\n"
     "- For lookups about specific data (amounts, dates), use the picked "
     "pages.\n"
-    "- For follow-ups (\"that one\", \"before\"), use prior turns.\n\n"
+    '- For follow-ups ("that one", "before"), use prior turns.\n\n'
     "If neither the digest nor the picked pages cover the question, say so "
     "plainly — never claim you cannot access a file. If one specific page "
     "best grounds the answer, return its path (relative to the property "
@@ -228,9 +229,7 @@ class AskService:
     ) -> AskResult:
         history = history or []
         if not (self._wiki._wiki_dir / property_id).is_dir():
-            return AskResult(
-                answer=f"property {property_id!r} not found", path=None
-            )
+            return AskResult(answer=f"property {property_id!r} not found", path=None)
         if hasattr(self._llm, "complete_agent"):
             return await self._answer_agent(
                 property_id=property_id,
@@ -303,11 +302,7 @@ class AskService:
             digest_chars=len(digest),
         )
 
-        user_prompt = (
-            f"{page_blocks}"
-            f"{history_block}"
-            f"=== Question ===\n{question}\n"
-        )
+        user_prompt = f"{page_blocks}{history_block}=== Question ===\n{question}\n"
         raw = await self._llm.complete(
             model=self._model,
             system_prompt=_ANSWER_SYSTEM_PROMPT + "\n\n" + cached_context,
@@ -345,9 +340,7 @@ class AskService:
                 usage=usage,
                 steps=steps,
             )
-        return AskResult(
-            answer=result.answer, path=result.path, usage=usage, steps=steps
-        )
+        return AskResult(answer=result.answer, path=result.path, usage=usage, steps=steps)
 
     async def _answer_agent(
         self,
@@ -358,74 +351,89 @@ class AskService:
         history: list[tuple[str, str]],
         on_step: Callable[[AskStep], Awaitable[None]] | None = None,
     ) -> AskResult:
+        from claude_agent_sdk import (
+            AssistantMessage,
+            ClaudeAgentOptions,
+            ResultMessage,
+            TextBlock,
+            ToolUseBlock,
+            query,
+        )
+
         steps: list[AskStep] = []
-        usage_rec = UsageRecorder()
 
         async def push_step(step: AskStep) -> None:
             steps.append(step)
             if on_step is not None:
                 await on_step(step)
+
+        prop_root = (self._wiki._wiki_dir / property_id).resolve()
         history_block = _render_history(history)
-        initial_user = (
-            f"Property: {property_id}\n\n"
-            f"{history_block}"
-            f"=== Question ===\n{question}\n\n"
-            f"Use the tools to navigate the wiki, then return your final JSON answer."
+        prompt_text = f"{history_block}=== Question ===\n{question}\n"
+        system_prompt = (
+            "You answer questions about a property's markdown wiki by "
+            "navigating it with tools.\n\n"
+            f"Property root: {prop_root}\n"
+            "All paths in your final response must be RELATIVE to the "
+            "property root (e.g. '07_timeline.md', "
+            "'04_dienstleister/DL-001.md').\n\n"
+            "Strategy:\n"
+            "  - Use Grep / Glob first to locate relevant files.\n"
+            "  - Read with offset/limit to avoid pulling whole files when "
+            "you only need part of them.\n"
+            "  - For listing or counting questions, Glob or Grep frontmatter "
+            "lines instead of reading every file in a directory.\n"
+            "  - Stop calling tools as soon as you can answer.\n\n"
+            "When done, respond with a SINGLE JSON object and no prose "
+            'outside it: {"answer": string|null, "path": string|null}. '
+            "Match the user's language. Use prior turns to resolve "
+            "references like 'before' or 'that one'."
         )
-        messages: list[dict] = [{"role": "user", "content": initial_user}]
-        cited_path: str | None = None
+        options = ClaudeAgentOptions(
+            system_prompt=system_prompt,
+            allowed_tools=["Read", "Glob", "Grep"],
+            permission_mode="acceptEdits",
+            cwd=str(prop_root),
+            max_turns=_MAX_AGENT_TURNS,
+            model=self._model,
+        )
+
         final_text = ""
-        for turn in range(_MAX_AGENT_TURNS):
-            resp: AgentResponse = await self._llm.complete_agent(  # type: ignore[attr-defined]
-                model=self._model,
-                system=_AGENT_SYSTEM_PROMPT,
-                messages=messages,
-                tools=AGENT_TOOLS,
-                usage=usage_rec,
-            )
-            if resp.text and resp.stop_reason in ("end_turn", "stop_sequence"):
-                final_text = resp.text
-                break
-            if resp.stop_reason != "tool_use" or not resp.tool_calls:
-                final_text = resp.text
-                break
-            messages.append({"role": "assistant", "content": resp.content_blocks})
-            tool_results: list[dict] = []
-            for call in resp.tool_calls:
-                output, summary, picked_path = await self._exec_tool(
-                    property_id=property_id, name=call.name, args=call.input
-                )
-                tool_results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": call.id,
-                        "content": output,
-                    }
-                )
-                arg_repr = _summarize_tool_input(call.name, call.input)
-                await push_step(
-                    AskStep(
-                        label=f"{call.name}({arg_repr})",
-                        detail=summary,
-                        paths=[picked_path] if picked_path else None,
-                    )
-                )
-            messages.append({"role": "user", "content": tool_results})
-        else:
-            log.warning("ask_agent_max_turns_hit", property_id=property_id)
-        if not steps:
-            await push_step(AskStep(label="Composed answer (no tool calls)"))
-        else:
-            await push_step(AskStep(label="Composed answer"))
+        sdk_usage: dict | None = None
+        async for msg in query(prompt=prompt_text, options=options):
+            if isinstance(msg, AssistantMessage):
+                for block in msg.content:
+                    if isinstance(block, ToolUseBlock):
+                        arg_repr = _summarize_sdk_tool_input(block.name, block.input)
+                        paths = _sdk_tool_paths(block.name, block.input, prop_root)
+                        await push_step(
+                            AskStep(
+                                label=f"{block.name}({arg_repr})",
+                                detail=None,
+                                paths=paths,
+                            )
+                        )
+                    elif isinstance(block, TextBlock):
+                        final_text = block.text
+            elif isinstance(msg, ResultMessage):
+                if msg.result:
+                    final_text = msg.result
+                if isinstance(msg.usage, dict):
+                    sdk_usage = msg.usage
+        await push_step(AskStep(label="Composed answer"))
+
         result = _parse_result(final_text)
-        cited_path = result.path
+        cited_path = _relativize_path(result.path, prop_root)
+        u = sdk_usage or {}
         usage = AskUsage(
-            input_tokens=usage_rec.input_tokens,
-            output_tokens=usage_rec.output_tokens,
-            cache_read_input_tokens=usage_rec.cache_read_input_tokens,
-            cache_creation_input_tokens=usage_rec.cache_creation_input_tokens,
+            input_tokens=int(u.get("input_tokens", 0) or 0),
+            output_tokens=int(u.get("output_tokens", 0) or 0),
+            cache_read_input_tokens=int(u.get("cache_read_input_tokens", 0) or 0),
+            cache_creation_input_tokens=int(
+                u.get("cache_creation_input_tokens", 0) or 0
+            ),
             sections={
-                "system": _approx_tokens(_AGENT_SYSTEM_PROMPT),
+                "system": _approx_tokens(system_prompt),
                 "history": _approx_tokens(history_block),
                 "question": _approx_tokens(question),
             },
@@ -444,9 +452,7 @@ class AskService:
                 usage=usage,
                 steps=steps,
             )
-        return AskResult(
-            answer=result.answer, path=cited_path, usage=usage, steps=steps
-        )
+        return AskResult(answer=result.answer, path=cited_path, usage=usage, steps=steps)
 
     async def _exec_tool(
         self, *, property_id: str, name: str, args: dict
@@ -465,9 +471,7 @@ class AskService:
             return self._tool_grep(property_id=property_id, pattern=pattern)
         return (f"error: unknown tool {name!r}", f"unknown tool {name!r}", None)
 
-    def _tool_list_dir(
-        self, *, property_id: str, rel: str
-    ) -> tuple[str, str, str | None]:
+    def _tool_list_dir(self, *, property_id: str, rel: str) -> tuple[str, str, str | None]:
         root = self._wiki._wiki_dir / property_id
         target = (root / rel).resolve() if rel else root.resolve()
         try:
@@ -488,9 +492,7 @@ class AskService:
         body = "\n".join(rows) if rows else "(empty)"
         return (body, f"{len(rows)} entries under {rel or '.'}", None)
 
-    def _tool_summary(
-        self, *, property_id: str, rel: str
-    ) -> tuple[str, str, str | None]:
+    def _tool_summary(self, *, property_id: str, rel: str) -> tuple[str, str, str | None]:
         root = self._wiki._wiki_dir / property_id
         target = (root / rel).resolve() if rel else root.resolve()
         try:
@@ -520,9 +522,7 @@ class AskService:
         body = "\n".join(rows) if rows else "(no .md files)"
         return (body, f"{len(rows)} files summarised under {rel or '.'}", None)
 
-    async def _tool_read_file(
-        self, *, property_id: str, rel: str
-    ) -> tuple[str, str, str | None]:
+    async def _tool_read_file(self, *, property_id: str, rel: str) -> tuple[str, str, str | None]:
         if not rel:
             return ("error: path required", "missing path arg", None)
         try:
@@ -532,15 +532,11 @@ class AskService:
         if content is None:
             return (f"error: file not found: {rel}", f"missing: {rel}", None)
         truncated = len(content) > _TOOL_FILE_CHAR_CAP
-        body = (
-            content[:_TOOL_FILE_CHAR_CAP] + "\n…[truncated]" if truncated else content
-        )
+        body = content[:_TOOL_FILE_CHAR_CAP] + "\n…[truncated]" if truncated else content
         summary = f"{len(content)} chars" + (" (truncated)" if truncated else "")
         return (body, summary, rel)
 
-    def _tool_grep(
-        self, *, property_id: str, pattern: str
-    ) -> tuple[str, str, str | None]:
+    def _tool_grep(self, *, property_id: str, pattern: str) -> tuple[str, str, str | None]:
         if not pattern:
             return ("error: pattern required", "missing pattern", None)
         try:
@@ -695,6 +691,40 @@ def _summarize_tool_input(name: str, args: dict) -> str:
     if name == "grep":
         return repr(args.get("pattern", ""))[:60]
     return str(args.get("path", ""))[:80]
+
+
+def _summarize_sdk_tool_input(name: str, args: dict) -> str:
+    if name == "Grep":
+        return repr(args.get("pattern", ""))[:60]
+    if name == "Glob":
+        return repr(args.get("pattern", ""))[:60]
+    if name == "Read":
+        path = str(args.get("file_path", ""))
+        offset = args.get("offset")
+        limit = args.get("limit")
+        if offset is not None or limit is not None:
+            return f"{path}, offset={offset}, limit={limit}"
+        return path[:80]
+    return str(args.get("path", "") or args.get("file_path", ""))[:80]
+
+
+def _sdk_tool_paths(name: str, args: dict, prop_root: Path) -> list[str] | None:
+    if name == "Read":
+        rel = _relativize_path(str(args.get("file_path", "")), prop_root)
+        return [rel] if rel else None
+    return None
+
+
+def _relativize_path(path: str | None, prop_root: Path) -> str | None:
+    if not path:
+        return None
+    p = Path(path)
+    try:
+        if p.is_absolute():
+            return p.resolve().relative_to(prop_root).as_posix()
+    except ValueError:
+        return None
+    return path.lstrip("/")
 
 
 def _approx_tokens(text: str) -> int:

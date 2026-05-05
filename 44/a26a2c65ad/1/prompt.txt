@@ -1,0 +1,17 @@
+how claude code agent use way less token to search large codebase
+
+---
+
+let's use claude code agent for our ai agent for the chat
+
+---
+
+1
+
+---
+
+[Image #16] why 440k cached?
+
+---
+
+yes optimise for sure

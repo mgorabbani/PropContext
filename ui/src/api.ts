@@ -62,6 +62,65 @@ export async function ask(
   return { ok: true, data: await r.json() };
 }
 
+export async function askStream(
+  question: string,
+  lie: string,
+  history: AskTurn[],
+  handlers: {
+    onStep: (step: AskStep) => void;
+    onResponse: (resp: AskResponse) => void;
+    onError: (err: { status: number; detail: string }) => void;
+  },
+  signal?: AbortSignal,
+): Promise<void> {
+  const r = await fetch(`${base}/ask/stream`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ question, lie, history }),
+    signal,
+  });
+  if (!r.ok || !r.body) {
+    handlers.onError({
+      status: r.status,
+      detail: await r.text().catch(() => ""),
+    });
+    return;
+  }
+  const reader = r.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buf.indexOf("\n\n")) !== -1) {
+      const block = buf.slice(0, idx);
+      buf = buf.slice(idx + 2);
+      const dataLine = block.split("\n").find((l) => l.startsWith("data:"));
+      if (!dataLine) continue;
+      const json = dataLine.slice(5).trim();
+      try {
+        const parsed = JSON.parse(json) as {
+          stage: string;
+          data: Record<string, unknown>;
+        };
+        if (parsed.stage === "step") {
+          handlers.onStep(parsed.data as unknown as AskStep);
+        } else if (parsed.stage === "response") {
+          handlers.onResponse(parsed.data as unknown as AskResponse);
+        } else if (parsed.stage === "error") {
+          handlers.onError(
+            parsed.data as unknown as { status: number; detail: string },
+          );
+        }
+      } catch {
+        // ignore malformed
+      }
+    }
+  }
+}
+
 export type SimItem = {
   id: string;
   kind: "email" | "invoice" | "bank";

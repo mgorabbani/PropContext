@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronRight, Send, Sparkles } from "lucide-react";
-import { ask } from "../api";
+import { askStream } from "../api";
 import type { AskStep, AskUsage } from "../api";
 import { cn } from "../lib/cn";
 
@@ -62,50 +62,67 @@ export function Query({ lie, onResolved }: Props) {
       .filter((x) => x.status === "ok" && x.answer)
       .map((x) => ({ question: x.question, answer: x.answer as string }));
     const id = ++idRef.current;
-    setEntries((e) => [...e, { id, question, answer: null, status: "pending" }]);
+    setEntries((e) => [
+      ...e,
+      { id, question, answer: null, status: "pending", steps: [] },
+    ]);
     setBusy(true);
-    const res = await ask(question, lie, history);
+    await askStream(question, lie, history, {
+      onStep: (step) => {
+        setEntries((e) =>
+          e.map((x) =>
+            x.id === id ? { ...x, steps: [...(x.steps ?? []), step] } : x,
+          ),
+        );
+      },
+      onResponse: (data) => {
+        const { answer, path, usage, steps } = data;
+        const usefulPath = isUsefulPath(path) ? path : undefined;
+        const fullPath = usefulPath ? `${lie}/${usefulPath}` : undefined;
+        if (fullPath) onResolved(fullPath);
+        setEntries((e) =>
+          e.map((x) => {
+            if (x.id !== id) return x;
+            const base = { ...x, usage, steps: steps ?? x.steps } as Entry;
+            if (answer) {
+              return { ...base, answer, path: fullPath, status: "ok" };
+            }
+            if (fullPath) {
+              return {
+                ...base,
+                answer: `Opened ${fullPath}`,
+                path: fullPath,
+                status: "ok",
+              };
+            }
+            return {
+              ...base,
+              answer:
+                "The model didn't find an answer in this property's wiki. Try rephrasing or asking about a specific page.",
+              status: "empty",
+            };
+          }),
+        );
+      },
+      onError: (err) => {
+        const isMissing = err.status === 404;
+        if (isMissing) setUnavailable(true);
+        setEntries((e) =>
+          e.map((x) =>
+            x.id === id
+              ? {
+                  ...x,
+                  answer: isMissing
+                    ? "Ask endpoint not available on this server."
+                    : `Request failed (${err.status}).`,
+                  status: "error",
+                }
+              : x,
+          ),
+        );
+      },
+    });
     setBusy(false);
-    if (!res.ok) {
-      const isMissing = res.status === 404;
-      if (isMissing) setUnavailable(true);
-      setEntries((e) =>
-        e.map((x) =>
-          x.id === id
-            ? {
-                ...x,
-                answer: isMissing
-                  ? "Ask endpoint not available on this server."
-                  : `Request failed (${res.status}).`,
-                status: "error",
-              }
-            : x,
-        ),
-      );
-      return;
-    }
-    const { answer, path, usage, steps } = res.data;
-    const usefulPath = isUsefulPath(path) ? path : undefined;
-    const fullPath = usefulPath ? `${lie}/${usefulPath}` : undefined;
-    if (fullPath) onResolved(fullPath);
-    setEntries((e) =>
-      e.map((x) => {
-        if (x.id !== id) return x;
-        const base = { ...x, usage, steps } as Entry;
-        if (answer) {
-          return { ...base, answer, path: fullPath, status: "ok" };
-        }
-        if (fullPath) {
-          return { ...base, answer: `Opened ${fullPath}`, path: fullPath, status: "ok" };
-        }
-        return {
-          ...base,
-          answer:
-            "The model didn't find an answer in this property's wiki. Try rephrasing or asking about a specific page.",
-          status: "empty",
-        };
-      }),
-    );
   }
 
   async function submit() {
@@ -182,9 +199,17 @@ export function Query({ lie, onResolved }: Props) {
                   </div>
                 </div>
                 {e.status === "pending" ? (
-                  <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
-                    thinking...
+                  <div className="space-y-2">
+                    {e.steps && e.steps.length > 0 && (
+                      <LiveTrace
+                        steps={e.steps}
+                        onPickPath={(p) => onResolved(`${lie}/${p}`)}
+                      />
+                    )}
+                    <div className="flex items-center gap-1.5 text-[13.5px] text-[var(--color-fg-muted)]">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
+                      thinking...
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -260,6 +285,52 @@ export function Query({ lie, onResolved }: Props) {
         </div>
       </div>
     </aside>
+  );
+}
+
+function LiveTrace({
+  steps,
+  onPickPath,
+}: {
+  steps: AskStep[];
+  onPickPath: (path: string) => void;
+}) {
+  return (
+    <ol className="space-y-1 rounded-md border border-[var(--color-border-2)]/60 bg-[var(--color-surface)]/30 px-3 py-2 font-mono text-[11.5px] text-[var(--color-fg-muted)]">
+      {steps.map((s, i) => {
+        const isLast = i === steps.length - 1;
+        return (
+          <li key={i} className="space-y-0.5">
+            <div
+              className={cn(
+                "flex items-baseline gap-1.5",
+                isLast ? "text-[var(--color-accent)]" : "text-[var(--color-fg)]",
+              )}
+            >
+              <span className="text-[var(--color-fg-dim)]">{i + 1}.</span>
+              <span>{s.label}</span>
+              {s.detail && (
+                <span className="text-[var(--color-fg-dim)]">— {s.detail}</span>
+              )}
+            </div>
+            {s.paths && s.paths.length > 0 && (
+              <ul className="ml-4 space-y-0.5">
+                {s.paths.map((p) => (
+                  <li key={p}>
+                    <button
+                      onClick={() => onPickPath(p)}
+                      className="text-left text-[var(--color-accent-dim)] hover:text-[var(--color-accent)] hover:underline"
+                    >
+                      → {p}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 

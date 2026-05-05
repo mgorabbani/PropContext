@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Annotated
@@ -195,6 +196,7 @@ class AskService:
         question: str,
         pin: bool = False,
         history: list[tuple[str, str]] | None = None,
+        on_step: Callable[[AskStep], Awaitable[None]] | None = None,
     ) -> AskResult:
         history = history or []
         if not (self._wiki._wiki_dir / property_id).is_dir():
@@ -207,6 +209,7 @@ class AskService:
                 question=question,
                 pin=pin,
                 history=history,
+                on_step=on_step,
             )
         return await self._answer_digest(
             property_id=property_id,
@@ -325,9 +328,15 @@ class AskService:
         question: str,
         pin: bool,
         history: list[tuple[str, str]],
+        on_step: Callable[[AskStep], Awaitable[None]] | None = None,
     ) -> AskResult:
         steps: list[AskStep] = []
         usage_rec = UsageRecorder()
+
+        async def push_step(step: AskStep) -> None:
+            steps.append(step)
+            if on_step is not None:
+                await on_step(step)
         history_block = _render_history(history)
         initial_user = (
             f"Property: {property_id}\n\n"
@@ -366,7 +375,7 @@ class AskService:
                     }
                 )
                 arg_repr = _summarize_tool_input(call.name, call.input)
-                steps.append(
+                await push_step(
                     AskStep(
                         label=f"{call.name}({arg_repr})",
                         detail=summary,
@@ -377,9 +386,9 @@ class AskService:
         else:
             log.warning("ask_agent_max_turns_hit", property_id=property_id)
         if not steps:
-            steps.append(AskStep(label="Composed answer (no tool calls)"))
+            await push_step(AskStep(label="Composed answer (no tool calls)"))
         else:
-            steps.append(AskStep(label="Composed answer"))
+            await push_step(AskStep(label="Composed answer"))
         result = _parse_result(final_text)
         cited_path = result.path
         usage = AskUsage(

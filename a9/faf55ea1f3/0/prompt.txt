@@ -1,0 +1,21 @@
+[Image #2] can we show jsonl file better in the UI?
+
+---
+
+[Image #3] does it make sense to you? is it even working properly?
+
+---
+
+[Image #4] do we need these 2 mode?
+
+---
+
+[Image #5] after i run a email, as it shows last event email... but why inner and outloop empty
+
+---
+
+yes fix, also [Image #6] after running 4 timese email ingestion, this is what i see
+
+---
+
+so i run same email in live more than 3 tiems, [Image #7] still no change
